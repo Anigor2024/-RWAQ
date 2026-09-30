@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Heart, ShoppingBag } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowLeft, ArrowRight, Heart, ShoppingBag } from 'lucide-react';
 import { EditorialProductCard } from '@/components/home/editorial-product-card';
 import { OlfactoryNotes } from '@/components/home/olfactory-notes';
 import { Reveal } from '@/components/ui/reveal';
@@ -23,7 +24,7 @@ export function FeaturedCreations({
   collections,
   products,
 }: FeaturedCreationsProps) {
-  const { locale, t } = useLocale();
+  const { locale, dir, t } = useLocale();
   const {
     selectedCollectionFilter,
     setSelectedCollectionFilter,
@@ -32,18 +33,26 @@ export function FeaturedCreations({
     toggleWishlist,
   } = useUI();
   const { showToast } = useToast();
+  const DirectionalArrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
 
   const visibleProducts =
     selectedCollectionFilter === 'all'
       ? products
+          .filter((p) => p.isFeatured || p.isBestSeller)
+          .slice(0, 6)
       : products.filter((p) => p.collectionSlug === selectedCollectionFilter);
 
   const flagshipProduct = visibleProducts[0];
-  const supportingProducts = visibleProducts.slice(1);
+  const supportingProducts = visibleProducts.slice(1, 6);
   const flagshipVariant = flagshipProduct?.variants[0];
   const flagshipSaved = flagshipProduct
     ? isWishlisted(flagshipProduct.id)
     : false;
+
+  const shopCatalogHref =
+    selectedCollectionFilter === 'all'
+      ? '/shop'
+      : `/shop?collection=${selectedCollectionFilter}`;
 
   return (
     <section
@@ -313,6 +322,17 @@ export function FeaturedCreations({
             </div>
           </div>
         )}
+
+        {/* Direct Editorial Bridge to /shop */}
+        <div className="mt-16 flex justify-center border-t border-[#DFD3C3] pt-10">
+          <Link
+            href={shopCatalogHref}
+            className="group inline-flex h-13 items-center justify-center gap-3 border border-[#0B0B0A] bg-[#0B0B0A] px-9 text-xs sm:text-sm font-medium text-[#F5F0E8] transition-colors duration-200 hover:bg-[#4A3027] hover:border-[#4A3027] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
+          >
+            <span>{t.creations.exploreFullCatalog}</span>
+            <DirectionalArrow className="h-4 w-4 text-[#A77A50] transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+          </Link>
+        </div>
       </div>
     </section>
   );

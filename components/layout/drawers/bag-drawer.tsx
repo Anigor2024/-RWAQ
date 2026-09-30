@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { formatVolumeMl, localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
@@ -29,13 +30,13 @@ export function BagDrawer() {
           <p className="mt-2 max-w-xs text-sm text-[#918A80]">
             {t.drawers.bag.emptyBody}
           </p>
-          <a
-            href="#creations"
+          <Link
+            href="/shop"
             onClick={closeDrawer}
             className="mt-6 inline-flex h-11 items-center justify-center bg-[#A77A50] px-6 text-xs font-medium text-[#0B0B0A] transition-colors hover:bg-[#B88B61] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
           >
             {t.drawers.bag.exploreButton}
-          </a>
+          </Link>
         </div>
       ) : (
         <>

@@ -41,7 +41,11 @@ interface UIContextValue {
   bagItems: CartItem[];
   bagCount: number;
   bagPricing: PriceBreakdown;
-  addToBag: (product: Product, variant?: ProductVariant) => void;
+  addToBag: (
+    product: Product,
+    variant?: ProductVariant,
+    quantity?: number
+  ) => void;
   updateBagQuantity: (variantId: EntityId, nextQuantity: number) => void;
   removeFromBag: (variantId: EntityId) => void;
   wishlistProductIds: EntityId[];
@@ -132,12 +136,18 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const addToBag = useCallback(
-    (product: Product, selectedVariant?: ProductVariant) => {
+    (
+      product: Product,
+      selectedVariant?: ProductVariant,
+      quantity: number = 1
+    ) => {
       const targetVariant =
         selectedVariant ??
         product.variants.find((v) => v.inStock) ??
         product.variants[0];
       if (!targetVariant) return;
+
+      const safeQty = Math.max(1, Math.min(10, Math.round(quantity)));
 
       setBagItems((prev) => {
         const existingIndex = prev.findIndex(
@@ -147,7 +157,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
         if (existingIndex > -1) {
           next = prev.map((item, idx) =>
             idx === existingIndex
-              ? { ...item, quantity: Math.min(10, item.quantity + 1) }
+              ? { ...item, quantity: Math.min(10, item.quantity + safeQty) }
               : item
           );
         } else {
@@ -161,7 +171,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
               collectionName: product.collectionName,
               sizeMl: targetVariant.sizeMl,
               unitPrice: targetVariant.price,
-              quantity: 1,
+              quantity: safeQty,
               imageUrl: product.image.url,
             },
           ];

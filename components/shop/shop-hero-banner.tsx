@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import { Typography } from '@/components/ui/typography';
 import type { CatalogFacetCounts } from '@/features/catalog/catalog-query';
 import { localize } from '@/lib/i18n/config';
@@ -16,6 +15,11 @@ interface ShopHeroBannerProps {
   onSelectCollection: (slug: Slug | undefined) => void;
 }
 
+/**
+ * Editorial opening area for /shop on a Warm Ivory (#F5F0E8) surface.
+ * Provides large editorial heading, luxury eyebrow, brief supporting sentence,
+ * and subtle collection context without a full-screen dark hero.
+ */
 export function ShopHeroBanner({
   collections,
   activeCollectionSlug,
@@ -28,100 +32,77 @@ export function ShopHeroBanner({
     (c) => c.slug === activeCollectionSlug
   );
 
-  const bannerImage = activeCollection
-    ? activeCollection.image.url
-    : '/images/rwaq/hero/rwaq-hero-luminous-campaign.jpg';
-
-  const bannerAlt = activeCollection
-    ? localize(activeCollection.image.alt, locale)
-    : t.shop.title;
-
   return (
     <section
       aria-label={t.shop.title}
-      className="relative overflow-hidden border-b border-[#F5F0E8]/12 bg-[#0B0B0A] pt-20 lg:pt-[5.25rem] text-[#FFFDF9]"
+      className="border-b border-[#DFD3C3] bg-[#F5F0E8] pt-20 lg:pt-[5.25rem] text-[#0B0B0A]"
     >
-      {/* Atmospheric Background Media */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <Image
-          key={bannerImage}
-          src={bannerImage}
-          alt={bannerAlt}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center opacity-45 brightness-[0.95] contrast-[1.05] transition-all duration-700"
-          referrerPolicy="no-referrer"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-[#0B0B0A] via-[#0B0B0A]/70 to-[#0B0B0A]/55"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-[radial-gradient(circle_at_50%_25%,rgba(167,122,80,0.18)_0%,transparent_65%)]"
-        />
-      </div>
+      <div className="mx-auto max-w-[1440px] px-4 pt-10 pb-8 sm:px-8 sm:pt-14 sm:pb-10 lg:px-12 lg:pt-16 lg:pb-12">
+        <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-3">
+              <span aria-hidden="true" className="h-px w-8 bg-[#A77A50]" />
+              <Typography variant="eyebrow" className="text-[#4A3027]">
+                {activeCollection
+                  ? `${t.collections.chapterPrefix} ${activeCollection.romanCode} · ${localize(
+                      activeCollection.originInspiration,
+                      locale
+                    )}`
+                  : t.shop.eyebrow}
+              </Typography>
+            </div>
 
-      {/* Editorial Header Content */}
-      <div className="relative z-10 mx-auto max-w-[1440px] px-4 pt-12 pb-10 sm:px-8 sm:pt-16 sm:pb-12 lg:px-12 lg:pt-20 lg:pb-14">
-        <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-3">
-            <span aria-hidden="true" className="h-px w-8 bg-[#A77A50]" />
-            <Typography variant="eyebrow" className="text-[#D8C8B2]">
-              {activeCollection
-                ? `${t.collections.chapterPrefix} ${activeCollection.romanCode} · ${localize(
-                    activeCollection.originInspiration,
-                    locale
-                  )}`
-                : t.shop.eyebrow}
-            </Typography>
-          </div>
+            <div className="mt-3.5 flex flex-wrap items-baseline gap-4">
+              <Typography
+                variant="display-l"
+                as="h1"
+                serifInEnglish
+                className="text-[#0B0B0A]"
+              >
+                {activeCollection
+                  ? localize(activeCollection.name, locale)
+                  : t.shop.title}
+              </Typography>
+              {activeCollection && (
+                <span className="font-[family-name:var(--font-display-en)] text-lg tracking-[0.2em] text-[#665F57]">
+                  {locale === 'ar'
+                    ? activeCollection.name.en
+                    : activeCollection.name.ar}
+                </span>
+              )}
+            </div>
 
-          <div className="mt-4 flex flex-wrap items-baseline gap-4">
             <Typography
-              variant="display-l"
-              as="h1"
-              serifInEnglish
-              className="text-[#FFFDF9]"
+              variant="body-lg"
+              className="mt-3.5 max-w-2xl text-[#4A3027]/90"
             >
               {activeCollection
-                ? localize(activeCollection.name, locale)
-                : t.shop.title}
+                ? localize(activeCollection.editorialDescription, locale)
+                : t.shop.subtitle}
             </Typography>
-            {activeCollection && (
-              <span className="font-[family-name:var(--font-display-en)] text-lg tracking-[0.22em] text-[#D8C8B2]">
-                {locale === 'ar'
-                  ? activeCollection.name.en
-                  : activeCollection.name.ar}
-              </span>
-            )}
           </div>
 
-          <Typography
-            variant="body-lg"
-            className="mt-4 max-w-2xl text-[#F5F0E8]/85"
-          >
-            {activeCollection
-              ? localize(activeCollection.editorialDescription, locale)
-              : t.shop.subtitle}
-          </Typography>
-
+          {/* Subtle Collection Context Summary */}
           {activeCollection && (
-            <div className="mt-5 inline-flex flex-wrap items-center gap-2 text-xs text-[#D8C8B2]">
-              <span className="text-[#918A80]">{t.collections.accordLabel}:</span>
-              <strong className="font-medium text-[#FFFDF9]">
+            <div className="border-s-2 border-[#A77A50] ps-4 text-xs text-[#665F57] lg:max-w-xs">
+              <span className="block text-[#918A80]">
+                {t.collections.accordLabel}
+              </span>
+              <strong className="mt-1 block text-sm font-medium text-[#0B0B0A]">
                 {localize(activeCollection.accordSummary, locale)}
               </strong>
+              <span className="mt-1.5 block text-[#4A3027]">
+                {localize(activeCollection.tagline, locale)}
+              </span>
             </div>
           )}
         </div>
 
-        {/* Interactive Olfactory World Tabs */}
+        {/* Subtle Collection World Context Selector */}
         <div
           role="tablist"
           aria-label={t.shop.filterGroups.collection}
-          className="mt-10 flex flex-wrap items-center gap-2.5 border-t border-[#F5F0E8]/14 pt-6"
+          className="mt-8 flex flex-wrap items-center gap-2 border-t border-[#DFD3C3] pt-5"
         >
           <button
             type="button"
@@ -129,17 +110,17 @@ export function ShopHeroBanner({
             aria-selected={!activeCollectionSlug}
             onClick={() => onSelectCollection(undefined)}
             className={cn(
-              'inline-flex h-11 items-center gap-2.5 px-5 text-xs transition-all duration-200 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
+              'inline-flex h-10 items-center gap-2 px-4 text-xs transition-colors duration-200 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
               !activeCollectionSlug
-                ? 'bg-[#F5F0E8] text-[#0B0B0A] font-medium'
-                : 'border border-[#F5F0E8]/20 bg-[#141311]/80 text-[#F5F0E8] hover:border-[#A77A50] hover:text-[#D8C8B2]'
+                ? 'bg-[#0B0B0A] text-[#F5F0E8] font-medium'
+                : 'border border-[#DFD3C3] bg-[#FFFDF9] text-[#4A3027] hover:border-[#0B0B0A] hover:text-[#0B0B0A]'
             )}
           >
             <span>{t.shop.allWorldsTab}</span>
             <span
               className={cn(
                 'text-[11px] tabular-nums',
-                !activeCollectionSlug ? 'text-[#4A3027]' : 'text-[#918A80]'
+                !activeCollectionSlug ? 'text-[#D8C8B2]' : 'text-[#918A80]'
               )}
             >
               ({facets.total})
@@ -159,16 +140,16 @@ export function ShopHeroBanner({
                   onSelectCollection(isSelected ? undefined : col.slug)
                 }
                 className={cn(
-                  'inline-flex h-11 items-center gap-2.5 px-5 text-xs transition-all duration-200 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
+                  'inline-flex h-10 items-center gap-2 px-4 text-xs transition-colors duration-200 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
                   isSelected
-                    ? 'bg-[#F5F0E8] text-[#0B0B0A] font-medium'
-                    : 'border border-[#F5F0E8]/20 bg-[#141311]/80 text-[#F5F0E8] hover:border-[#A77A50] hover:text-[#D8C8B2]'
+                    ? 'bg-[#0B0B0A] text-[#F5F0E8] font-medium'
+                    : 'border border-[#DFD3C3] bg-[#FFFDF9] text-[#4A3027] hover:border-[#0B0B0A] hover:text-[#0B0B0A]'
                 )}
               >
                 <span
                   className={cn(
                     'font-[family-name:var(--font-display-en)] tracking-widest',
-                    isSelected ? 'text-[#4A3027]' : 'text-[#A77A50]'
+                    isSelected ? 'text-[#A77A50]' : 'text-[#A77A50]'
                   )}
                 >
                   {col.romanCode}
@@ -177,7 +158,7 @@ export function ShopHeroBanner({
                 <span
                   className={cn(
                     'text-[11px] tabular-nums',
-                    isSelected ? 'text-[#4A3027]' : 'text-[#918A80]'
+                    isSelected ? 'text-[#D8C8B2]' : 'text-[#918A80]'
                   )}
                 >
                   ({count})

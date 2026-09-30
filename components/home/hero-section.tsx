@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
 import { HeroMedia } from '@/components/home/hero-media';
 import { Reveal } from '@/components/ui/reveal';
@@ -79,13 +80,13 @@ export function HeroSection({ hero }: HeroSectionProps) {
           {/* High-Contrast Luxury Retail CTA Group */}
           <Reveal delay={0.32} yOffset={14}>
             <div className="mt-8 sm:mt-11 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3.5 sm:gap-4">
-              <a
-                href={`#${hero.primaryCta.targetSectionId}`}
+              <Link
+                href="/shop"
                 className="group inline-flex h-13 sm:h-14 items-center justify-center gap-3.5 bg-[#F5F0E8] px-8 sm:px-9 text-sm font-medium text-[#0B0B0A] shadow-[0_12px_32px_rgba(0,0,0,0.3)] transition-all duration-200 hover:bg-[#FFFDF9] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50] whitespace-nowrap"
               >
                 <span>{localize(hero.primaryCta.label, locale)}</span>
                 <DirectionalArrow className="h-4 w-4 text-[#4A3027] transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
-              </a>
+              </Link>
 
               {hero.secondaryCta && (
                 <a

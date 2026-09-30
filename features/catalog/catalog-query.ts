@@ -329,82 +329,90 @@ function buildProductSearchIndex(product: Product): string {
 }
 
 /**
- * Filters and sorts the catalog products according to the active CatalogQueryState.
+ * Deterministic bilingual catalog search across Arabic and English fields, notes, accords, and SKU.
  */
-export function queryCatalogProducts(
-  products: Product[],
-  state: CatalogQueryState,
-  locale: Locale
-): Product[] {
-  const normalizedQuery = normalizeSearchText(state.q);
+export function searchCatalog(products: Product[], rawQuery: string): Product[] {
+  const normalizedQuery = normalizeSearchText(rawQuery);
   const queryTokens = normalizedQuery
     ? normalizedQuery.split(' ').filter(Boolean)
     : [];
+  if (queryTokens.length === 0) return products;
 
-  const filtered = products.filter((product) => {
-    if (state.collection && product.collectionSlug !== state.collection) {
+  return products.filter((product) => {
+    const searchCorpus = buildProductSearchIndex(product);
+    return queryTokens.every((token) => searchCorpus.includes(token));
+  });
+}
+
+/**
+ * Combinable catalog filter evaluation across all supported RWAQ product attributes.
+ */
+export function filterCatalog(
+  products: Product[],
+  filters: Partial<CatalogQueryState>
+): Product[] {
+  return products.filter((product) => {
+    if (filters.collection && product.collectionSlug !== filters.collection) {
       return false;
     }
-    if (state.family && product.olfactoryFamilyKey !== state.family) {
+    if (filters.family && product.olfactoryFamilyKey !== filters.family) {
       return false;
     }
-    if (state.gender && product.genderPositioning !== state.gender) {
+    if (filters.gender && product.genderPositioning !== filters.gender) {
       return false;
     }
-    if (state.season && product.season !== state.season) {
+    if (filters.season && product.season !== filters.season) {
       return false;
     }
-    if (state.occasion && product.occasion !== state.occasion) {
+    if (filters.occasion && product.occasion !== filters.occasion) {
       return false;
     }
-    if (state.longevity && product.longevity !== state.longevity) {
+    if (filters.longevity && product.longevity !== filters.longevity) {
       return false;
     }
-    if (state.projection && product.projection !== state.projection) {
+    if (filters.projection && product.projection !== filters.projection) {
       return false;
     }
-    if (state.availability === 'in-stock' && !product.inStock) {
+    if (filters.availability === 'in-stock' && !product.inStock) {
       return false;
     }
-    if (state.isNew && !product.isNew) {
+    if (filters.isNew && !product.isNew) {
       return false;
     }
-    if (state.isBestSeller && !product.isBestSeller) {
+    if (filters.isBestSeller && !product.isBestSeller) {
       return false;
     }
     if (
-      state.minPrice !== undefined &&
-      product.price.amount < state.minPrice
+      filters.minPrice !== undefined &&
+      product.price.amount < filters.minPrice
     ) {
       return false;
     }
     if (
-      state.maxPrice !== undefined &&
-      product.price.amount > state.maxPrice
+      filters.maxPrice !== undefined &&
+      product.price.amount > filters.maxPrice
     ) {
       return false;
     }
-
-    if (queryTokens.length > 0) {
-      const searchCorpus = buildProductSearchIndex(product);
-      const matchesAllTokens = queryTokens.every((token) =>
-        searchCorpus.includes(token)
-      );
-      if (!matchesAllTokens) {
-        return false;
-      }
-    }
-
     return true;
   });
+}
 
-  const sorted = [...filtered];
+/**
+ * Deterministic catalog comparator and sorting function.
+ */
+export function sortCatalog(
+  products: Product[],
+  sort: CatalogSort,
+  locale: Locale
+): Product[] {
+  const sorted = [...products];
   const collator = new Intl.Collator(locale === 'ar' ? 'ar-SA' : 'en-US', {
     sensitivity: 'base',
   });
 
   sorted.sort((a, b) => {
-    switch (state.sort) {
+    switch (sort) {
       case 'price-asc':
         return a.price.amount - b.price.amount || a.sku.localeCompare(b.sku);
 
@@ -451,6 +459,19 @@ export function queryCatalogProducts(
   });
 
   return sorted;
+}
+
+/**
+ * Filters, searches, and sorts the catalog products according to the active CatalogQueryState.
+ */
+export function queryCatalogProducts(
+  products: Product[],
+  state: CatalogQueryState,
+  locale: Locale
+): Product[] {
+  const afterFilter = filterCatalog(products, state);
+  const afterSearch = searchCatalog(afterFilter, state.q);
+  return sortCatalog(afterSearch, state.sort, locale);
 }
 
 export interface CatalogFacetCounts {

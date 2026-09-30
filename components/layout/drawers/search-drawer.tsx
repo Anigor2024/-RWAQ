@@ -3,14 +3,15 @@
 import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Heart, Search } from 'lucide-react';
 import {
   DEFAULT_CATALOG_QUERY_STATE,
   normalizeSearchText,
   queryCatalogProducts,
-} from '@/features/catalog/catalog-query';
+} from '@/features/catalog/service';
 import { localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
+import { cn } from '@/lib/utils';
 import { useLocale } from '@/providers/locale-provider';
 import { useToast } from '@/providers/toast-provider';
 import { useUI } from '@/providers/ui-provider';
@@ -31,7 +32,7 @@ const SUGGESTED_NOTES = [
 
 export function SearchDrawer({ products }: SearchDrawerProps) {
   const { locale, dir, t } = useLocale();
-  const { addToBag, closeDrawer } = useUI();
+  const { addToBag, closeDrawer, isWishlisted, toggleWishlist } = useUI();
   const { showToast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const DirectionalArrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
@@ -47,6 +48,11 @@ export function SearchDrawer({ products }: SearchDrawerProps) {
         locale
       ),
     [products, searchQuery, locale]
+  );
+
+  const previewProducts = useMemo(
+    () => filteredProducts.slice(0, 6),
+    [filteredProducts]
   );
 
   const shopSearchHref = searchQuery.trim()
@@ -106,6 +112,7 @@ export function SearchDrawer({ products }: SearchDrawerProps) {
         </div>
       </div>
 
+      {/* View All Results in /shop Action */}
       <div className="mt-5">
         <Link
           href={shopSearchHref}
@@ -119,66 +126,100 @@ export function SearchDrawer({ products }: SearchDrawerProps) {
         </Link>
       </div>
 
+      {/* Limited Preview List (up to 6 creations) */}
       <div className="mt-6 flex-1 space-y-5">
-        {filteredProducts.length === 0 ? (
+        {previewProducts.length === 0 ? (
           <p className="py-12 text-center text-sm text-[#918A80]">
             {t.drawers.search.noResults}
           </p>
         ) : (
-          filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="flex gap-4 border-b border-[#F5F0E8]/10 pb-5"
-            >
-              <div className="relative h-24 w-20 shrink-0 overflow-hidden bg-[#1C1A17]">
-                <Image
-                  src={product.image.url}
-                  alt={localize(product.image.alt, locale)}
-                  fill
-                  sizes="80px"
-                  className="object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <div className="flex flex-1 flex-col justify-between">
-                <div>
-                  <div className="flex items-baseline justify-between gap-2">
-                    <h3 className="text-base font-medium text-[#F5F0E8]">
-                      {localize(product.name, locale)}
-                    </h3>
-                    <span className="text-sm tabular-nums text-[#D8C8B2]">
-                      {formatMoney(product.price, locale)}
-                    </span>
+          previewProducts.map((product) => {
+            const saved = isWishlisted(product.id);
+            return (
+              <div
+                key={product.id}
+                className="flex gap-4 border-b border-[#F5F0E8]/10 pb-5"
+              >
+                <div className="relative h-24 w-20 shrink-0 overflow-hidden bg-[#1C1A17]">
+                  <Image
+                    src={product.image.url}
+                    alt={localize(product.image.alt, locale)}
+                    fill
+                    sizes="80px"
+                    className="object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                <div className="flex flex-1 flex-col justify-between">
+                  <div>
+                    <div className="flex items-baseline justify-between gap-2">
+                      <h3 className="text-base font-medium text-[#F5F0E8]">
+                        {localize(product.name, locale)}
+                      </h3>
+                      <span className="text-sm tabular-nums text-[#D8C8B2]">
+                        {formatMoney(product.price, locale)}
+                      </span>
+                    </div>
+                    <p className="mt-0.5 text-xs text-[#918A80]">
+                      {localize(product.collectionName, locale)} ·{' '}
+                      {localize(product.notes.olfactoryFamily, locale)}
+                    </p>
                   </div>
-                  <p className="mt-0.5 text-xs text-[#918A80]">
-                    {localize(product.collectionName, locale)} ·{' '}
-                    {localize(product.notes.olfactoryFamily, locale)}
-                  </p>
-                </div>
 
-                <div className="mt-3 flex items-center justify-between gap-2">
-                  <span className="text-xs text-[#918A80]">
-                    {product.notes.top
-                      .slice(0, 2)
-                      .map((n) => localize(n, locale))
-                      .join(' · ')}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      addToBag(product);
-                      showToast(
-                        `${localize(product.name, locale)} — ${t.creations.addedToBag}`
-                      );
-                    }}
-                    className="border border-[#A77A50]/60 px-3 py-1 text-xs text-[#F5F0E8] transition-colors hover:bg-[#A77A50] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
-                  >
-                    {t.creations.addToBag}
-                  </button>
+                  <div className="mt-3 flex items-center justify-between gap-2">
+                    <span className="text-xs text-[#918A80]">
+                      {product.notes.top
+                        .slice(0, 2)
+                        .map((n) => localize(n, locale))
+                        .join(' · ')}
+                    </span>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const nowSaved = toggleWishlist(product.id);
+                          showToast(
+                            `${localize(product.name, locale)} — ${
+                              nowSaved
+                                ? t.creations.saveToWishlist
+                                : t.creations.removeFromWishlist
+                            }`
+                          );
+                        }}
+                        aria-label={
+                          saved
+                            ? t.creations.removeFromWishlist
+                            : t.creations.saveToWishlist
+                        }
+                        className="inline-flex h-8 w-8 items-center justify-center border border-[#F5F0E8]/20 text-[#F5F0E8] transition-colors hover:border-[#A77A50] hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                      >
+                        <Heart
+                          className={cn(
+                            'h-3.5 w-3.5',
+                            saved ? 'fill-[#A77A50] text-[#A77A50]' : ''
+                          )}
+                        />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          addToBag(product);
+                          showToast(
+                            `${localize(product.name, locale)} — ${t.creations.addedToBag}`
+                          );
+                        }}
+                        className="border border-[#A77A50]/60 px-3 py-1 text-xs text-[#F5F0E8] transition-colors hover:bg-[#A77A50] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
+                      >
+                        {t.creations.addToBag}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>
