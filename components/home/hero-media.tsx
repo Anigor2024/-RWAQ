@@ -13,10 +13,10 @@ interface HeroMediaProps {
 }
 
 /**
- * Reusable HeroMedia component supporting both high-resolution editorial imagery
- * with restrained GPU-accelerated cinematic motion and optional campaign video
- * with autoplay, muted, loop, playsInline, poster fallback, prefers-reduced-motion
- * compliance, and directional RTL/LTR lighting.
+ * Reusable HeroMedia component supporting high-resolution luminous campaign imagery
+ * with restrained GPU-accelerated cinematic motion and optional campaign video.
+ * Uses a single localized readability gradient behind copy so the center-left
+ * bottle, bronze cap, travertine stone, and warm highlights remain bright and clear.
  */
 export function HeroMedia({ media }: HeroMediaProps) {
   const { locale, dir } = useLocale();
@@ -34,14 +34,14 @@ export function HeroMedia({ media }: HeroMediaProps) {
   const isRtl = dir === 'rtl';
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[#120E0C]">
-      {/* Warm Chiaroscuro Base Fallback */}
+    <div className="absolute inset-0 overflow-hidden bg-[#1A1410]">
+      {/* Warm Golden-Hour Stone Fallback */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,#5E3D2E_0%,#261B16_52%,#0B0B0A_100%)]"
+        className="absolute inset-0 bg-[radial-gradient(circle_at_38%_46%,#7A5438_0%,#33241B_55%,#120E0B_100%)]"
       />
 
-      {/* Primary Hero Visual with Slow Cinematic Drift (Disabled in Reduced Motion) */}
+      {/* Primary Hero Visual with Restrained Cinematic Drift */}
       <div
         className={cn(
           'relative h-full w-full',
@@ -50,7 +50,7 @@ export function HeroMedia({ media }: HeroMediaProps) {
       >
         {shouldRenderVideo ? (
           <video
-            className="h-full w-full object-cover object-center brightness-[1.1] contrast-[1.04]"
+            className="h-full w-full object-cover object-center"
             autoPlay
             muted
             loop
@@ -68,55 +68,55 @@ export function HeroMedia({ media }: HeroMediaProps) {
             priority
             sizes="100vw"
             className={cn(
-              'object-cover brightness-[1.14] contrast-[1.05] saturate-[1.05]',
+              'object-cover',
               isRtl
-                ? 'object-[38%_center] sm:object-[44%_center] lg:object-center'
-                : 'object-[62%_center] sm:object-[56%_center] lg:object-center'
+                ? 'object-[34%_center] sm:object-[40%_center] lg:object-center'
+                : 'object-[42%_center] sm:object-[46%_center] lg:object-center'
             )}
             referrerPolicy="no-referrer"
           />
         )}
       </div>
 
-      {/* Warm Luminous Bronze Light Sweep (Bottle & Limestone Highlight) */}
+      {/* Gentle Golden-Hour Light Sweep Enhancing Bottle & Stone Reflections */}
       <div
         aria-hidden="true"
         className={cn(
-          'pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_50%_at_50%_46%,rgba(216,200,178,0.22)_0%,rgba(167,122,80,0.14)_38%,transparent_72%)] mix-blend-screen',
+          'pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_48%_at_38%_48%,rgba(255,244,224,0.18)_0%,rgba(198,148,97,0.10)_42%,transparent_72%)] mix-blend-screen',
           !prefersReducedMotion && 'rwaq-hero-light-sweep'
         )}
       />
 
-      {/* Subtle Ambient Incense / Twilight Haze Impression */}
+      {/* Subtle Ambient Warm Haze */}
       <div
         aria-hidden="true"
         className={cn(
-          'pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_65%_40%_at_35%_62%,rgba(245,240,232,0.10)_0%,rgba(167,122,80,0.06)_45%,transparent_75%)]',
+          'pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_38%_at_32%_60%,rgba(245,240,232,0.08)_0%,transparent_70%)]',
           !prefersReducedMotion && 'rwaq-hero-haze'
         )}
       />
 
-      {/* Directional Readability Gradient: Protects Copy Side While Preserving Bottle Luminosity */}
+      {/* Single Localized Readability Gradient Behind Text Only — Bottle Area Remains Unobstructed */}
       <div
         aria-hidden="true"
         className={cn(
           'pointer-events-none absolute inset-0',
           isRtl
-            ? 'bg-[linear-gradient(to_left,rgba(11,11,10,0.84)_0%,rgba(11,11,10,0.52)_36%,rgba(11,11,10,0.16)_68%,rgba(11,11,10,0.05)_100%)]'
-            : 'bg-[linear-gradient(to_right,rgba(11,11,10,0.84)_0%,rgba(11,11,10,0.52)_36%,rgba(11,11,10,0.16)_68%,rgba(11,11,10,0.05)_100%)]'
+            ? 'bg-[linear-gradient(to_left,rgba(14,11,9,0.76)_0%,rgba(14,11,9,0.42)_34%,rgba(14,11,9,0.08)_60%,transparent_100%)]'
+            : 'bg-[linear-gradient(to_right,rgba(14,11,9,0.76)_0%,rgba(14,11,9,0.42)_34%,rgba(14,11,9,0.08)_60%,transparent_100%)]'
         )}
       />
 
-      {/* Localized Top Header Scrim (Only Top 9rem) */}
+      {/* Minimal Top Navigation Readability Scrim */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-[#0B0B0A]/75 via-[#0B0B0A]/30 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#0B0B0A]/60 via-[#0B0B0A]/20 to-transparent"
       />
 
-      {/* Localized Bottom Architectural Bar Scrim (Only Bottom 11rem) */}
+      {/* Minimal Bottom Bar Scrim */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#0B0B0A]/92 via-[#0B0B0A]/45 to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#0B0B0A]/75 via-[#0B0B0A]/25 to-transparent"
       />
     </div>
   );

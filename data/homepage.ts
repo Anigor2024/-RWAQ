@@ -1,7 +1,7 @@
 import type { HomepageContent } from '@/types';
 
 export const SEED_HOMEPAGE_CONTENT: HomepageContent = {
-  id: 'homepage-v1',
+  id: 'homepage-v2',
   hero: {
     eyebrow: {
       ar: 'دار عطور سعودية معاصرة',
@@ -31,11 +31,11 @@ export const SEED_HOMEPAGE_CONTENT: HomepageContent = {
     },
     media: {
       type: 'image',
-      imageUrl: '/images/rwaq/hero_rwaq_campaign_1790732049989.jpg',
-      posterUrl: '/images/rwaq/hero_rwaq_campaign_1790732049989.jpg',
+      imageUrl: '/images/rwaq/hero/rwaq-hero-luminous-campaign.jpg',
+      posterUrl: '/images/rwaq/hero/rwaq-hero-luminous-campaign.jpg',
       alt: {
-        ar: 'زجاجة عطر رِواق المنحوتة من الزجاج المدخن والبرونز على الحجر الجيري النجدي ورمال الصحراء تحت ضوء دافئ',
-        en: 'RWAQ sculptural smoked-glass and bronze perfume flacon illuminated on raw Najdi limestone and desert sand',
+        ar: 'زجاجة عطر رِواق المنحوتة من الزجاج المدخن والبرونز المصقول تحت إضاءة ذهبية دافئة على حجر الترافرتين النجدي ورمال الصحراء',
+        en: 'RWAQ sculptural smoked-glass and brushed bronze perfume flacon illuminated by warm golden-hour light on Najdi travertine stone and desert sand',
       },
     },
   },
@@ -45,8 +45,8 @@ export const SEED_HOMEPAGE_CONTENT: HomepageContent = {
       en: 'The House Manifesto · Olfactory Philosophy',
     },
     statement: {
-      ar: 'نؤمن أن العطر ليس ما ترتديه، بل ما يسبق حضورك ويبقى بعدك.',
-      en: 'Fragrance is not simply worn. It arrives before you and remains after you.',
+      ar: 'نؤمن أن العطر ليس ما ترتديه فقط، بل بصمةٌ تسبق حضورك وتُعرّف بك.',
+      en: 'Fragrance is more than something you wear — it is a signature that arrives before you and becomes part of how you are remembered.',
     },
     supportingParagraph: {
       ar: 'في رِواق، نستمد إلهامنا من سكينة الأروقة النجدية وامتداد الصحراء وهيبة المجالس السعودية. نختار أنقى خلاصات العود واللبان والورد الطائفي والأخشاب المعتّقة، لنصوغها بتأنٍّ معاصر يبتعد عن الصخب ويحتفي بالعمق والوقار.',
@@ -66,5 +66,5 @@ export const SEED_HOMEPAGE_CONTENT: HomepageContent = {
     'zill-smoke',
     'maqam-saffron',
   ],
-  updatedAt: '2026-09-29T18:00:00.000Z',
+  updatedAt: '2026-09-30T12:55:00.000Z',
 };
