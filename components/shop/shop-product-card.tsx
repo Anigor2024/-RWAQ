@@ -3,6 +3,12 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Eye, Heart, ShoppingBag } from 'lucide-react';
+import {
+  getDefaultPurchasableVariant,
+  getProductDisplayOriginalPrice,
+  getProductDisplayPrice,
+  isVariantPurchasable,
+} from '@/features/catalog/product-commerce';
 import { formatVolumeMl, localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
 import { cn } from '@/lib/utils';
@@ -24,17 +30,31 @@ export function ShopProductCard({
   const { addToBag, isWishlisted, toggleWishlist } = useUI();
   const { showToast } = useToast();
 
+  const defaultPurchasableVariant = getDefaultPurchasableVariant(product);
+
   const [selectedVariantId, setSelectedVariantId] = useState<string>(
-    product.variants[0]?.id ?? ''
+    defaultPurchasableVariant?.id ?? ''
   );
 
   const activeVariant =
-    product.variants.find((v) => v.id === selectedVariantId) ??
-    product.variants[0];
+    product.variants.find(
+      (v) =>
+        v.id === selectedVariantId &&
+        product.inStock &&
+        isVariantPurchasable(v)
+    ) ?? defaultPurchasableVariant;
+
+  const canAddToBag = Boolean(
+    product.inStock && activeVariant && isVariantPurchasable(activeVariant)
+  );
 
   const saved = isWishlisted(product.id);
-  const displayPrice = activeVariant ? activeVariant.price : product.price;
-  const displayOriginalPrice = activeVariant?.originalPrice ?? product.originalPrice;
+  const displayPrice = activeVariant
+    ? activeVariant.price
+    : getProductDisplayPrice(product);
+  const displayOriginalPrice = activeVariant
+    ? (activeVariant.originalPrice ?? product.originalPrice)
+    : getProductDisplayOriginalPrice(product);
 
   return (
     <article className="group flex h-full flex-col justify-between border border-[#DFD3C3]/80 bg-[#FFFDF9] p-4 sm:p-5 transition-colors duration-300 hover:border-[#A77A50]/65">
@@ -51,7 +71,7 @@ export function ShopProductCard({
               src={product.image.url}
               alt={localize(product.image.alt, locale)}
               fill
-              sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 30vw"
+              sizes="(max-width: 767px) 92vw, (max-width: 1279px) 46vw, 30vw"
               className="object-cover brightness-[1.04] contrast-[1.03] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
               referrerPolicy="no-referrer"
             />
@@ -111,7 +131,7 @@ export function ShopProductCard({
             <span>{t.shop.families[product.olfactoryFamilyKey]}</span>
           </span>
           <span className="font-mono text-[11px] text-[#918A80]">
-            {product.sku}
+            {activeVariant?.sku ?? product.sku}
           </span>
         </div>
 
@@ -193,17 +213,29 @@ export function ShopProductCard({
               className="flex flex-wrap items-center gap-1.5"
             >
               {product.variants.map((variant) => {
-                const isSelected = activeVariant?.id === variant.id;
+                const purchasable =
+                  product.inStock && isVariantPurchasable(variant);
+                const isSelected =
+                  purchasable && activeVariant?.id === variant.id;
                 return (
                   <button
                     key={variant.id}
                     type="button"
-                    onClick={() => setSelectedVariantId(variant.id)}
+                    disabled={!purchasable}
+                    aria-disabled={!purchasable}
+                    aria-pressed={isSelected}
+                    onClick={() => {
+                      if (purchasable) {
+                        setSelectedVariantId(variant.id);
+                      }
+                    }}
                     className={cn(
                       'px-2.5 py-1 text-xs tabular-nums transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
-                      isSelected
-                        ? 'bg-[#0B0B0A] text-[#F5F0E8] font-medium'
-                        : 'border border-[#DFD3C3] bg-transparent text-[#665F57] hover:border-[#0B0B0A] hover:text-[#0B0B0A]'
+                      !purchasable
+                        ? 'cursor-not-allowed border border-[#DFD3C3]/60 bg-[#F5F0E8]/40 text-[#918A80] line-through opacity-60'
+                        : isSelected
+                          ? 'bg-[#0B0B0A] text-[#F5F0E8] font-medium'
+                          : 'border border-[#DFD3C3] bg-transparent text-[#665F57] hover:border-[#0B0B0A] hover:text-[#0B0B0A]'
                     )}
                   >
                     {formatVolumeMl(variant.sizeMl, locale)}
@@ -219,19 +251,31 @@ export function ShopProductCard({
       <div className="mt-5 flex items-center gap-2 pt-1">
         <button
           type="button"
+          disabled={!canAddToBag}
+          aria-disabled={!canAddToBag}
           onClick={() => {
-            addToBag(product, activeVariant);
-            showToast(
-              `${localize(product.name, locale)} (${formatVolumeMl(
-                activeVariant?.sizeMl ?? 100,
-                locale
-              )}) — ${t.creations.addedToBag}`
-            );
+            if (!canAddToBag || !activeVariant) return;
+            const added = addToBag(product, activeVariant, 1);
+            if (added) {
+              showToast(
+                `${localize(product.name, locale)} (${formatVolumeMl(
+                  activeVariant.sizeMl,
+                  locale
+                )}) — ${t.creations.addedToBag}`
+              );
+            }
           }}
-          className="inline-flex h-11 flex-1 items-center justify-center gap-2 bg-[#0B0B0A] px-4 text-xs font-medium text-[#F5F0E8] transition-colors duration-200 hover:bg-[#4A3027] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
+          className={cn(
+            'inline-flex h-11 flex-1 items-center justify-center gap-2 px-4 text-xs font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap',
+            canAddToBag
+              ? 'bg-[#0B0B0A] text-[#F5F0E8] hover:bg-[#4A3027]'
+              : 'cursor-not-allowed border border-[#DFD3C3] bg-[#F5F0E8] text-[#918A80] opacity-70'
+          )}
         >
           <ShoppingBag className="h-3.5 w-3.5" />
-          <span>{t.creations.addToBag}</span>
+          <span>
+            {canAddToBag ? t.creations.addToBag : t.shop.card.outOfStockLabel}
+          </span>
         </button>
 
         <button

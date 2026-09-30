@@ -8,8 +8,14 @@ import { EditorialProductCard } from '@/components/home/editorial-product-card';
 import { OlfactoryNotes } from '@/components/home/olfactory-notes';
 import { Reveal } from '@/components/ui/reveal';
 import { Typography } from '@/components/ui/typography';
+import {
+  getDefaultPurchasableVariant,
+  getProductDisplayPrice,
+  isProductPurchasable,
+} from '@/features/catalog/product-commerce';
 import { formatVolumeMl, localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
+import { cn } from '@/lib/utils';
 import { useLocale } from '@/providers/locale-provider';
 import { useToast } from '@/providers/toast-provider';
 import { useUI } from '@/providers/ui-provider';
@@ -35,24 +41,31 @@ export function FeaturedCreations({
   const { showToast } = useToast();
   const DirectionalArrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
 
+  // Curate top 6 featured creations on homepage while full 18-creation catalog lives at /shop
+  const curatedPool = products.slice(0, 6);
+
   const visibleProducts =
     selectedCollectionFilter === 'all'
-      ? products
-          .filter((p) => p.isFeatured || p.isBestSeller)
-          .slice(0, 6)
-      : products.filter((p) => p.collectionSlug === selectedCollectionFilter);
+      ? curatedPool
+      : products
+          .filter((p) => p.collectionSlug === selectedCollectionFilter)
+          .slice(0, 6);
 
   const flagshipProduct = visibleProducts[0];
-  const supportingProducts = visibleProducts.slice(1, 6);
-  const flagshipVariant = flagshipProduct?.variants[0];
+  const supportingProducts = visibleProducts.slice(1);
+  const flagshipVariant = flagshipProduct
+    ? (getDefaultPurchasableVariant(flagshipProduct) ??
+      flagshipProduct.variants[0])
+    : undefined;
+  const flagshipPurchasable = flagshipProduct
+    ? isProductPurchasable(flagshipProduct)
+    : false;
+  const flagshipDisplayPrice = flagshipProduct
+    ? getProductDisplayPrice(flagshipProduct)
+    : undefined;
   const flagshipSaved = flagshipProduct
     ? isWishlisted(flagshipProduct.id)
     : false;
-
-  const shopCatalogHref =
-    selectedCollectionFilter === 'all'
-      ? '/shop'
-      : `/shop?collection=${selectedCollectionFilter}`;
 
   return (
     <section
@@ -130,7 +143,7 @@ export function FeaturedCreations({
         </div>
 
         {/* Oversized Editorial Flagship Creation Spotlight */}
-        {flagshipProduct && (
+        {flagshipProduct && flagshipDisplayPrice && (
           <Reveal delay={0.14}>
             <article className="mt-14 border border-[#DFD3C3] bg-[#F5F0E8]/65 p-5 sm:p-8 lg:p-12">
               <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-14">
@@ -218,7 +231,7 @@ export function FeaturedCreations({
 
                       <div className="text-end">
                         <span className="block text-xl sm:text-2xl font-medium tabular-nums text-[#0B0B0A]">
-                          {formatMoney(flagshipProduct.price, locale)}
+                          {formatMoney(flagshipDisplayPrice, locale)}
                         </span>
                         <span className="block text-[11px] text-[#665F57]">
                           {t.creations.vatIncludedNote}
@@ -278,18 +291,32 @@ export function FeaturedCreations({
                   <div className="mt-8 flex flex-wrap items-center gap-3">
                     <button
                       type="button"
+                      disabled={!flagshipPurchasable}
+                      aria-disabled={!flagshipPurchasable}
                       onClick={() => {
-                        addToBag(flagshipProduct);
-                        showToast(
-                          `${localize(flagshipProduct.name, locale)} — ${
-                            t.creations.addedToBag
-                          }`
-                        );
+                        if (!flagshipPurchasable) return;
+                        const added = addToBag(flagshipProduct);
+                        if (added) {
+                          showToast(
+                            `${localize(flagshipProduct.name, locale)} — ${
+                              t.creations.addedToBag
+                            }`
+                          );
+                        }
                       }}
-                      className="inline-flex h-13 flex-1 sm:flex-initial items-center justify-center gap-3 bg-[#0B0B0A] px-9 text-xs sm:text-sm font-medium text-[#F5F0E8] transition-colors duration-200 hover:bg-[#4A3027] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
+                      className={cn(
+                        'inline-flex h-13 flex-1 sm:flex-initial items-center justify-center gap-3 px-9 text-xs sm:text-sm font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap',
+                        flagshipPurchasable
+                          ? 'bg-[#0B0B0A] text-[#F5F0E8] hover:bg-[#4A3027]'
+                          : 'cursor-not-allowed border border-[#DFD3C3] bg-[#F5F0E8] text-[#918A80] opacity-70'
+                      )}
                     >
                       <ShoppingBag className="h-4 w-4" />
-                      <span>{t.creations.addToBag}</span>
+                      <span>
+                        {flagshipPurchasable
+                          ? t.creations.addToBag
+                          : t.shop.card.outOfStockLabel}
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -323,14 +350,18 @@ export function FeaturedCreations({
           </div>
         )}
 
-        {/* Direct Editorial Bridge to /shop */}
-        <div className="mt-16 flex justify-center border-t border-[#DFD3C3] pt-10">
+        {/* Direct CTA to Complete 18-Creation Shop */}
+        <div className="mt-16 flex justify-center border-t border-[#DFD3C3] pt-12">
           <Link
-            href={shopCatalogHref}
-            className="group inline-flex h-13 items-center justify-center gap-3 border border-[#0B0B0A] bg-[#0B0B0A] px-9 text-xs sm:text-sm font-medium text-[#F5F0E8] transition-colors duration-200 hover:bg-[#4A3027] hover:border-[#4A3027] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
+            href={
+              selectedCollectionFilter === 'all'
+                ? '/shop'
+                : `/shop?collection=${selectedCollectionFilter}`
+            }
+            className="group inline-flex h-13 items-center justify-center gap-3.5 border border-[#0B0B0A] bg-[#0B0B0A] px-8 text-xs sm:text-sm font-medium text-[#F5F0E8] transition-colors duration-200 hover:border-[#4A3027] hover:bg-[#4A3027] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
           >
             <span>{t.creations.exploreFullCatalog}</span>
-            <DirectionalArrow className="h-4 w-4 text-[#A77A50] transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+            <DirectionalArrow className="h-4 w-4 text-[#D8C8B2] transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
           </Link>
         </div>
       </div>

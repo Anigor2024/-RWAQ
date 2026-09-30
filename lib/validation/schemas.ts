@@ -102,23 +102,35 @@ export function normalizeAssetUrl(rawUrl: string): string {
   return rawUrl;
 }
 
-export const persistedCartItemSchema = z.object({
-  productId: entityIdSchema,
-  productSlug: slugSchema,
-  variantId: entityIdSchema,
-  name: localizedStringSchema,
-  collectionName: localizedStringSchema,
-  sizeMl: z.number().int().positive().max(2000),
-  unitPrice: moneySchema,
-  quantity: z.number().int().min(1).max(10),
-  imageUrl: z
-    .string()
-    .trim()
-    .min(1)
-    .max(500)
-    .transform((val) => normalizeAssetUrl(val)),
-  giftWrapRequested: z.boolean().optional(),
-});
+export const persistedCartItemSchema = z
+  .object({
+    productId: entityIdSchema,
+    productSlug: slugSchema,
+    variantId: entityIdSchema,
+    name: localizedStringSchema,
+    collectionName: localizedStringSchema,
+    sizeMl: z.number().int().positive().max(2000),
+    unitPrice: moneySchema,
+    quantity: z.number().int().min(1).max(10),
+    maxStockQuantity: z.number().int().min(1).max(10000).optional(),
+    imageUrl: z
+      .string()
+      .trim()
+      .min(1)
+      .max(500)
+      .transform((val) => normalizeAssetUrl(val)),
+    giftWrapRequested: z.boolean().optional(),
+  })
+  .transform((item) => {
+    const maxAllowed =
+      item.maxStockQuantity !== undefined
+        ? Math.min(10, Math.max(1, item.maxStockQuantity))
+        : 10;
+    return {
+      ...item,
+      quantity: Math.min(maxAllowed, Math.max(1, item.quantity)),
+    };
+  });
 
 export const persistedCartListSchema = z.array(persistedCartItemSchema).max(50);
 

@@ -47,6 +47,7 @@ export interface CartItem {
   sizeMl: number;
   unitPrice: Money;
   quantity: number;
+  maxStockQuantity?: number;
   imageUrl: string;
   giftWrapRequested?: boolean;
 }

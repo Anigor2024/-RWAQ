@@ -3,12 +3,17 @@
 import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Heart, Search } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
 import {
   DEFAULT_CATALOG_QUERY_STATE,
+  getCuratedEmptySearchProducts,
   normalizeSearchText,
   queryCatalogProducts,
-} from '@/features/catalog/service';
+} from '@/features/catalog/catalog-query';
+import {
+  getProductDisplayPrice,
+  isProductPurchasable,
+} from '@/features/catalog/product-commerce';
 import { localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
 import { cn } from '@/lib/utils';
@@ -21,6 +26,8 @@ interface SearchDrawerProps {
   products: Product[];
 }
 
+const MAX_SEARCH_DRAWER_PREVIEW = 6;
+
 const SUGGESTED_NOTES = [
   { ar: 'عود', en: 'Oud' },
   { ar: 'زعفران', en: 'Saffron' },
@@ -32,31 +39,40 @@ const SUGGESTED_NOTES = [
 
 export function SearchDrawer({ products }: SearchDrawerProps) {
   const { locale, dir, t } = useLocale();
-  const { addToBag, closeDrawer, isWishlisted, toggleWishlist } = useUI();
+  const { addToBag, closeDrawer } = useUI();
   const { showToast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const DirectionalArrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
 
-  const filteredProducts = useMemo(
+  const trimmedQuery = searchQuery.trim();
+
+  const matchingProducts = useMemo(
     () =>
       queryCatalogProducts(
         products,
         {
           ...DEFAULT_CATALOG_QUERY_STATE,
-          q: searchQuery,
+          q: trimmedQuery,
         },
         locale
       ),
-    [products, searchQuery, locale]
+    [products, trimmedQuery, locale]
   );
 
-  const previewProducts = useMemo(
-    () => filteredProducts.slice(0, 6),
-    [filteredProducts]
-  );
+  // When query is empty: show a curated maximum of 6 products prioritizing:
+  // 1. isFeatured, 2. isBestSeller, 3. stable catalog order.
+  // When query is non-empty: show first 6 actual search matches.
+  const previewProducts = useMemo(() => {
+    if (!trimmedQuery) {
+      return getCuratedEmptySearchProducts(products, MAX_SEARCH_DRAWER_PREVIEW);
+    }
+    return matchingProducts.slice(0, MAX_SEARCH_DRAWER_PREVIEW);
+  }, [products, matchingProducts, trimmedQuery]);
 
-  const shopSearchHref = searchQuery.trim()
-    ? `/shop?q=${encodeURIComponent(searchQuery.trim())}`
+  const totalMatchingCount = matchingProducts.length;
+
+  const shopSearchHref = trimmedQuery
+    ? `/shop?q=${encodeURIComponent(trimmedQuery)}`
     : '/shop';
 
   return (
@@ -112,7 +128,6 @@ export function SearchDrawer({ products }: SearchDrawerProps) {
         </div>
       </div>
 
-      {/* View All Results in /shop Action */}
       <div className="mt-5">
         <Link
           href={shopSearchHref}
@@ -120,13 +135,12 @@ export function SearchDrawer({ products }: SearchDrawerProps) {
           className="group flex h-11 w-full items-center justify-between border border-[#A77A50]/50 bg-[#141311] px-4 text-xs font-medium text-[#F5F0E8] transition-colors hover:border-[#A77A50] hover:bg-[#A77A50] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
         >
           <span>
-            {t.drawers.search.viewAllInShop} ({filteredProducts.length})
+            {t.drawers.search.viewAllInShop} ({totalMatchingCount})
           </span>
           <DirectionalArrow className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
         </Link>
       </div>
 
-      {/* Limited Preview List (up to 6 creations) */}
       <div className="mt-6 flex-1 space-y-5">
         {previewProducts.length === 0 ? (
           <p className="py-12 text-center text-sm text-[#918A80]">
@@ -134,7 +148,8 @@ export function SearchDrawer({ products }: SearchDrawerProps) {
           </p>
         ) : (
           previewProducts.map((product) => {
-            const saved = isWishlisted(product.id);
+            const purchasable = isProductPurchasable(product);
+            const displayPrice = getProductDisplayPrice(product);
             return (
               <div
                 key={product.id}
@@ -157,7 +172,7 @@ export function SearchDrawer({ products }: SearchDrawerProps) {
                         {localize(product.name, locale)}
                       </h3>
                       <span className="text-sm tabular-nums text-[#D8C8B2]">
-                        {formatMoney(product.price, locale)}
+                        {formatMoney(displayPrice, locale)}
                       </span>
                     </div>
                     <p className="mt-0.5 text-xs text-[#918A80]">
@@ -173,48 +188,30 @@ export function SearchDrawer({ products }: SearchDrawerProps) {
                         .map((n) => localize(n, locale))
                         .join(' · ')}
                     </span>
-
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const nowSaved = toggleWishlist(product.id);
-                          showToast(
-                            `${localize(product.name, locale)} — ${
-                              nowSaved
-                                ? t.creations.saveToWishlist
-                                : t.creations.removeFromWishlist
-                            }`
-                          );
-                        }}
-                        aria-label={
-                          saved
-                            ? t.creations.removeFromWishlist
-                            : t.creations.saveToWishlist
-                        }
-                        className="inline-flex h-8 w-8 items-center justify-center border border-[#F5F0E8]/20 text-[#F5F0E8] transition-colors hover:border-[#A77A50] hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
-                      >
-                        <Heart
-                          className={cn(
-                            'h-3.5 w-3.5',
-                            saved ? 'fill-[#A77A50] text-[#A77A50]' : ''
-                          )}
-                        />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          addToBag(product);
+                    <button
+                      type="button"
+                      disabled={!purchasable}
+                      aria-disabled={!purchasable}
+                      onClick={() => {
+                        if (!purchasable) return;
+                        const added = addToBag(product);
+                        if (added) {
                           showToast(
                             `${localize(product.name, locale)} — ${t.creations.addedToBag}`
                           );
-                        }}
-                        className="border border-[#A77A50]/60 px-3 py-1 text-xs text-[#F5F0E8] transition-colors hover:bg-[#A77A50] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
-                      >
-                        {t.creations.addToBag}
-                      </button>
-                    </div>
+                        }
+                      }}
+                      className={cn(
+                        'px-3 py-1 text-xs transition-colors whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
+                        purchasable
+                          ? 'border border-[#A77A50]/60 text-[#F5F0E8] hover:bg-[#A77A50] hover:text-[#0B0B0A]'
+                          : 'cursor-not-allowed border border-[#F5F0E8]/15 text-[#918A80] opacity-60'
+                      )}
+                    >
+                      {purchasable
+                        ? t.creations.addToBag
+                        : t.shop.card.outOfStockLabel}
+                    </button>
                   </div>
                 </div>
               </div>

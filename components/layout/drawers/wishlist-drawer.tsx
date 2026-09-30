@@ -3,8 +3,13 @@
 import React, { useMemo } from 'react';
 import Image from 'next/image';
 import { Heart, X } from 'lucide-react';
+import {
+  getProductDisplayPrice,
+  isProductPurchasable,
+} from '@/features/catalog/product-commerce';
 import { localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
+import { cn } from '@/lib/utils';
 import { useLocale } from '@/providers/locale-provider';
 import { useToast } from '@/providers/toast-provider';
 import { useUI } from '@/providers/ui-provider';
@@ -38,60 +43,76 @@ export function WishlistDrawer({ products }: WishlistDrawerProps) {
         </div>
       ) : (
         <div className="space-y-5">
-          {wishlistedProducts.map((product) => (
-            <div
-              key={product.id}
-              className="flex gap-4 border-b border-[#F5F0E8]/10 pb-5"
-            >
-              <div className="relative h-24 w-20 shrink-0 overflow-hidden bg-[#1C1A17]">
-                <Image
-                  src={product.image.url}
-                  alt={localize(product.image.alt, locale)}
-                  fill
-                  sizes="80px"
-                  className="object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <div className="flex flex-1 flex-col justify-between">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <h3 className="text-base font-medium text-[#F5F0E8]">
-                      {localize(product.name, locale)}
-                    </h3>
-                    <p className="text-xs text-[#918A80]">
-                      {localize(product.collectionName, locale)} ·{' '}
-                      {formatMoney(product.price, locale)}
-                    </p>
+          {wishlistedProducts.map((product) => {
+            const purchasable = isProductPurchasable(product);
+            const displayPrice = getProductDisplayPrice(product);
+            return (
+              <div
+                key={product.id}
+                className="flex gap-4 border-b border-[#F5F0E8]/10 pb-5"
+              >
+                <div className="relative h-24 w-20 shrink-0 overflow-hidden bg-[#1C1A17]">
+                  <Image
+                    src={product.image.url}
+                    alt={localize(product.image.alt, locale)}
+                    fill
+                    sizes="80px"
+                    className="object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                <div className="flex flex-1 flex-col justify-between">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h3 className="text-base font-medium text-[#F5F0E8]">
+                        {localize(product.name, locale)}
+                      </h3>
+                      <p className="text-xs text-[#918A80]">
+                        {localize(product.collectionName, locale)} ·{' '}
+                        {formatMoney(displayPrice, locale)}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => toggleWishlist(product.id)}
+                      aria-label={t.creations.removeFromWishlist}
+                      className="p-1 text-[#A77A50] hover:text-[#F5F0E8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => toggleWishlist(product.id)}
-                    aria-label={t.creations.removeFromWishlist}
-                    className="p-1 text-[#A77A50] hover:text-[#F5F0E8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
 
-                <div className="mt-3 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      addToBag(product);
-                      toggleWishlist(product.id);
-                      showToast(
-                        `${localize(product.name, locale)} — ${t.creations.addedToBag}`
-                      );
-                    }}
-                    className="border border-[#A77A50] px-3.5 py-1.5 text-xs text-[#F5F0E8] transition-colors hover:bg-[#A77A50] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
-                  >
-                    {t.drawers.wishlist.moveToBag}
-                  </button>
+                  <div className="mt-3 flex justify-end">
+                    <button
+                      type="button"
+                      disabled={!purchasable}
+                      aria-disabled={!purchasable}
+                      onClick={() => {
+                        if (!purchasable) return;
+                        const added = addToBag(product);
+                        if (added) {
+                          toggleWishlist(product.id);
+                          showToast(
+                            `${localize(product.name, locale)} — ${t.creations.addedToBag}`
+                          );
+                        }
+                      }}
+                      className={cn(
+                        'px-3.5 py-1.5 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
+                        purchasable
+                          ? 'border border-[#A77A50] text-[#F5F0E8] hover:bg-[#A77A50] hover:text-[#0B0B0A]'
+                          : 'cursor-not-allowed border border-[#F5F0E8]/15 text-[#918A80] opacity-60'
+                      )}
+                    >
+                      {purchasable
+                        ? t.drawers.wishlist.moveToBag
+                        : t.shop.card.outOfStockLabel}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

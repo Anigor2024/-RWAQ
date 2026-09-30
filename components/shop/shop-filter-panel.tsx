@@ -1,7 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Check, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
+import {
+  FilterOptionList,
+  FilterSection,
+  type FilterOptionItem,
+} from '@/components/shop/filter-primitives';
 import {
   GENDER_POSITIONING_KEYS,
   LONGEVITY_LEVEL_KEYS,
@@ -71,27 +76,177 @@ export function ShopFilterPanel({
     }
   };
 
-  const sectionHeadingClass = cn(
-    'text-xs font-medium tracking-wider uppercase',
-    isDark ? 'text-[#D8C8B2]' : 'text-[#4A3027]'
+  const collectionOptions: FilterOptionItem[] = [
+    {
+      key: 'all-collections',
+      label: t.shop.allWorldsTab,
+      count: facets.total,
+      isSelected: !queryState.collection,
+      onSelect: () => onUpdateState({ collection: undefined }),
+    },
+    ...collections.map((col) => {
+      const isSelected = queryState.collection === col.slug;
+      return {
+        key: col.id,
+        label: `${col.romanCode} · ${localize(col.name, locale)}`,
+        count: facets.byCollection[col.slug] ?? 0,
+        isSelected,
+        onSelect: () =>
+          onUpdateState({
+            collection: isSelected ? undefined : (col.slug as Slug),
+          }),
+      };
+    }),
+  ];
+
+  const familyOptions: FilterOptionItem[] = [
+    {
+      key: 'all-families',
+      label: t.shop.allOption,
+      count: facets.total,
+      isSelected: !queryState.family,
+      onSelect: () => onUpdateState({ family: undefined }),
+    },
+    ...OLFACTORY_FAMILY_KEYS.map((familyKey: OlfactoryFamilyKey) => {
+      const isSelected = queryState.family === familyKey;
+      return {
+        key: familyKey,
+        label: t.shop.families[familyKey],
+        count: facets.byFamily[familyKey],
+        isSelected,
+        onSelect: () =>
+          onUpdateState({
+            family: isSelected ? undefined : familyKey,
+          }),
+      };
+    }),
+  ];
+
+  const curationOptions: FilterOptionItem[] = [
+    {
+      key: 'bestsellers',
+      label: t.shop.curationFlags.bestsellersOnly,
+      count: facets.bestSellerCount,
+      isSelected: Boolean(queryState.isBestSeller),
+      showCheckIcon: true,
+      onSelect: () =>
+        onUpdateState({
+          isBestSeller: queryState.isBestSeller ? undefined : true,
+        }),
+    },
+    {
+      key: 'new-releases',
+      label: t.shop.curationFlags.newReleasesOnly,
+      count: facets.newCount,
+      isSelected: Boolean(queryState.isNew),
+      showCheckIcon: true,
+      onSelect: () =>
+        onUpdateState({
+          isNew: queryState.isNew ? undefined : true,
+        }),
+    },
+    {
+      key: 'in-stock',
+      label: t.shop.curationFlags.inStockOnly,
+      count: facets.inStockCount,
+      isSelected: queryState.availability === 'in-stock',
+      showCheckIcon: true,
+      onSelect: () =>
+        onUpdateState({
+          availability:
+            queryState.availability === 'in-stock' ? undefined : 'in-stock',
+        }),
+    },
+  ];
+
+  const priceOptions: FilterOptionItem[] = (
+    ['all', 'under700', 'from700To850', 'above850'] as const
+  ).map((presetKey) => ({
+    key: presetKey,
+    label: t.shop.pricePresets[presetKey],
+    isSelected: activePricePreset === presetKey,
+    onSelect: () => handlePricePreset(presetKey),
+  }));
+
+  const projectionOptions: FilterOptionItem[] = PROJECTION_LEVEL_KEYS.map(
+    (projKey: ProjectionLevel) => {
+      const isSelected = queryState.projection === projKey;
+      return {
+        key: projKey,
+        label: t.creations.projectionValues[projKey],
+        count: facets.byProjection[projKey],
+        isSelected,
+        onSelect: () =>
+          onUpdateState({
+            projection: isSelected ? undefined : projKey,
+          }),
+      };
+    }
   );
 
-  const dividerClass = cn(
-    'border-t pt-5',
-    isDark ? 'border-[#F5F0E8]/12' : 'border-[#DFD3C3]'
+  const longevityOptions: FilterOptionItem[] = LONGEVITY_LEVEL_KEYS.map(
+    (longKey: LongevityLevel) => {
+      const isSelected = queryState.longevity === longKey;
+      return {
+        key: longKey,
+        label: t.creations.longevityValues[longKey],
+        count: facets.byLongevity[longKey],
+        isSelected,
+        onSelect: () =>
+          onUpdateState({
+            longevity: isSelected ? undefined : longKey,
+          }),
+      };
+    }
   );
 
-  const getOptionButtonClass = (isActive: boolean) =>
-    cn(
-      'flex w-full items-center justify-between gap-2 px-3 py-2 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
-      isActive
-        ? isDark
-          ? 'bg-[#A77A50] text-[#0B0B0A] font-medium'
-          : 'bg-[#0B0B0A] text-[#F5F0E8] font-medium'
-        : isDark
-          ? 'text-[#F5F0E8]/85 hover:bg-[#F5F0E8]/10'
-          : 'text-[#0B0B0A] hover:bg-[#EBE3D5]'
-    );
+  const occasionOptions: FilterOptionItem[] = OCCASION_SUITABILITY_KEYS.map(
+    (occKey: OccasionSuitability) => {
+      const isSelected = queryState.occasion === occKey;
+      return {
+        key: occKey,
+        label: t.shop.occasions[occKey],
+        count: facets.byOccasion[occKey],
+        isSelected,
+        onSelect: () =>
+          onUpdateState({
+            occasion: isSelected ? undefined : occKey,
+          }),
+      };
+    }
+  );
+
+  const seasonOptions: FilterOptionItem[] = SEASON_SUITABILITY_KEYS.map(
+    (seasonKey: SeasonSuitability) => {
+      const isSelected = queryState.season === seasonKey;
+      return {
+        key: seasonKey,
+        label: t.shop.seasons[seasonKey],
+        count: facets.bySeason[seasonKey],
+        isSelected,
+        onSelect: () =>
+          onUpdateState({
+            season: isSelected ? undefined : seasonKey,
+          }),
+      };
+    }
+  );
+
+  const genderOptions: FilterOptionItem[] = GENDER_POSITIONING_KEYS.map(
+    (genderKey: GenderPositioning) => {
+      const isSelected = queryState.gender === genderKey;
+      return {
+        key: genderKey,
+        label: t.shop.genders[genderKey],
+        count: facets.byGender[genderKey],
+        isSelected,
+        onSelect: () =>
+          onUpdateState({
+            gender: isSelected ? undefined : genderKey,
+          }),
+      };
+    }
+  );
 
   return (
     <div className="space-y-6">
@@ -118,314 +273,57 @@ export function ShopFilterPanel({
       )}
 
       {/* 1. Olfactory World (Collection) */}
-      <div>
-        <h3 className={sectionHeadingClass}>
-          {t.shop.filterGroups.collection}
-        </h3>
-        <div className="mt-3 space-y-1">
-          <button
-            type="button"
-            onClick={() => onUpdateState({ collection: undefined })}
-            className={getOptionButtonClass(!queryState.collection)}
-          >
-            <span>{t.shop.allWorldsTab}</span>
-            <span className="tabular-nums opacity-75">{facets.total}</span>
-          </button>
-          {collections.map((col) => {
-            const isSelected = queryState.collection === col.slug;
-            return (
-              <button
-                key={col.id}
-                type="button"
-                onClick={() =>
-                  onUpdateState({
-                    collection: isSelected ? undefined : (col.slug as Slug),
-                  })
-                }
-                className={getOptionButtonClass(isSelected)}
-              >
-                <span>
-                  {col.romanCode} · {localize(col.name, locale)}
-                </span>
-                <span className="tabular-nums opacity-75">
-                  {facets.byCollection[col.slug] ?? 0}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <FilterSection
+        title={t.shop.filterGroups.collection}
+        isDark={isDark}
+        withTopDivider={false}
+      >
+        <FilterOptionList options={collectionOptions} isDark={isDark} />
+      </FilterSection>
 
       {/* 2. Olfactory Family */}
-      <div className={dividerClass}>
-        <h3 className={sectionHeadingClass}>{t.shop.filterGroups.family}</h3>
-        <div className="mt-3 space-y-1">
-          <button
-            type="button"
-            onClick={() => onUpdateState({ family: undefined })}
-            className={getOptionButtonClass(!queryState.family)}
-          >
-            <span>{t.shop.allOption}</span>
-            <span className="tabular-nums opacity-75">{facets.total}</span>
-          </button>
-          {OLFACTORY_FAMILY_KEYS.map((familyKey: OlfactoryFamilyKey) => {
-            const isSelected = queryState.family === familyKey;
-            return (
-              <button
-                key={familyKey}
-                type="button"
-                onClick={() =>
-                  onUpdateState({
-                    family: isSelected ? undefined : familyKey,
-                  })
-                }
-                className={getOptionButtonClass(isSelected)}
-              >
-                <span>{t.shop.families[familyKey]}</span>
-                <span className="tabular-nums opacity-75">
-                  {facets.byFamily[familyKey]}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <FilterSection title={t.shop.filterGroups.family} isDark={isDark}>
+        <FilterOptionList options={familyOptions} isDark={isDark} />
+      </FilterSection>
 
       {/* 3. Curation & Availability */}
-      <div className={dividerClass}>
-        <h3 className={sectionHeadingClass}>{t.shop.filterGroups.curation}</h3>
-        <div className="mt-3 space-y-2">
-          <button
-            type="button"
-            onClick={() =>
-              onUpdateState({
-                isBestSeller: queryState.isBestSeller ? undefined : true,
-              })
-            }
-            className={getOptionButtonClass(Boolean(queryState.isBestSeller))}
-          >
-            <span className="flex items-center gap-2">
-              <Check
-                className={cn(
-                  'h-3.5 w-3.5 transition-opacity',
-                  queryState.isBestSeller ? 'opacity-100' : 'opacity-25'
-                )}
-              />
-              <span>{t.shop.curationFlags.bestsellersOnly}</span>
-            </span>
-            <span className="tabular-nums opacity-75">
-              {facets.bestSellerCount}
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() =>
-              onUpdateState({
-                isNew: queryState.isNew ? undefined : true,
-              })
-            }
-            className={getOptionButtonClass(Boolean(queryState.isNew))}
-          >
-            <span className="flex items-center gap-2">
-              <Check
-                className={cn(
-                  'h-3.5 w-3.5 transition-opacity',
-                  queryState.isNew ? 'opacity-100' : 'opacity-25'
-                )}
-              />
-              <span>{t.shop.curationFlags.newReleasesOnly}</span>
-            </span>
-            <span className="tabular-nums opacity-75">{facets.newCount}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() =>
-              onUpdateState({
-                availability:
-                  queryState.availability === 'in-stock'
-                    ? undefined
-                    : 'in-stock',
-              })
-            }
-            className={getOptionButtonClass(
-              queryState.availability === 'in-stock'
-            )}
-          >
-            <span className="flex items-center gap-2">
-              <Check
-                className={cn(
-                  'h-3.5 w-3.5 transition-opacity',
-                  queryState.availability === 'in-stock'
-                    ? 'opacity-100'
-                    : 'opacity-25'
-                )}
-              />
-              <span>{t.shop.curationFlags.inStockOnly}</span>
-            </span>
-            <span className="tabular-nums opacity-75">
-              {facets.inStockCount}
-            </span>
-          </button>
-        </div>
-      </div>
+      <FilterSection title={t.shop.filterGroups.curation} isDark={isDark}>
+        <FilterOptionList
+          options={curationOptions}
+          isDark={isDark}
+          spacing="relaxed"
+        />
+      </FilterSection>
 
       {/* 4. Price Range (SAR) */}
-      <div className={dividerClass}>
-        <h3 className={sectionHeadingClass}>{t.shop.filterGroups.price}</h3>
-        <div className="mt-3 space-y-1">
-          {(
-            ['all', 'under700', 'from700To850', 'above850'] as const
-          ).map((presetKey) => (
-            <button
-              key={presetKey}
-              type="button"
-              onClick={() => handlePricePreset(presetKey)}
-              className={getOptionButtonClass(activePricePreset === presetKey)}
-            >
-              <span>{t.shop.pricePresets[presetKey]}</span>
-            </button>
-          ))}
-        </div>
-      </div>
+      <FilterSection title={t.shop.filterGroups.price} isDark={isDark}>
+        <FilterOptionList options={priceOptions} isDark={isDark} />
+      </FilterSection>
 
       {/* 5. Sillage & Projection */}
-      <div className={dividerClass}>
-        <h3 className={sectionHeadingClass}>
-          {t.shop.filterGroups.projection}
-        </h3>
-        <div className="mt-3 space-y-1">
-          {PROJECTION_LEVEL_KEYS.map((projKey: ProjectionLevel) => {
-            const isSelected = queryState.projection === projKey;
-            return (
-              <button
-                key={projKey}
-                type="button"
-                onClick={() =>
-                  onUpdateState({
-                    projection: isSelected ? undefined : projKey,
-                  })
-                }
-                className={getOptionButtonClass(isSelected)}
-              >
-                <span>{t.creations.projectionValues[projKey]}</span>
-                <span className="tabular-nums opacity-75">
-                  {facets.byProjection[projKey]}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <FilterSection title={t.shop.filterGroups.projection} isDark={isDark}>
+        <FilterOptionList options={projectionOptions} isDark={isDark} />
+      </FilterSection>
 
       {/* 6. Longevity */}
-      <div className={dividerClass}>
-        <h3 className={sectionHeadingClass}>{t.shop.filterGroups.longevity}</h3>
-        <div className="mt-3 space-y-1">
-          {LONGEVITY_LEVEL_KEYS.map((longKey: LongevityLevel) => {
-            const isSelected = queryState.longevity === longKey;
-            return (
-              <button
-                key={longKey}
-                type="button"
-                onClick={() =>
-                  onUpdateState({
-                    longevity: isSelected ? undefined : longKey,
-                  })
-                }
-                className={getOptionButtonClass(isSelected)}
-              >
-                <span>{t.creations.longevityValues[longKey]}</span>
-                <span className="tabular-nums opacity-75">
-                  {facets.byLongevity[longKey]}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <FilterSection title={t.shop.filterGroups.longevity} isDark={isDark}>
+        <FilterOptionList options={longevityOptions} isDark={isDark} />
+      </FilterSection>
 
       {/* 7. Occasion */}
-      <div className={dividerClass}>
-        <h3 className={sectionHeadingClass}>{t.shop.filterGroups.occasion}</h3>
-        <div className="mt-3 space-y-1">
-          {OCCASION_SUITABILITY_KEYS.map((occKey: OccasionSuitability) => {
-            const isSelected = queryState.occasion === occKey;
-            return (
-              <button
-                key={occKey}
-                type="button"
-                onClick={() =>
-                  onUpdateState({
-                    occasion: isSelected ? undefined : occKey,
-                  })
-                }
-                className={getOptionButtonClass(isSelected)}
-              >
-                <span>{t.shop.occasions[occKey]}</span>
-                <span className="tabular-nums opacity-75">
-                  {facets.byOccasion[occKey]}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <FilterSection title={t.shop.filterGroups.occasion} isDark={isDark}>
+        <FilterOptionList options={occasionOptions} isDark={isDark} />
+      </FilterSection>
 
       {/* 8. Season */}
-      <div className={dividerClass}>
-        <h3 className={sectionHeadingClass}>{t.shop.filterGroups.season}</h3>
-        <div className="mt-3 space-y-1">
-          {SEASON_SUITABILITY_KEYS.map((seasonKey: SeasonSuitability) => {
-            const isSelected = queryState.season === seasonKey;
-            return (
-              <button
-                key={seasonKey}
-                type="button"
-                onClick={() =>
-                  onUpdateState({
-                    season: isSelected ? undefined : seasonKey,
-                  })
-                }
-                className={getOptionButtonClass(isSelected)}
-              >
-                <span>{t.shop.seasons[seasonKey]}</span>
-                <span className="tabular-nums opacity-75">
-                  {facets.bySeason[seasonKey]}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <FilterSection title={t.shop.filterGroups.season} isDark={isDark}>
+        <FilterOptionList options={seasonOptions} isDark={isDark} />
+      </FilterSection>
 
       {/* 9. Olfactory Character / Gender Positioning */}
-      <div className={dividerClass}>
-        <h3 className={sectionHeadingClass}>{t.shop.filterGroups.gender}</h3>
-        <div className="mt-3 space-y-1">
-          {GENDER_POSITIONING_KEYS.map((genderKey: GenderPositioning) => {
-            const isSelected = queryState.gender === genderKey;
-            return (
-              <button
-                key={genderKey}
-                type="button"
-                onClick={() =>
-                  onUpdateState({
-                    gender: isSelected ? undefined : genderKey,
-                  })
-                }
-                className={getOptionButtonClass(isSelected)}
-              >
-                <span>{t.shop.genders[genderKey]}</span>
-                <span className="tabular-nums opacity-75">
-                  {facets.byGender[genderKey]}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <FilterSection title={t.shop.filterGroups.gender} isDark={isDark}>
+        <FilterOptionList options={genderOptions} isDark={isDark} />
+      </FilterSection>
     </div>
   );
 }

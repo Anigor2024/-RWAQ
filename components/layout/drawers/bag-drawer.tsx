@@ -4,8 +4,10 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
+import { MAX_CART_QUANTITY_PER_LINE } from '@/features/catalog/product-commerce';
 import { formatVolumeMl, localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
+import { cn } from '@/lib/utils';
 import { useLocale } from '@/providers/locale-provider';
 import { useUI } from '@/providers/ui-provider';
 
@@ -41,79 +43,99 @@ export function BagDrawer() {
       ) : (
         <>
           <div className="space-y-5">
-            {bagItems.map((item) => (
-              <div
-                key={item.variantId}
-                className="flex gap-4 border-b border-[#F5F0E8]/10 pb-5"
-              >
-                <div className="relative h-24 w-20 shrink-0 overflow-hidden bg-[#1C1A17]">
-                  <Image
-                    src={item.imageUrl}
-                    alt={localize(item.name, locale)}
-                    fill
-                    sizes="80px"
-                    className="object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                <div className="flex flex-1 flex-col justify-between">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <h3 className="text-base font-medium text-[#F5F0E8]">
-                        {localize(item.name, locale)}
-                      </h3>
-                      <p className="text-xs text-[#918A80]">
-                        {localize(item.collectionName, locale)} ·{' '}
-                        {formatVolumeMl(item.sizeMl, locale)}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeFromBag(item.variantId)}
-                      aria-label={t.drawers.bag.removeItem}
-                      className="p-1 text-[#918A80] transition-colors hover:text-[#F5F0E8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
+            {bagItems.map((item) => {
+              const maxAllowed =
+                item.maxStockQuantity !== undefined && item.maxStockQuantity > 0
+                  ? Math.min(MAX_CART_QUANTITY_PER_LINE, item.maxStockQuantity)
+                  : MAX_CART_QUANTITY_PER_LINE;
+              const isAtMaxQuantity = item.quantity >= maxAllowed;
 
-                  <div className="mt-3 flex items-center justify-between">
-                    <div className="inline-flex items-center border border-[#F5F0E8]/20">
+              return (
+                <div
+                  key={item.variantId}
+                  className="flex gap-4 border-b border-[#F5F0E8]/10 pb-5"
+                >
+                  <div className="relative h-24 w-20 shrink-0 overflow-hidden bg-[#1C1A17]">
+                    <Image
+                      src={item.imageUrl}
+                      alt={localize(item.name, locale)}
+                      fill
+                      sizes="80px"
+                      className="object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-col justify-between">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <h3 className="text-base font-medium text-[#F5F0E8]">
+                          {localize(item.name, locale)}
+                        </h3>
+                        <p className="text-xs text-[#918A80]">
+                          {localize(item.collectionName, locale)} ·{' '}
+                          {formatVolumeMl(item.sizeMl, locale)}
+                        </p>
+                      </div>
                       <button
                         type="button"
-                        onClick={() =>
-                          updateBagQuantity(item.variantId, item.quantity - 1)
-                        }
-                        aria-label={t.drawers.bag.decreaseQty}
-                        className="flex h-8 w-8 items-center justify-center text-[#D8C8B2] hover:bg-[#F5F0E8]/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                        onClick={() => removeFromBag(item.variantId)}
+                        aria-label={t.drawers.bag.removeItem}
+                        className="p-1 text-[#918A80] transition-colors hover:text-[#F5F0E8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
                       >
-                        <Minus className="h-3 w-3" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
-                      <span className="px-3 text-xs tabular-nums text-[#F5F0E8]">
-                        {item.quantity}
+                    </div>
+
+                    <div className="mt-3 flex items-center justify-between">
+                      <div className="inline-flex items-center border border-[#F5F0E8]/20">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateBagQuantity(item.variantId, item.quantity - 1)
+                          }
+                          aria-label={t.drawers.bag.decreaseQty}
+                          className="flex h-8 w-8 items-center justify-center text-[#D8C8B2] hover:bg-[#F5F0E8]/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                        >
+                          <Minus className="h-3 w-3" />
+                        </button>
+                        <span className="px-3 text-xs tabular-nums text-[#F5F0E8]">
+                          {item.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          disabled={isAtMaxQuantity}
+                          aria-disabled={isAtMaxQuantity}
+                          onClick={() => {
+                            if (!isAtMaxQuantity) {
+                              updateBagQuantity(
+                                item.variantId,
+                                item.quantity + 1
+                              );
+                            }
+                          }}
+                          aria-label={t.drawers.bag.increaseQty}
+                          className={cn(
+                            'flex h-8 w-8 items-center justify-center text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
+                            isAtMaxQuantity
+                              ? 'cursor-not-allowed opacity-35'
+                              : 'hover:bg-[#F5F0E8]/10'
+                          )}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </button>
+                      </div>
+
+                      <span className="text-sm font-medium tabular-nums text-[#F5F0E8]">
+                        {formatMoney(
+                          item.unitPrice.amount * item.quantity,
+                          locale
+                        )}
                       </span>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateBagQuantity(item.variantId, item.quantity + 1)
-                        }
-                        aria-label={t.drawers.bag.increaseQty}
-                        className="flex h-8 w-8 items-center justify-center text-[#D8C8B2] hover:bg-[#F5F0E8]/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
-                      >
-                        <Plus className="h-3 w-3" />
-                      </button>
                     </div>
-
-                    <span className="text-sm font-medium tabular-nums text-[#F5F0E8]">
-                      {formatMoney(
-                        item.unitPrice.amount * item.quantity,
-                        locale
-                      )}
-                    </span>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             <div className="border border-[#A77A50]/30 bg-[#141311] p-4 text-xs leading-relaxed text-[#D8C8B2]">
               {t.drawers.bag.complimentarySampleNote}

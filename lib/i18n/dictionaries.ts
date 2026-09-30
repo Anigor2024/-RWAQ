@@ -180,6 +180,7 @@ export interface Dictionary {
       inspectDossier: string;
       inStockLabel: string;
       limitedStockLabel: string;
+      outOfStockLabel: string;
       skuLabel: string;
     };
     dossier: {
@@ -325,7 +326,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       scrollToManifesto: 'التمرير إلى البيان العطري',
     },
     nav: {
-      shop: 'العطور',
+      shop: 'المتجر',
       collections: 'المجموعات',
       creations: 'الابتكارات العطرية',
       craft: 'الخامات والحِرفة',
@@ -439,11 +440,11 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       },
     },
     shop: {
-      eyebrow: 'دار رِواق · المجموعة العطرية الكاملة',
-      title: 'عطور رِواق',
+      eyebrow: 'دار رِواق · البوتيك العطري الكامل',
+      title: 'مقتنيات رِواق العطرية',
       subtitle:
-        'مجموعة من التركيبات السعودية المعاصرة، من العود والزعفران إلى الورد الطائفي والمسك.',
-      allWorldsTab: 'جميع المجموعات',
+        'ثمانية عشر ابتكاراً عطرياً موزعة على ثلاثية نَجد وصَحراء ولَيل؛ صِيغت في تراكيز إكسترايت وأبسولو عالية لصناعة حضورٍ لا يُنسى.',
+      allWorldsTab: 'جميع العوالم',
       creationsCountUnit: 'عطراً',
       searchPlaceholder:
         'ابحث باسم العطر، النوتة (عود، زعفران، ورد طائفي، صندل، مسك)، أو الرمز...',
@@ -518,6 +519,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         inspectDossier: 'الملف العطري',
         inStockLabel: 'متوفر',
         limitedStockLabel: 'إصدار محدود',
+        outOfStockLabel: 'غير متوفر حالياً',
         skuLabel: 'الرمز',
       },
       dossier: {
@@ -537,10 +539,10 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       },
       emptyState: {
         eyebrow: 'لا توجد نتائج مطابقة',
-        title: 'لم نجد عطراً يطابق هذه الاختيارات.',
+        title: 'لم نعثر على عطر يطابق معايير التصفية الحالية',
         description:
-          'جرّب إزالة بعض الفلاتر النشطة، أو البحث بنوتة عطرية مختلفة، أو مسح عوامل التصفية لاستعراض جميع ابتكارات رِواق الثمانية عشر.',
-        resetButton: 'مسح عوامل التصفية',
+          'جرّب إزالة بعض الفلاتر النشطة، أو البحث بنوتة عطرية مختلفة، أو إعادة تعيين البحث لاستعراض جميع ابتكارات رِواق الثمانية عشر.',
+        resetButton: 'عرض جميع العطور (18)',
         suggestedNotesTitle: 'أو ابدأ الاستكشاف عبر النوتة العطرية:',
       },
     },
@@ -769,7 +771,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       scrollToManifesto: 'Scroll to brand manifesto',
     },
     nav: {
-      shop: 'Shop',
+      shop: 'The Shop',
       collections: 'Collections',
       creations: 'Creations',
       craft: 'Craft & Materials',
@@ -884,10 +886,10 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     },
     shop: {
       eyebrow: 'RWAQ House Boutique · Complete Curation',
-      title: 'RWAQ Creations',
+      title: 'The Olfactory Catalog',
       subtitle:
-        'A contemporary Saudi fragrance collection shaped by oud, saffron, Taif rose, musk and modern restraint.',
-      allWorldsTab: 'All Collections',
+        'Eighteen high-concentration Extrait and Parfum Absolu compositions across the NAJD, SAHRA, and LAYL trilogy — crafted for an unforgettable presence.',
+      allWorldsTab: 'All Worlds',
       creationsCountUnit: 'Creations',
       searchPlaceholder:
         'Search by creation name, note (oud, saffron, Taif rose, sandalwood, musk), or SKU...',
@@ -962,6 +964,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         inspectDossier: 'Olfactory Dossier',
         inStockLabel: 'In Stock',
         limitedStockLabel: 'Limited Allocation',
+        outOfStockLabel: 'Unavailable',
         skuLabel: 'SKU',
       },
       dossier: {
@@ -981,10 +984,10 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       },
       emptyState: {
         eyebrow: 'No Matching Creations',
-        title: 'No fragrances matched these selections.',
+        title: 'No creations match your current selection',
         description:
-          'Try removing one of your active filters, searching for a foundational note, or clearing filters to explore all eighteen RWAQ compositions.',
-        resetButton: 'Clear Filters',
+          'Try removing one of your active filters, searching for a foundational note, or resetting your view to explore all eighteen RWAQ compositions.',
+        resetButton: 'Show All 18 Creations',
         suggestedNotesTitle: 'Or explore by signature olfactory note:',
       },
     },

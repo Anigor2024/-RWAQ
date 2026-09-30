@@ -16,13 +16,15 @@ export const SEED_HOMEPAGE_CONTENT: HomepageContent = {
       en: 'RWAQ reimagines Saudi perfumery through a contemporary lens — oud, Taif rose and saffron composed for a distinctive presence.',
     },
     primaryCta: {
+      type: 'route',
       label: {
         ar: 'اكتشف عطور رِواق',
         en: 'Discover RWAQ',
       },
-      targetSectionId: 'creations',
+      href: '/shop',
     },
     secondaryCta: {
+      type: 'section',
       label: {
         ar: 'استكشف المجموعات',
         en: 'Explore Collections',

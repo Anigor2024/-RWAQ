@@ -53,20 +53,26 @@ export interface HeroMediaConfig {
   alt: LocalizedString;
 }
 
+export type HeroCtaConfig =
+  | {
+      type: 'route';
+      label: LocalizedString;
+      href: string;
+    }
+  | {
+      type: 'section';
+      label: LocalizedString;
+      targetSectionId: string;
+    };
+
 export interface HomepageContent {
   id: EntityId;
   hero: {
     eyebrow: LocalizedString;
     headline: LocalizedString;
     supportingCopy: LocalizedString;
-    primaryCta: {
-      label: LocalizedString;
-      targetSectionId: string;
-    };
-    secondaryCta?: {
-      label: LocalizedString;
-      targetSectionId: string;
-    };
+    primaryCta: HeroCtaConfig;
+    secondaryCta?: HeroCtaConfig;
     media: HeroMediaConfig;
   };
   manifesto: {

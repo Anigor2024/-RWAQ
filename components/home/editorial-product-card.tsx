@@ -4,8 +4,15 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { ChevronDown, ChevronUp, Heart, ShoppingBag } from 'lucide-react';
 import { OlfactoryNotes } from '@/components/home/olfactory-notes';
+import {
+  getDefaultPurchasableVariant,
+  getProductDisplayOriginalPrice,
+  getProductDisplayPrice,
+  isProductPurchasable,
+} from '@/features/catalog/product-commerce';
 import { formatVolumeMl, localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
+import { cn } from '@/lib/utils';
 import { useLocale } from '@/providers/locale-provider';
 import { useToast } from '@/providers/toast-provider';
 import { useUI } from '@/providers/ui-provider';
@@ -22,7 +29,12 @@ export function EditorialProductCard({ product }: EditorialProductCardProps) {
   const [isNotesExpanded, setIsNotesExpanded] = useState(false);
 
   const saved = isWishlisted(product.id);
-  const defaultVariant = product.variants[0];
+  const defaultVariant = getDefaultPurchasableVariant(product);
+  const purchasable = isProductPurchasable(product);
+  const displayPrice = getProductDisplayPrice(product);
+  const displayOriginalPrice = getProductDisplayOriginalPrice(product);
+  const displayVolumeMl =
+    defaultVariant?.sizeMl ?? product.variants[0]?.sizeMl;
 
   return (
     <article className="group flex h-full flex-col justify-between">
@@ -92,9 +104,9 @@ export function EditorialProductCard({ product }: EditorialProductCardProps) {
             </span>
             {localize(product.notes.olfactoryFamily, locale)}
           </span>
-          {defaultVariant && (
+          {displayVolumeMl !== undefined && (
             <span className="tabular-nums text-[#665F57]">
-              {formatVolumeMl(defaultVariant.sizeMl, locale)}
+              {formatVolumeMl(displayVolumeMl, locale)}
             </span>
           )}
         </div>
@@ -111,13 +123,13 @@ export function EditorialProductCard({ product }: EditorialProductCardProps) {
           </div>
 
           <div className="flex items-baseline gap-2 tabular-nums">
-            {product.originalPrice && (
+            {displayOriginalPrice && (
               <span className="text-xs text-[#918A80] line-through">
-                {formatMoney(product.originalPrice, locale)}
+                {formatMoney(displayOriginalPrice, locale)}
               </span>
             )}
             <span className="text-base font-medium text-[#0B0B0A]">
-              {formatMoney(product.price, locale)}
+              {formatMoney(displayPrice, locale)}
             </span>
           </div>
         </div>
@@ -151,16 +163,28 @@ export function EditorialProductCard({ product }: EditorialProductCardProps) {
       <div className="mt-5 flex items-center gap-2.5 pt-2">
         <button
           type="button"
+          disabled={!purchasable}
+          aria-disabled={!purchasable}
           onClick={() => {
-            addToBag(product);
-            showToast(
-              `${localize(product.name, locale)} — ${t.creations.addedToBag}`
-            );
+            if (!purchasable) return;
+            const added = addToBag(product, defaultVariant ?? undefined, 1);
+            if (added) {
+              showToast(
+                `${localize(product.name, locale)} — ${t.creations.addedToBag}`
+              );
+            }
           }}
-          className="inline-flex h-11 flex-1 items-center justify-center gap-2 bg-[#0B0B0A] px-5 text-xs font-medium text-[#F5F0E8] transition-colors duration-200 hover:bg-[#4A3027] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
+          className={cn(
+            'inline-flex h-11 flex-1 items-center justify-center gap-2 px-5 text-xs font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap',
+            purchasable
+              ? 'bg-[#0B0B0A] text-[#F5F0E8] hover:bg-[#4A3027]'
+              : 'cursor-not-allowed border border-[#DFD3C3] bg-[#F5F0E8] text-[#918A80] opacity-70'
+          )}
         >
           <ShoppingBag className="h-3.5 w-3.5" />
-          <span>{t.creations.addToBag}</span>
+          <span>
+            {purchasable ? t.creations.addToBag : t.shop.card.outOfStockLabel}
+          </span>
         </button>
 
         <button

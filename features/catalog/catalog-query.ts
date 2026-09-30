@@ -1,4 +1,9 @@
+import {
+  getProductDisplayPrice,
+  isProductPurchasable,
+} from '@/features/catalog/product-commerce';
 import type {
+  CatalogFilters,
   CatalogQueryState,
   CatalogSort,
   GenderPositioning,
@@ -336,7 +341,10 @@ export function searchCatalog(products: Product[], rawQuery: string): Product[] 
   const queryTokens = normalizedQuery
     ? normalizedQuery.split(' ').filter(Boolean)
     : [];
-  if (queryTokens.length === 0) return products;
+
+  if (queryTokens.length === 0) {
+    return products;
+  }
 
   return products.filter((product) => {
     const searchCorpus = buildProductSearchIndex(product);
@@ -345,11 +353,41 @@ export function searchCatalog(products: Product[], rawQuery: string): Product[] 
 }
 
 /**
- * Combinable catalog filter evaluation across all supported RWAQ product attributes.
+ * Curates up to `limit` products for empty-query search drawer state:
+ * 1. isFeatured
+ * 2. isBestSeller
+ * 3. stable catalog order
+ */
+export function getCuratedEmptySearchProducts(
+  products: Product[],
+  limit = 6
+): Product[] {
+  const indexed = products.map((product, index) => ({ product, index }));
+  indexed.sort((a, b) => {
+    const aFeatured = Boolean(a.product.isFeatured);
+    const bFeatured = Boolean(b.product.isFeatured);
+    if (aFeatured !== bFeatured) {
+      return aFeatured ? -1 : 1;
+    }
+
+    const aBest = Boolean(a.product.isBestSeller);
+    const bBest = Boolean(b.product.isBestSeller);
+    if (aBest !== bBest) {
+      return aBest ? -1 : 1;
+    }
+
+    return a.index - b.index;
+  });
+
+  return indexed.slice(0, limit).map((entry) => entry.product);
+}
+
+/**
+ * Applies structured catalog filters using the central public display-price and purchasability policies.
  */
 export function filterCatalog(
   products: Product[],
-  filters: Partial<CatalogQueryState>
+  filters: CatalogFilters
 ): Product[] {
   return products.filter((product) => {
     if (filters.collection && product.collectionSlug !== filters.collection) {
@@ -373,7 +411,10 @@ export function filterCatalog(
     if (filters.projection && product.projection !== filters.projection) {
       return false;
     }
-    if (filters.availability === 'in-stock' && !product.inStock) {
+    if (
+      filters.availability === 'in-stock' &&
+      !isProductPurchasable(product)
+    ) {
       return false;
     }
     if (filters.isNew && !product.isNew) {
@@ -382,24 +423,28 @@ export function filterCatalog(
     if (filters.isBestSeller && !product.isBestSeller) {
       return false;
     }
+
+    const displayAmount = getProductDisplayPrice(product).amount;
+
     if (
       filters.minPrice !== undefined &&
-      product.price.amount < filters.minPrice
+      displayAmount < filters.minPrice
     ) {
       return false;
     }
     if (
       filters.maxPrice !== undefined &&
-      product.price.amount > filters.maxPrice
+      displayAmount > filters.maxPrice
     ) {
       return false;
     }
+
     return true;
   });
 }
 
 /**
- * Deterministic catalog comparator and sorting function.
+ * Sorts catalog products deterministically using the central public display-price policy.
  */
 export function sortCatalog(
   products: Product[],
@@ -412,12 +457,15 @@ export function sortCatalog(
   });
 
   sorted.sort((a, b) => {
+    const priceA = getProductDisplayPrice(a).amount;
+    const priceB = getProductDisplayPrice(b).amount;
+
     switch (sort) {
       case 'price-asc':
-        return a.price.amount - b.price.amount || a.sku.localeCompare(b.sku);
+        return priceA - priceB || a.sku.localeCompare(b.sku);
 
       case 'price-desc':
-        return b.price.amount - a.price.amount || a.sku.localeCompare(b.sku);
+        return priceB - priceA || a.sku.localeCompare(b.sku);
 
       case 'newest': {
         if (a.isNew !== b.isNew) {
@@ -436,7 +484,7 @@ export function sortCatalog(
         if (Boolean(a.isFeatured) !== Boolean(b.isFeatured)) {
           return a.isFeatured ? -1 : 1;
         }
-        return b.price.amount - a.price.amount;
+        return priceB - priceA;
       }
 
       case 'name': {
@@ -462,16 +510,16 @@ export function sortCatalog(
 }
 
 /**
- * Filters, searches, and sorts the catalog products according to the active CatalogQueryState.
+ * Searches, filters, and sorts the catalog products according to the active CatalogQueryState.
  */
 export function queryCatalogProducts(
   products: Product[],
   state: CatalogQueryState,
   locale: Locale
 ): Product[] {
-  const afterFilter = filterCatalog(products, state);
-  const afterSearch = searchCatalog(afterFilter, state.q);
-  return sortCatalog(afterSearch, state.sort, locale);
+  const searched = searchCatalog(products, state.q);
+  const filtered = filterCatalog(searched, state);
+  return sortCatalog(filtered, state.sort, locale);
 }
 
 export interface CatalogFacetCounts {
@@ -547,7 +595,7 @@ export function computeCatalogFacets(products: Product[]): CatalogFacetCounts {
     facets.byProjection[p.projection] += 1;
     if (p.isNew) facets.newCount += 1;
     if (p.isBestSeller) facets.bestSellerCount += 1;
-    if (p.inStock) facets.inStockCount += 1;
+    if (isProductPurchasable(p)) facets.inStockCount += 1;
   }
 
   return facets;

@@ -8,15 +8,52 @@ import { Reveal } from '@/components/ui/reveal';
 import { Typography } from '@/components/ui/typography';
 import { localize } from '@/lib/i18n/config';
 import { useLocale } from '@/providers/locale-provider';
-import type { HomepageContent } from '@/types';
+import type { HeroCtaConfig, HomepageContent } from '@/types';
 
 interface HeroSectionProps {
   hero: HomepageContent['hero'];
 }
 
-export function HeroSection({ hero }: HeroSectionProps) {
-  const { locale, dir, t } = useLocale();
+interface HeroCtaButtonProps {
+  cta: HeroCtaConfig;
+  variant: 'primary' | 'secondary';
+}
+
+function HeroCtaButton({ cta, variant }: HeroCtaButtonProps) {
+  const { locale, dir } = useLocale();
   const DirectionalArrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
+
+  const className =
+    variant === 'primary'
+      ? 'group inline-flex h-13 sm:h-14 items-center justify-center gap-3.5 bg-[#F5F0E8] px-8 sm:px-9 text-sm font-medium text-[#0B0B0A] shadow-[0_12px_32px_rgba(0,0,0,0.3)] transition-all duration-200 hover:bg-[#FFFDF9] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50] whitespace-nowrap'
+      : 'group inline-flex h-13 sm:h-14 items-center justify-center gap-2.5 border border-[#F5F0E8]/65 bg-[#0B0B0A]/45 px-8 sm:px-9 text-sm font-normal text-[#FFFDF9] backdrop-blur-xs transition-all duration-200 hover:border-[#D8C8B2] hover:bg-[#F5F0E8]/14 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50] whitespace-nowrap';
+
+  const content = (
+    <>
+      <span>{localize(cta.label, locale)}</span>
+      {variant === 'primary' && (
+        <DirectionalArrow className="h-4 w-4 text-[#4A3027] transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+      )}
+    </>
+  );
+
+  if (cta.type === 'route') {
+    return (
+      <Link href={cta.href} className={className}>
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <a href={`#${cta.targetSectionId}`} className={className}>
+      {content}
+    </a>
+  );
+}
+
+export function HeroSection({ hero }: HeroSectionProps) {
+  const { locale, t } = useLocale();
 
   return (
     <section
@@ -39,10 +76,7 @@ export function HeroSection({ hero }: HeroSectionProps) {
                 aria-hidden="true"
                 className="h-px w-8 sm:w-10 bg-[#A77A50]"
               />
-              <Typography
-                variant="eyebrow"
-                className="text-[#D8C8B2]"
-              >
+              <Typography variant="eyebrow" className="text-[#D8C8B2]">
                 {localize(hero.eyebrow, locale)}
               </Typography>
               <span
@@ -80,21 +114,9 @@ export function HeroSection({ hero }: HeroSectionProps) {
           {/* High-Contrast Luxury Retail CTA Group */}
           <Reveal delay={0.32} yOffset={14}>
             <div className="mt-8 sm:mt-11 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3.5 sm:gap-4">
-              <Link
-                href="/shop"
-                className="group inline-flex h-13 sm:h-14 items-center justify-center gap-3.5 bg-[#F5F0E8] px-8 sm:px-9 text-sm font-medium text-[#0B0B0A] shadow-[0_12px_32px_rgba(0,0,0,0.3)] transition-all duration-200 hover:bg-[#FFFDF9] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50] whitespace-nowrap"
-              >
-                <span>{localize(hero.primaryCta.label, locale)}</span>
-                <DirectionalArrow className="h-4 w-4 text-[#4A3027] transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
-              </Link>
-
+              <HeroCtaButton cta={hero.primaryCta} variant="primary" />
               {hero.secondaryCta && (
-                <a
-                  href={`#${hero.secondaryCta.targetSectionId}`}
-                  className="group inline-flex h-13 sm:h-14 items-center justify-center gap-2.5 border border-[#F5F0E8]/65 bg-[#0B0B0A]/45 px-8 sm:px-9 text-sm font-normal text-[#FFFDF9] backdrop-blur-xs transition-all duration-200 hover:border-[#D8C8B2] hover:bg-[#F5F0E8]/14 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50] whitespace-nowrap"
-                >
-                  <span>{localize(hero.secondaryCta.label, locale)}</span>
-                </a>
+                <HeroCtaButton cta={hero.secondaryCta} variant="secondary" />
               )}
             </div>
           </Reveal>

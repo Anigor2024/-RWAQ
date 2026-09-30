@@ -58,16 +58,49 @@ export function ShopCatalogView({
   const queryStateRef = useRef<CatalogQueryState>(queryState);
   queryStateRef.current = queryState;
 
-  const syncUrlFromState = useCallback(
+  /**
+   * Path A — COMMITTED DISCOVERY ACTIONS:
+   * Uses `router.push(..., { scroll: false })` so Browser Back/Forward navigates
+   * through committed filter, collection, sort, chip-removal, and Clear All states.
+   */
+  const commitCatalogState = useCallback(
     (nextState: CatalogQueryState) => {
-      const serialized = buildCatalogSearchParams(nextState);
-      const nextHref = serialized ? `${pathname}?${serialized}` : pathname;
-      router.replace(nextHref, { scroll: false });
+      const currentSerialized = buildCatalogSearchParams(queryStateRef.current);
+      const nextSerialized = buildCatalogSearchParams(nextState);
+      const nextHref = nextSerialized ? `${pathname}?${nextSerialized}` : pathname;
+
+      queryStateRef.current = nextState;
+      setQueryState(nextState);
+
+      if (currentSerialized !== nextSerialized) {
+        router.push(nextHref, { scroll: false });
+      }
     },
     [pathname, router]
   );
 
-  // Synchronize local state when URL searchParams change externally (e.g., Back/Forward or nav links)
+  /**
+   * Path B — LIVE SEARCH TYPING:
+   * Uses `router.replace(..., { scroll: false })` so debounced keystrokes
+   * update the URL in place without polluting browser history per keystroke.
+   */
+  const replaceCatalogSearchState = useCallback(
+    (nextState: CatalogQueryState) => {
+      const currentSerialized = buildCatalogSearchParams(queryStateRef.current);
+      const nextSerialized = buildCatalogSearchParams(nextState);
+      const nextHref = nextSerialized ? `${pathname}?${nextSerialized}` : pathname;
+
+      queryStateRef.current = nextState;
+      setQueryState(nextState);
+
+      if (currentSerialized !== nextSerialized) {
+        router.replace(nextHref, { scroll: false });
+      }
+    },
+    [pathname, router]
+  );
+
+  // Synchronize local state when URL searchParams change externally (e.g., Browser Back/Forward)
   useEffect(() => {
     const parsedFromUrl = parseCatalogSearchParams(
       new URLSearchParams(urlQueryString)
@@ -76,12 +109,13 @@ export function ShopCatalogView({
     const incomingSerialized = buildCatalogSearchParams(parsedFromUrl);
 
     if (currentSerialized !== incomingSerialized) {
+      queryStateRef.current = parsedFromUrl;
       setQueryState(parsedFromUrl);
       setSearchInput(parsedFromUrl.q);
     }
   }, [urlQueryString]);
 
-  // Debounce search input updates into queryState + URL
+  // Debounce live search typing into queryState + URL via replaceCatalogSearchState
   useEffect(() => {
     const trimmedInput = searchInput.trim();
     if (trimmedInput === queryStateRef.current.q.trim()) {
@@ -93,12 +127,11 @@ export function ShopCatalogView({
         ...queryStateRef.current,
         q: trimmedInput,
       };
-      setQueryState(nextState);
-      syncUrlFromState(nextState);
+      replaceCatalogSearchState(nextState);
     }, 220);
 
     return () => window.clearTimeout(timer);
-  }, [searchInput, syncUrlFromState]);
+  }, [searchInput, replaceCatalogSearchState]);
 
   const handleUpdateState = useCallback(
     (patch: Partial<CatalogQueryState>) => {
@@ -106,13 +139,12 @@ export function ShopCatalogView({
         ...queryStateRef.current,
         ...patch,
       };
-      setQueryState(nextState);
       if (patch.q !== undefined) {
         setSearchInput(patch.q);
       }
-      syncUrlFromState(nextState);
+      commitCatalogState(nextState);
     },
-    [syncUrlFromState]
+    [commitCatalogState]
   );
 
   const handleClearSearch = useCallback(() => {
@@ -121,15 +153,13 @@ export function ShopCatalogView({
       ...queryStateRef.current,
       q: '',
     };
-    setQueryState(nextState);
-    syncUrlFromState(nextState);
-  }, [syncUrlFromState]);
+    commitCatalogState(nextState);
+  }, [commitCatalogState]);
 
   const handleResetAll = useCallback(() => {
     setSearchInput('');
-    setQueryState(DEFAULT_CATALOG_QUERY_STATE);
-    syncUrlFromState(DEFAULT_CATALOG_QUERY_STATE);
-  }, [syncUrlFromState]);
+    commitCatalogState(DEFAULT_CATALOG_QUERY_STATE);
+  }, [commitCatalogState]);
 
   const facets = useMemo(() => computeCatalogFacets(products), [products]);
 
@@ -253,8 +283,7 @@ export function ShopCatalogView({
                                 ...DEFAULT_CATALOG_QUERY_STATE,
                                 q: label,
                               };
-                              setQueryState(nextState);
-                              syncUrlFromState(nextState);
+                              commitCatalogState(nextState);
                             }}
                             className="border border-[#DFD3C3] bg-[#F5F0E8] px-3.5 py-1.5 text-xs text-[#0B0B0A] transition-colors hover:border-[#0B0B0A] hover:bg-[#EBE3D5] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
                           >
@@ -270,8 +299,8 @@ export function ShopCatalogView({
               <div
                 className={
                   isDesktopSidebarOpen
-                    ? 'grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3'
-                    : 'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'
+                    ? 'grid grid-cols-1 gap-7 md:grid-cols-2 xl:grid-cols-3'
+                    : 'grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3'
                 }
               >
                 {filteredProducts.map((product) => (
