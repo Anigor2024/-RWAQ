@@ -24,7 +24,7 @@
     },
     "Product": {
       "title": "Product",
-      "description": "A signature RWAQ fragrance product.",
+      "description": "A public RWAQ fragrance creation with multi-variant sizes, olfactory pyramid, and accord profile.",
       "type": "object",
       "properties": {
         "slug": {
@@ -42,9 +42,43 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 128
+        },
+        "collectionSlug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 96
+        },
+        "olfactoryFamilyKey": {
+          "type": "string",
+          "enum": [
+            "woody-amber",
+            "smoky-oud",
+            "floral-musk",
+            "spiced-oriental",
+            "incense-resinous",
+            "leather-iris"
+          ]
+        },
+        "inStock": {
+          "type": "boolean"
+        },
+        "isNew": {
+          "type": "boolean"
+        },
+        "isBestSeller": {
+          "type": "boolean"
         }
       },
-      "required": ["slug", "sku", "collectionId"]
+      "required": [
+        "slug",
+        "sku",
+        "collectionId",
+        "collectionSlug",
+        "olfactoryFamilyKey",
+        "inStock",
+        "isNew",
+        "isBestSeller"
+      ]
     },
     "NewsletterSubscription": {
       "title": "NewsletterSubscription",

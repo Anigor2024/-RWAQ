@@ -68,6 +68,18 @@ export const fragranceNotesSchema = z.object({
   olfactoryFamily: localizedStringSchema,
 });
 
+export const accordLevelSchema = z.object({
+  key: z.string().trim().min(1).max(48),
+  label: localizedStringSchema,
+  intensity: z.number().min(0).max(100),
+});
+
+export const productIngredientHighlightSchema = z.object({
+  name: localizedStringSchema,
+  origin: localizedStringSchema,
+  description: localizedStringSchema,
+});
+
 export const productVariantSchema = z.object({
   id: entityIdSchema,
   sku: z.string().trim().min(2).max(64),
@@ -79,6 +91,15 @@ export const productVariantSchema = z.object({
   stockQuantity: z.number().int().nonnegative(),
 });
 
+export const olfactoryFamilyKeySchema = z.enum([
+  'woody-amber',
+  'smoky-oud',
+  'floral-musk',
+  'spiced-oriental',
+  'incense-resinous',
+  'leather-iris',
+]);
+
 export const firestoreProductSchema = z.object({
   id: entityIdSchema,
   slug: slugSchema,
@@ -86,13 +107,22 @@ export const firestoreProductSchema = z.object({
   name: localizedStringSchema,
   subtitle: localizedStringSchema,
   shortDescription: localizedStringSchema,
+  editorialDescription: localizedStringSchema,
+  inspiration: localizedStringSchema,
+  applicationRitual: localizedStringSchema,
+  whenToWear: localizedStringSchema,
   collectionId: entityIdSchema,
   collectionSlug: slugSchema,
   collectionName: localizedStringSchema,
+  olfactoryFamilyKey: olfactoryFamilyKeySchema,
+  concentration: localizedStringSchema,
   price: moneySchema,
   originalPrice: moneySchema.optional(),
   image: mediaAssetSchema,
+  gallery: z.array(mediaAssetSchema).min(1).max(12),
   notes: fragranceNotesSchema,
+  accords: z.array(accordLevelSchema).min(1).max(10),
+  ingredientHighlights: z.array(productIngredientHighlightSchema).min(1).max(8),
   variants: z.array(productVariantSchema).min(1).max(20),
   genderPositioning: z.enum([
     'unisex',
@@ -109,8 +139,10 @@ export const firestoreProductSchema = z.object({
   ]),
   longevity: z.enum(['moderate', 'long-lasting', 'eternal']),
   projection: z.enum(['intimate', 'moderate', 'commanding']),
+  inStock: z.boolean(),
   isNew: z.boolean(),
   isBestSeller: z.boolean(),
+  isFeatured: z.boolean().optional(),
   createdAt: isoTimestampFieldSchema,
   updatedAt: isoTimestampFieldSchema,
 });

@@ -6,11 +6,32 @@ import type {
   Slug,
 } from './common';
 
+export type OlfactoryFamilyKey =
+  | 'woody-amber'
+  | 'smoky-oud'
+  | 'floral-musk'
+  | 'spiced-oriental'
+  | 'incense-resinous'
+  | 'leather-iris';
+
 export interface FragranceNotes {
   top: LocalizedString[];
   heart: LocalizedString[];
   base: LocalizedString[];
   olfactoryFamily: LocalizedString;
+}
+
+export interface AccordLevel {
+  key: string;
+  label: LocalizedString;
+  /** Normalized intensity from 0 to 100 */
+  intensity: number;
+}
+
+export interface ProductIngredientHighlight {
+  name: LocalizedString;
+  origin: LocalizedString;
+  description: LocalizedString;
 }
 
 export interface ProductVariant {
@@ -59,21 +80,32 @@ export interface Product {
   name: LocalizedString;
   subtitle: LocalizedString;
   shortDescription: LocalizedString;
+  editorialDescription: LocalizedString;
+  inspiration: LocalizedString;
+  applicationRitual: LocalizedString;
+  whenToWear: LocalizedString;
   collectionId: EntityId;
   collectionSlug: Slug;
   collectionName: LocalizedString;
+  olfactoryFamilyKey: OlfactoryFamilyKey;
+  concentration: LocalizedString;
   price: Money;
   originalPrice?: Money;
   image: MediaAsset;
+  gallery: MediaAsset[];
   notes: FragranceNotes;
+  accords: AccordLevel[];
+  ingredientHighlights: ProductIngredientHighlight[];
   variants: ProductVariant[];
   genderPositioning: GenderPositioning;
   season: SeasonSuitability;
   occasion: OccasionSuitability;
   longevity: LongevityLevel;
   projection: ProjectionLevel;
+  inStock: boolean;
   isNew: boolean;
   isBestSeller: boolean;
+  isFeatured?: boolean;
   createdAt: ISODateString;
   updatedAt: ISODateString;
 }
@@ -90,4 +122,30 @@ export interface Collection {
   image: MediaAsset;
   featuredProductSlugs: Slug[];
   sortOrder: number;
+}
+
+export type CatalogSortOption =
+  | 'featured'
+  | 'newest'
+  | 'price-asc'
+  | 'price-desc'
+  | 'bestsellers'
+  | 'name';
+
+export type PriceRangeKey = 'under-650' | '650-800' | 'over-800';
+
+export interface CatalogFilterParams {
+  q?: string;
+  collection?: Slug;
+  family?: OlfactoryFamilyKey;
+  gender?: GenderPositioning;
+  season?: SeasonSuitability;
+  occasion?: OccasionSuitability;
+  longevity?: LongevityLevel;
+  projection?: ProjectionLevel;
+  priceRange?: PriceRangeKey;
+  availability?: 'in-stock';
+  isNew?: boolean;
+  isBestSeller?: boolean;
+  sort?: CatalogSortOption;
 }
