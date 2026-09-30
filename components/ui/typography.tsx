@@ -59,11 +59,11 @@ export function Typography({
 
   const variantClasses: Record<TypographyVariant, string> = {
     'display-xl': isArabic
-      ? 'text-[2.5rem] sm:text-5xl md:text-6xl lg:text-[4.25rem] font-normal leading-[1.22] tracking-normal text-balance'
-      : 'text-[2.75rem] sm:text-6xl md:text-7xl lg:text-[5rem] font-normal leading-[1.06] tracking-[-0.02em] text-balance',
+      ? 'text-[clamp(2.15rem,4.3vw+0.85rem,4.35rem)] font-medium leading-[1.22] tracking-normal text-balance'
+      : 'text-[clamp(2.5rem,5vw+0.85rem,5rem)] font-normal leading-[1.05] tracking-[-0.02em] text-balance',
     'display-l': isArabic
-      ? 'text-3xl sm:text-4xl md:text-5xl lg:text-[3.35rem] font-normal leading-[1.32] tracking-normal text-balance'
-      : 'text-3xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-normal leading-[1.12] tracking-[-0.015em] text-balance',
+      ? 'text-[clamp(1.85rem,3.2vw+0.7rem,3.35rem)] font-normal leading-[1.3] tracking-normal text-balance'
+      : 'text-[clamp(2.1rem,3.8vw+0.7rem,3.85rem)] font-normal leading-[1.1] tracking-[-0.015em] text-balance',
     h1: isArabic
       ? 'text-2xl sm:text-3xl md:text-4xl font-medium leading-[1.35] text-balance'
       : 'text-3xl sm:text-4xl md:text-5xl font-normal leading-[1.15] tracking-[-0.01em] text-balance',
@@ -84,7 +84,7 @@ export function Typography({
       : 'text-xs sm:text-[0.8125rem] font-normal leading-[1.55]',
     eyebrow: isArabic
       ? 'text-xs sm:text-[0.8125rem] font-medium leading-[1.5] tracking-wide'
-      : 'text-[0.75rem] sm:text-[0.8125rem] font-medium leading-[1.4] tracking-[0.16em]',
+      : 'text-[0.75rem] sm:text-[0.8125rem] font-medium leading-[1.4] tracking-[0.16em] uppercase',
   };
 
   const fontFamilyClass = useEnglishDisplaySerif

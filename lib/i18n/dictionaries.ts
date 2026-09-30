@@ -1,5 +1,19 @@
 import type { DemoPersona, Locale } from '@/types';
 
+export interface CraftMaterialEntry {
+  id: string;
+  numeral: string;
+  name: string;
+  subtitle: string;
+  description: string;
+  olfactoryRole: string;
+  sensoryProfile: string;
+  featuredCreations: string;
+  searchQuery: string;
+  imageUrl: string;
+  imageAlt: string;
+}
+
 export interface Dictionary {
   brand: {
     name: string;
@@ -27,6 +41,7 @@ export interface Dictionary {
   nav: {
     collections: string;
     creations: string;
+    craft: string;
     manifesto: string;
     house: string;
     languageToggleLabel: string;
@@ -34,6 +49,16 @@ export interface Dictionary {
   };
   hero: {
     scrollPrompt: string;
+    concentrationBadge: string;
+    trilogyLabel: string;
+  };
+  signatureStrip: {
+    ariaLabel: string;
+    items: Array<{
+      code: string;
+      title: string;
+      detail: string;
+    }>;
   };
   manifesto: {
     pillarOneTitle: string;
@@ -51,12 +76,26 @@ export interface Dictionary {
     originLabel: string;
     exploreCollectionCreations: string;
     chapterPrefix: string;
+    worldsInteractiveHint: string;
+    featuredInCollectionLabel: string;
+    materialCharacterLabel: string;
+    worldsMeta: Record<
+      'najd' | 'sahra' | 'layl',
+      {
+        material: string;
+        atmosphere: string;
+      }
+    >;
   };
   creations: {
     sectionEyebrow: string;
     sectionTitle: string;
     sectionSubtitle: string;
     filterAll: string;
+    flagshipBadge: string;
+    supportingHeading: string;
+    swipeHint: string;
+    concentrationLabel: string;
     topNotes: string;
     heartNotes: string;
     baseNotes: string;
@@ -81,6 +120,29 @@ export interface Dictionary {
       moderate: string;
       commanding: string;
     };
+  };
+  craft: {
+    sectionEyebrow: string;
+    sectionTitle: string;
+    sectionSubtitle: string;
+    olfactoryRoleLabel: string;
+    sensoryProfileLabel: string;
+    featuredInLabel: string;
+    exploreNoteInSearch: string;
+    materials: CraftMaterialEntry[];
+  };
+  concierge: {
+    sectionEyebrow: string;
+    sectionTitle: string;
+    sectionSubtitle: string;
+    primaryAction: string;
+    secondaryAction: string;
+    pillars: Array<{
+      code: string;
+      title: string;
+      description: string;
+      detail: string;
+    }>;
   };
   drawers: {
     mobileMenu: {
@@ -180,13 +242,41 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     nav: {
       collections: 'المجموعات',
       creations: 'الابتكارات العطرية',
+      craft: 'الخامات والحِرفة',
       manifesto: 'فلسفة الدار',
       house: 'الدار',
       languageToggleLabel: 'EN',
       languageToggleFull: 'English',
     },
     hero: {
-      scrollPrompt: 'اكتشف رواق',
+      scrollPrompt: 'استكشف عالم رِواق',
+      concentrationBadge: 'إكسترايت دي بارفان · تركيز ٢٥٪ – ٣٥٪',
+      trilogyLabel: 'الثلاثية التوقيعية: نَجد · صَحراء · لَيل',
+    },
+    signatureStrip: {
+      ariaLabel: 'سمات دار رِواق',
+      items: [
+        {
+          code: 'I',
+          title: 'تركيزات عطرية عالية',
+          detail: 'تركيبات إكسترايت وأبسولو بتركيز ٢٥٪ إلى ٣٥٪ لثباتٍ عميق وفوحان متزن.',
+        },
+        {
+          code: 'II',
+          title: 'خامات مختارة',
+          detail: 'العود المعتّق، الورد الطائفي في قطفته الأولى، الزعفران، واللبان الحوجري.',
+        },
+        {
+          code: 'III',
+          title: 'هوية سعودية معاصرة',
+          detail: 'تراكيب تستلهم سكينة المعمار النجدي وتحولات الضوء في الجزيرة العربية.',
+        },
+        {
+          code: 'IV',
+          title: 'إهداء فاخر',
+          detail: 'زجاجات منحوتة من الزجاج المدخّن ومقصورات تحاكي ملمس الحجر الجيري والبرونز.',
+        },
+      ],
     },
     manifesto: {
       pillarOneTitle: 'أصالة المنشأ',
@@ -200,21 +290,42 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         'تغليف معماري مستوحى من الحجر النجدي والأنسجة الطبيعية بتفاصيل برونزية متقنة.',
     },
     collections: {
-      sectionEyebrow: 'الثلاثية العطرية · الإصدار الأول',
-      sectionTitle: 'المجموعات التوقيعية',
+      sectionEyebrow: 'العوالم العطرية · الثلاثية التوقيعية',
+      sectionTitle: 'عوالم رِواق العطرية',
       sectionSubtitle:
-        'ثلاثة عوالم عطرية تستمد ملامحها من جغرافيا الجزيرة العربية وتحولات الضوء والظل.',
+        'ثلاثة عوالم حسية تستمد ملامحها من جغرافيا الجزيرة العربية وتباين الحجر والرمال وسكينة الليل.',
       accordLabel: 'السمة العطرية',
       originLabel: 'الإلهام المكاني',
       exploreCollectionCreations: 'استعرض عطور المجموعة',
       chapterPrefix: 'الفصل',
+      worldsInteractiveHint: 'انتقل بين الفصول الثلاثة أو استكشف كل عالم بالتفصيل',
+      featuredInCollectionLabel: 'عطور هذا العالم',
+      materialCharacterLabel: 'الطابع المادي والضوئي',
+      worldsMeta: {
+        najd: {
+          material: 'حجر الترافرتين النجدي · الزعفران الأحمر · خشب الأرز',
+          atmosphere: 'ضوء الأصيل الدافئ على الشرفات الحجرية في الدرعية',
+        },
+        sahra: {
+          material: 'العود المعتّق · اللبان الحوجري · الجلد المصقول',
+          atmosphere: 'وهج الجمار الهادئ وامتداد الكثبان الرملية عند الغروب',
+        },
+        layl: {
+          material: 'حجر البازلت المصقول · الورد الطائفي · المسك الأبيض',
+          atmosphere: 'سكينة السمر الليلي تحت سماء الطائف والعُلا الصافية',
+        },
+      },
     },
     creations: {
       sectionEyebrow: 'مختارات الدار · عطور موقّعة',
       sectionTitle: 'ابتكارات رِواق',
       sectionSubtitle:
-        'ستة عطور مصاغة بتأنٍّ من أنقى الخلاصات العطرية؛ استكشف هرم النوتات لكل عطر أو أضفه إلى حقيبتك.',
+        'ستة عطور مصاغة بتأنٍّ في تركيزات عالية؛ استكشف الإصدار التوقيعي المختار أو تصفح التشكيلة الكاملة.',
       filterAll: 'جميع المجموعات',
+      flagshipBadge: 'الإصدار التوقيعي المختار',
+      supportingHeading: 'بقية ابتكارات التشكيلة',
+      swipeHint: 'اسحب أفقياً لاستعراض العطور',
+      concentrationLabel: 'التركيز',
       topNotes: 'الافتتاحية',
       heartNotes: 'القلب العطري',
       baseNotes: 'القاعدة',
@@ -239,6 +350,119 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         moderate: 'متوازن',
         commanding: 'حضور لافت',
       },
+    },
+    craft: {
+      sectionEyebrow: 'الحِرفة والخامات · لغة التصميم العطري',
+      sectionTitle: 'خاماتٌ نبيلة صِيغت بروح معاصرة',
+      sectionSubtitle:
+        'تتشكل لغة رِواق من حوارٍ مدروس بين أربع خامات عطرية أصيلة ومفردات المعمار السعودي؛ حيث تتحول المادة الخام إلى حضورٍ ملموس.',
+      olfactoryRoleLabel: 'الدور في البناء العطري',
+      sensoryProfileLabel: 'البصمة الحسية',
+      featuredInLabel: 'يبرز في عطور',
+      exploreNoteInSearch: 'استكشف العطور بهذه السمة',
+      materials: [
+        {
+          id: 'oud',
+          numeral: '01',
+          name: 'العود المعتّق',
+          subtitle: 'عمق الخشب الراتنجي والوقار الهادئ',
+          description:
+            'تُصاغ نوتات العود في رِواق بعيداً عن الحدة التقليدية؛ حيث يُصقل العود الكمبودي والملكي بطبقات من الأخشاب الجافة والعنبر ليمنح العطر قاعدة دافئة ومهيبة.',
+          olfactoryRole: 'قاعدة ارتكازية تمنح الثبات الفائق والعمق الخشبي الدافئ',
+          sensoryProfile: 'راتنجي · خشبي داكن · دافئ ومصقول',
+          featuredCreations: 'أثَر (ATHAR) · مَقام (MAQAM) · ظِل (ZILL)',
+          searchQuery: 'عود',
+          imageUrl: '/images/rwaq/products/rwaq_prod_sahra_incense_1790766997373.jpg',
+          imageAlt: 'رقائق العود المعتق واللبان الحوجري بجانب زجاجة عطر رِواق',
+        },
+        {
+          id: 'taif-rose',
+          numeral: '02',
+          name: 'الورد الطائفي',
+          subtitle: 'إشراقة القطفة الأولى في أعالي الجبال',
+          description:
+            'نستحضر الورد الطائفي في توازنٍ معاصر يجمع بين النضارة الزهرية والعمق المخملي، ممزوجاً بالتين الداكن والشاي المدخن والمسك النقي.',
+          olfactoryRole: 'قلب عطري نابض يمنح التوهج والنعومة المخملية',
+          sensoryProfile: 'زهري ندي · فاكهي داكن · مخملي',
+          featuredCreations: 'وَجد (WAJD)',
+          searchQuery: 'ورد طائفي',
+          imageUrl: '/images/rwaq/products/rwaq_prod_layl_rose_1790767019885.jpg',
+          imageAlt: 'بتلات الورد الطائفي والتين الداكن على حجر البازلت',
+        },
+        {
+          id: 'saffron',
+          numeral: '03',
+          name: 'الزعفران والهيل',
+          subtitle: 'ذهب الصحراء الأحمر وحفاوة المجالس',
+          description:
+            'خيوط الزعفران الأحمر وحبوب الهيل الأخضر تمنح افتتاحيات رِواق توقيعاً مشرقاً يستحضر دفء الضيافة السعودية وهيبة القصور النجدية.',
+          olfactoryRole: 'افتتاحية مشرقة تربط التوابل الدافئة بالعنبر الصخري',
+          sensoryProfile: 'تابلي مشرق · جلدي ناعم · دافئ',
+          featuredCreations: 'سَرى (SARA) · مَقام (MAQAM)',
+          searchQuery: 'زعفران',
+          imageUrl: '/images/rwaq/products/rwaq_prod_najd_saffron_1790766970563.jpg',
+          imageAlt: 'خيوط الزعفران الأحمر وحبوب الهيل على حجر الترافرتين',
+        },
+        {
+          id: 'frankincense',
+          numeral: '04',
+          name: 'اللبان والمرّ العربي',
+          subtitle: 'أثر الدخان النقي والراتنجات الصحراوية',
+          description:
+            'يمثل اللبان الحوجري والمرّ العربي الذاكرة الهوائية للعطر؛ طبقة شفافة من الدخان العطري النقي الذي يملأ المكان بهدوءٍ مهيب.',
+          olfactoryRole: 'جسر عطري يمنح الفوحان الهوائي والعمق البلسمي',
+          sensoryProfile: 'بلسمي · دخاني شفاف · معدني دافئ',
+          featuredCreations: 'أثَر (ATHAR) · ظِل (ZILL)',
+          searchQuery: 'لبان',
+          imageUrl: '/images/rwaq/products/rwaq_prod_sahra_myrrh_1790767009599.jpg',
+          imageAlt: 'راتنج المر العربي واللبان مع زجاجة عطر رِواق',
+        },
+        {
+          id: 'architecture',
+          numeral: '05',
+          name: 'المعمار والحجر النجدي',
+          subtitle: 'من هندسة الأروقة إلى نحت الزجاجة',
+          description:
+            'استُلهم تصميم زجاجة رِواق من الكتل المعمارية النجدية وتدرجات الحجر الجيري والبازلت؛ زجاج مدخّن ثقيل يعلوه غطاء برونزي مصقول يحفظ الخلاصة العطرية.',
+          olfactoryRole: 'وعاء معماري يحمي الخلاصة العطرية من الضوء والحرارة',
+          sensoryProfile: 'حجر جيري دافئ · زجاج مدخّن · برونز مصقول',
+          featuredCreations: 'جميع إصدارات نَجد وصَحراء ولَيل',
+          searchQuery: 'مسك',
+          imageUrl: '/images/rwaq/product_flacon_studio_1790732089787.jpg',
+          imageAlt: 'زجاجة رِواق المنحوتة من الزجاج المدخن والبرونز على قاعدة من الحجر الجيري',
+        },
+      ],
+    },
+    concierge: {
+      sectionEyebrow: 'مراسم الدار · تجربة رِواق',
+      sectionTitle: 'تجربةٌ صُممت لتليق بحضورك',
+      sectionSubtitle:
+        'في رِواق، يمتد الاعتناء بالعطر إلى الطريقة التي يُقدّم ويُختبر بها؛ من اختيار النوتة الملائمة وحتى مراسم الإهداء.',
+      primaryAction: 'ابدأ الاستكشاف بالبحث العطري',
+      secondaryAction: 'معاينة حقيبة الاقتناء',
+      pillars: [
+        {
+          code: '01',
+          title: 'تجرِبة العينات المرفقة',
+          description:
+            'فلسفة الاقتناء الواثق؛ صُممت تجربة رِواق لتتيح لك اختبار العطر على البشرة عبر عينات استكشافية قبل فضّ ختم الزجاجة الرئيسية.',
+          detail: 'عينتان استكشافيتان (2 مل) ضمن مفهوم تقديم الطلبات',
+        },
+        {
+          code: '02',
+          title: 'مقصورة الإهداء المعمارية',
+          description:
+            'تُقدّم كل زجاجة داخل علبة صلبة مكسوة بنسيج يحاكي الحجر الجيري النجدي، ومزودة بتفاصيل برونزية تجعلها جاهزة للإهداء الرفيع.',
+          detail: 'تصميم يجمع المتانة المعمارية والبساطة الفاخرة',
+        },
+        {
+          code: '03',
+          title: 'الاستكشاف عبر النوتات والعوالم',
+          description:
+            'سواء كنت تبحث عن دفء الزعفران النجدي، أو عمق العود والجلد، أو سكينة المسك والورد الطائفي، يمكنك تصفية الابتكارات حسب النوتة أو المجموعة.',
+          detail: 'تصنيف عطري واضح للثبات والفوحان وهرم النوتات',
+        },
+      ],
     },
     drawers: {
       mobileMenu: {
@@ -310,7 +534,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     },
     footer: {
       statement:
-        'دار عطور سعودية معاصرة تصوغ العطر كذاكرة؛ تتقاطع فيها أصالة المواد الخام مع السكينة المعمارية الحديثة.',
+        'دار عطور سعودية معاصرة تعيد صياغة العطر بروح حديثة؛ تتقاطع فيها أصالة العود والورد الطائفي والزعفران مع السكينة المعمارية لصناعة حضورٍ مميّز.',
       location: 'الرياض · المملكة العربية السعودية',
       newsletterEyebrow: 'رسائل الدار',
       newsletterTitle:
@@ -353,13 +577,41 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     nav: {
       collections: 'Collections',
       creations: 'Creations',
+      craft: 'Craft & Materials',
       manifesto: 'Manifesto',
       house: 'The House',
       languageToggleLabel: 'عربي',
       languageToggleFull: 'العربية',
     },
     hero: {
-      scrollPrompt: 'Discover RWAQ',
+      scrollPrompt: 'Enter the House',
+      concentrationBadge: 'Extrait de Parfum · 25%–35% Concentration',
+      trilogyLabel: 'Signature Trilogy: NAJD · SAHRA · LAYL',
+    },
+    signatureStrip: {
+      ariaLabel: 'RWAQ House Signatures',
+      items: [
+        {
+          code: 'I',
+          title: 'High Oil Concentrations',
+          detail: 'Extrait and Absolu compositions crafted at 25% to 35% for depth and poise.',
+        },
+        {
+          code: 'II',
+          title: 'Selected Noble Materials',
+          detail: 'Aged agarwood, first-harvest Taif rose, red saffron, and Hojari frankincense.',
+        },
+        {
+          code: 'III',
+          title: 'Contemporary Saudi Identity',
+          detail: 'Rooted in Najdi architectural geometry and the shifting light of Arabia.',
+        },
+        {
+          code: 'IV',
+          title: 'Luxury Gifting Presentation',
+          detail: 'Heavy smoked-glass flacons housed in limestone-textured ceremonial coffrets.',
+        },
+      ],
     },
     manifesto: {
       pillarOneTitle: 'Provenance of Raw Materials',
@@ -373,21 +625,42 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         'Architectural vessels and limestone-textured packaging finished with restrained brushed bronze.',
     },
     collections: {
-      sectionEyebrow: 'The Olfactory Trilogy · Chapter I',
-      sectionTitle: 'Signature Collections',
+      sectionEyebrow: 'Olfactory Worlds · The Signature Trilogy',
+      sectionTitle: 'The Three Olfactory Worlds',
       sectionSubtitle:
-        'Three distinct olfactory territories shaped by the landscapes, light, and nocturnal rituals of the Arabian Peninsula.',
+        'Three sensory territories shaped by the geology, desert horizons, and nocturnal stillness of the Arabian Peninsula.',
       accordLabel: 'Primary Accord',
       originLabel: 'Spatial Inspiration',
-      exploreCollectionCreations: 'Filter creations by collection',
+      exploreCollectionCreations: 'Explore Collection Creations',
       chapterPrefix: 'Chapter',
+      worldsInteractiveHint: 'Select an olfactory world or explore each chapter below',
+      featuredInCollectionLabel: 'Creations in this World',
+      materialCharacterLabel: 'Material & Lighting Character',
+      worldsMeta: {
+        najd: {
+          material: 'Najdi Travertine Stone · Red Saffron · Atlas Cedarwood',
+          atmosphere: 'Warm late-afternoon sun casting long shadows across Diriyah colonnades',
+        },
+        sahra: {
+          material: 'Aged Agarwood · Hojari Frankincense · Burnished Leather',
+          atmosphere: 'Glowing desert embers and resinous incense smoke at twilight',
+        },
+        layl: {
+          material: 'Honed Basalt · First-Harvest Taif Rose · Velvet Skin Musk',
+          atmosphere: 'Cool highland air and starlit stillness across Taif and AlUla',
+        },
+      },
     },
     creations: {
       sectionEyebrow: 'House Selection · Composed Extraits',
       sectionTitle: 'Featured Creations',
       sectionSubtitle:
-        'Six signature compositions crafted in high concentration. Inspect the olfactory pyramid or add a flacon to your bag.',
+        'Six signature compositions crafted in high concentration. Inspect the flagship spotlight or browse the full curation.',
       filterAll: 'All Collections',
+      flagshipBadge: 'Featured House Creation',
+      supportingHeading: 'The Curated Selection',
+      swipeHint: 'Swipe horizontally to explore creations',
+      concentrationLabel: 'Concentration',
       topNotes: 'Top Notes',
       heartNotes: 'Heart Notes',
       baseNotes: 'Base Notes',
@@ -412,6 +685,119 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         moderate: 'Balanced',
         commanding: 'Commanding',
       },
+    },
+    craft: {
+      sectionEyebrow: 'Craft & Materials · Olfactory Design Language',
+      sectionTitle: 'Noble Ingredients & Architectural Materiality',
+      sectionSubtitle:
+        'RWAQ’s design language is built on a dialogue between four foundational raw ingredients and Saudi architectural textures — turning scent into tactile presence.',
+      olfactoryRoleLabel: 'Olfactory Role',
+      sensoryProfileLabel: 'Sensory Profile',
+      featuredInLabel: 'Featured Prominently In',
+      exploreNoteInSearch: 'Explore Creations with this Note',
+      materials: [
+        {
+          id: 'oud',
+          numeral: '01',
+          name: 'Aged Agarwood (Oud)',
+          subtitle: 'Resinous depth polished with modern restraint',
+          description:
+            'Rather than overwhelming the wearer, RWAQ’s oud is sculpted with dry woods, amber, and leather — creating a warm, architectural foundation with commanding poise.',
+          olfactoryRole: 'Structural base providing eternal longevity and warm woody resonance',
+          sensoryProfile: 'Resinous · Dark Woody · Polished & Warm',
+          featuredCreations: 'ATHAR (أثَر) · MAQAM (مَقام) · ZILL (ظِل)',
+          searchQuery: 'Oud',
+          imageUrl: '/images/rwaq/products/rwaq_prod_sahra_incense_1790766997373.jpg',
+          imageAlt: 'Aged agarwood chips and Hojari frankincense beside RWAQ perfume flacon',
+        },
+        {
+          id: 'taif-rose',
+          numeral: '02',
+          name: 'Taif Rose',
+          subtitle: 'First-harvest highland radiance meets nocturnal shadow',
+          description:
+            'Distilled from mountain roses harvested at dawn, our Taif rose accord is paired with dark fig nectar, smoked black tea, and velvet musk for a magnetic contemporary contrast.',
+          olfactoryRole: 'Luminous floral heart lending velvet texture and emotional tension',
+          sensoryProfile: 'Dewy Rose · Dark Fruit · Velvet Musk',
+          featuredCreations: 'WAJD (وَجد)',
+          searchQuery: 'Taif Rose',
+          imageUrl: '/images/rwaq/products/rwaq_prod_layl_rose_1790767019885.jpg',
+          imageAlt: 'Dark Taif rose petals and black fig resting on honed basalt stone',
+        },
+        {
+          id: 'saffron',
+          numeral: '03',
+          name: 'Red Saffron & Cardamom',
+          subtitle: 'Ceremonial warmth of the Najdi Majlis',
+          description:
+            'Crimson saffron threads and crushed green cardamom pods ignite our openings with golden warmth, paying tribute to Saudi hospitality and sunlit limestone courtyards.',
+          olfactoryRole: 'Radiant spice opening bridging dry woods and rock amber',
+          sensoryProfile: 'Warm Spice · Soft Leathery · Luminous',
+          featuredCreations: 'SARA (سَرى) · MAQAM (مَقام)',
+          searchQuery: 'Saffron',
+          imageUrl: '/images/rwaq/products/rwaq_prod_najd_saffron_1790766970563.jpg',
+          imageAlt: 'Red saffron threads and green cardamom on raw travertine stone',
+        },
+        {
+          id: 'frankincense',
+          numeral: '04',
+          name: 'Frankincense & Arabian Myrrh',
+          subtitle: 'Atmospheric incense smoke and desert resins',
+          description:
+            'Hojari frankincense and golden Arabian myrrh bring verticality and air into our compositions — evoking the quiet trail of incense rising through a stone colonnade.',
+          olfactoryRole: 'Atmospheric bridge creating airy sillage and balsamic depth',
+          sensoryProfile: 'Balsamic · Translucent Smoke · Warm Mineral',
+          featuredCreations: 'ATHAR (أثَر) · ZILL (ظِل)',
+          searchQuery: 'Frankincense',
+          imageUrl: '/images/rwaq/products/rwaq_prod_sahra_myrrh_1790767009599.jpg',
+          imageAlt: 'Golden Arabian myrrh resin and frankincense with RWAQ flacon',
+        },
+        {
+          id: 'architecture',
+          numeral: '05',
+          name: 'Saudi Architectural Materiality',
+          subtitle: 'From Najdi colonnades to the monolithic flacon',
+          description:
+            'Every RWAQ vessel draws from the geometry of traditional arcades (riwaq) and raw desert stone — crafted in heavy smoked glass and crowned with brushed dark bronze.',
+          olfactoryRole: 'Protective smoked-glass vessel shielding high-concentration oils from light',
+          sensoryProfile: 'Warm Limestone · Smoked Glass · Brushed Bronze',
+          featuredCreations: 'All NAJD, SAHRA & LAYL Creations',
+          searchQuery: 'Musk',
+          imageUrl: '/images/rwaq/product_flacon_studio_1790732089787.jpg',
+          imageAlt: 'Monolithic RWAQ smoked-glass flacon with brushed bronze cap on limestone pedestal',
+        },
+      ],
+    },
+    concierge: {
+      sectionEyebrow: 'The House Experience · RWAQ Rituals',
+      sectionTitle: 'An Experience Designed Around Presence',
+      sectionSubtitle:
+        'At RWAQ, the ritual of acquiring a fragrance is conceived with the same architectural care as the scent itself — from guided olfactory discovery to ceremonial presentation.',
+      primaryAction: 'Open Olfactory Discovery',
+      secondaryAction: 'Inspect Your Bag',
+      pillars: [
+        {
+          code: '01',
+          title: 'The Discovery Vial Ritual',
+          description:
+            'Our presentation philosophy pairs each full flacon with complimentary 2ml discovery vials, intended to let you live with the composition on skin before unsealing the main vessel.',
+          detail: 'Two 2ml discovery vials included in the RWAQ presentation concept',
+        },
+        {
+          code: '02',
+          title: 'Architectural Coffret Presentation',
+          description:
+            'Each flacon rests within a structured limestone-textured coffret accented in brushed bronze — conceived from the outset for personal keepsake and ceremonial gifting.',
+          detail: 'Monolithic smoked glass & tactile stone-inspired housing',
+        },
+        {
+          code: '03',
+          title: 'Olfactory Guidance by Note & Accord',
+          description:
+            'Whether drawn to sunlit saffron, resinous oud and leather, or nocturnal Taif rose and skin musk, explore our creations through transparent note pyramids and sillage profiles.',
+          detail: 'Structured Top, Heart & Base note pyramids on every creation',
+        },
+      ],
     },
     drawers: {
       mobileMenu: {
@@ -485,7 +871,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     },
     footer: {
       statement:
-        'A contemporary Saudi fragrance house crafting scent as memory — where noble raw materials meet modern architectural restraint.',
+        'A contemporary Saudi fragrance house reimagining perfumery through a modern lens — oud, Taif rose, and saffron composed for a distinctive presence.',
       location: 'Riyadh · Kingdom of Saudi Arabia',
       newsletterEyebrow: 'The House Letters',
       newsletterTitle:

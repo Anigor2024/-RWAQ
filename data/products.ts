@@ -26,10 +26,10 @@ export const SEED_PRODUCTS: Product[] = [
     },
     price: createMoney(680),
     image: {
-      url: '/images/rwaq/collection_najd_amber_1790732060898.jpg',
+      url: '/images/rwaq/products/rwaq_prod_najd_saffron_1790766970563.jpg',
       alt: {
-        ar: 'عطر سرى من رِواق — مجموعة نجد',
-        en: 'SARA Extrait de Parfum by RWAQ — Najd Collection',
+        ar: 'زجاجة عطر سرى من رِواق مع خيوط الزعفران الأحمر والهيل على حجر الترافرتين النجدي',
+        en: 'SARA Extrait de Parfum flacon by RWAQ with red saffron threads and cardamom on Najdi travertine',
       },
       aspectRatio: '3:4',
     },
@@ -102,10 +102,10 @@ export const SEED_PRODUCTS: Product[] = [
     },
     price: createMoney(820),
     image: {
-      url: '/images/rwaq/collection_sahra_oud_1790732070469.jpg',
+      url: '/images/rwaq/products/rwaq_prod_sahra_incense_1790766997373.jpg',
       alt: {
-        ar: 'عطر أثر من رِواق — مجموعة صحراء',
-        en: 'ATHAR Extrait de Parfum by RWAQ — Sahra Collection',
+        ar: 'زجاجة عطر أثر من رِواق بجانب رقائق العود المعتق ودخان اللبان الحوجري والجلد المصقول',
+        en: 'ATHAR Extrait de Parfum flacon by RWAQ beside aged agarwood chips, Hojari frankincense smoke, and burnished leather',
       },
       aspectRatio: '3:4',
     },
@@ -177,10 +177,10 @@ export const SEED_PRODUCTS: Product[] = [
     },
     price: createMoney(740),
     image: {
-      url: '/images/rwaq/collection_layl_musk_1790732079960.jpg',
+      url: '/images/rwaq/products/rwaq_prod_layl_rose_1790767019885.jpg',
       alt: {
-        ar: 'عطر وجد من رِواق — مجموعة ليل',
-        en: 'WAJD Eau de Parfum Intense by RWAQ — Layl Collection',
+        ar: 'زجاجة عطر وجد من رِواق مع بتلات الورد الطائفي الداكنة والتين الأسود على حجر البازلت',
+        en: 'WAJD Eau de Parfum Intense flacon by RWAQ with dark Taif rose petals and black fig on honed basalt',
       },
       aspectRatio: '3:4',
     },
@@ -251,10 +251,10 @@ export const SEED_PRODUCTS: Product[] = [
     },
     price: createMoney(590),
     image: {
-      url: '/images/rwaq/product_flacon_studio_1790732089787.jpg',
+      url: '/images/rwaq/products/rwaq_prod_layl_iris_1790767031847.jpg',
       alt: {
-        ar: 'عطر سكون من رِواق — مجموعة ليل',
-        en: 'SUKOON Extrait de Parfum by RWAQ — Layl Collection',
+        ar: 'زجاجة عطر سكون من رِواق مع المسك الأبيض وزهر السوسن على حجر جيري ناعم',
+        en: 'SUKOON Extrait de Parfum flacon by RWAQ with pure white musk and Pallida iris on smooth limestone',
       },
       aspectRatio: '3:4',
     },
@@ -325,10 +325,10 @@ export const SEED_PRODUCTS: Product[] = [
     price: createMoney(790),
     originalPrice: createMoney(860),
     image: {
-      url: '/images/rwaq/collection_sahra_oud_1790732070469.jpg',
+      url: '/images/rwaq/products/rwaq_prod_sahra_myrrh_1790767009599.jpg',
       alt: {
-        ar: 'عطر ظل من رِواق — مجموعة صحراء',
-        en: 'ZILL Extrait de Parfum by RWAQ — Sahra Collection',
+        ar: 'زجاجة عطر ظل من رِواق مع راتنج المر العربي والأخشاب المدخنة',
+        en: 'ZILL Extrait de Parfum flacon by RWAQ with golden Arabian myrrh resin and charred woods',
       },
       aspectRatio: '3:4',
     },
@@ -400,10 +400,10 @@ export const SEED_PRODUCTS: Product[] = [
     },
     price: createMoney(890),
     image: {
-      url: '/images/rwaq/product_flacon_studio_1790732089787.jpg',
+      url: '/images/rwaq/products/rwaq_prod_najd_coffee_1790766983637.jpg',
       alt: {
-        ar: 'عطر مقام من رِواق — مجموعة نجد',
-        en: 'MAQAM Parfum Absolu by RWAQ — Najd Collection',
+        ar: 'زجاجة عطر مقام من رِواق مع الهيل والقهوة السعودية الشقراء والعود الملكي',
+        en: 'MAQAM Parfum Absolu flacon by RWAQ with cardamom pods, blonde Saudi coffee, and royal oud',
       },
       aspectRatio: '3:4',
     },

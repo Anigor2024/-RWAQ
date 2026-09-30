@@ -17,32 +17,39 @@ export function MobileMenuDrawer({ collections }: MobileMenuDrawerProps) {
 
   return (
     <div className="flex flex-1 flex-col justify-between overflow-y-auto px-6 py-8 sm:px-8">
-      <nav aria-label={t.a11y.primaryNavigation} className="flex flex-col space-y-6">
-        <a
-          href="#manifesto"
-          onClick={closeDrawer}
-          className="border-b border-[#F5F0E8]/10 pb-4 text-2xl font-light text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
-        >
-          {t.nav.manifesto}
-        </a>
-        <a
-          href="#collections"
-          onClick={closeDrawer}
-          className="border-b border-[#F5F0E8]/10 pb-4 text-2xl font-light text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
-        >
-          {t.nav.collections}
-        </a>
+      <nav aria-label={t.a11y.primaryNavigation} className="flex flex-col space-y-5">
         <a
           href="#creations"
           onClick={closeDrawer}
-          className="border-b border-[#F5F0E8]/10 pb-4 text-2xl font-light text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+          className="border-b border-[#F5F0E8]/10 pb-3.5 text-xl font-light text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
         >
           {t.nav.creations}
         </a>
         <a
+          href="#collections"
+          onClick={closeDrawer}
+          className="border-b border-[#F5F0E8]/10 pb-3.5 text-xl font-light text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+        >
+          {t.nav.collections}
+        </a>
+        <a
+          href="#craft"
+          onClick={closeDrawer}
+          className="border-b border-[#F5F0E8]/10 pb-3.5 text-xl font-light text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+        >
+          {t.nav.craft}
+        </a>
+        <a
+          href="#manifesto"
+          onClick={closeDrawer}
+          className="border-b border-[#F5F0E8]/10 pb-3.5 text-xl font-light text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+        >
+          {t.nav.manifesto}
+        </a>
+        <a
           href="#house"
           onClick={closeDrawer}
-          className="border-b border-[#F5F0E8]/10 pb-4 text-2xl font-light text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+          className="border-b border-[#F5F0E8]/10 pb-3.5 text-xl font-light text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
         >
           {t.nav.house}
         </a>

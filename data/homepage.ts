@@ -8,34 +8,34 @@ export const SEED_HOMEPAGE_CONTENT: HomepageContent = {
       en: 'A Contemporary Saudi Fragrance House',
     },
     headline: {
-      ar: 'عطرٌ يبقى بعد الرحيل',
-      en: 'A scent that lingers beyond the moment.',
+      ar: 'حضورٌ لا يُنسى، يبدأ بالعطر',
+      en: 'An unforgettable presence begins with scent.',
     },
     supportingCopy: {
-      ar: 'رِواق يصوغ العطر كذاكرة؛ مزيج من الأصالة السعودية والتعبير المعاصر.',
-      en: 'RWAQ crafts fragrance as memory — rooted in Saudi character, expressed with modern restraint.',
+      ar: 'رِواق يعيد صياغة العطر السعودي بروح معاصرة؛ العود والورد الطائفي والزعفران في تراكيب صُممت لصناعة حضور مميّز.',
+      en: 'RWAQ reimagines Saudi perfumery through a contemporary lens — oud, Taif rose and saffron composed for a distinctive presence.',
     },
     primaryCta: {
       label: {
-        ar: 'اكتشف المجموعة',
-        en: 'Explore the Collection',
+        ar: 'اكتشف عطور رِواق',
+        en: 'Discover RWAQ',
       },
-      targetSectionId: 'collections',
+      targetSectionId: 'creations',
     },
     secondaryCta: {
       label: {
-        ar: 'اكتشف عطرك',
-        en: 'Find Your Scent',
+        ar: 'استكشف المجموعات',
+        en: 'Explore Collections',
       },
-      targetSectionId: 'creations',
+      targetSectionId: 'collections',
     },
     media: {
       type: 'image',
       imageUrl: '/images/rwaq/hero_rwaq_campaign_1790732049989.jpg',
       posterUrl: '/images/rwaq/hero_rwaq_campaign_1790732049989.jpg',
       alt: {
-        ar: 'زجاجة عطر رِواق المنحوتة من الزجاج المدخن والبرونز على الحجر الجيري النجدي ورمال الصحراء عند الغسق',
-        en: 'RWAQ sculptural smoked-glass and bronze perfume flacon on raw Najdi limestone and desert sand at twilight',
+        ar: 'زجاجة عطر رِواق المنحوتة من الزجاج المدخن والبرونز على الحجر الجيري النجدي ورمال الصحراء تحت ضوء دافئ',
+        en: 'RWAQ sculptural smoked-glass and bronze perfume flacon illuminated on raw Najdi limestone and desert sand',
       },
     },
   },

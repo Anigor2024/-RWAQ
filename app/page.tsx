@@ -1,6 +1,9 @@
 import React from 'react';
+import { ConciergeServiceSection } from '@/components/home/concierge-service-section';
+import { CraftMaterialsSection } from '@/components/home/craft-materials-section';
 import { FeaturedCreations } from '@/components/home/featured-creations';
 import { HeroSection } from '@/components/home/hero-section';
+import { HouseSignatureStrip } from '@/components/home/house-signature-strip';
 import { ManifestoSection } from '@/components/home/manifesto-section';
 import { SignatureCollections } from '@/components/home/signature-collections';
 import { Footer } from '@/components/layout/footer';
@@ -17,9 +20,12 @@ export default async function HomePage() {
 
       <main id="main-content" className="flex-1">
         <HeroSection hero={homepage.hero} />
+        <HouseSignatureStrip />
         <ManifestoSection manifesto={homepage.manifesto} />
-        <SignatureCollections collections={collections} />
         <FeaturedCreations collections={collections} products={products} />
+        <SignatureCollections collections={collections} products={products} />
+        <CraftMaterialsSection />
+        <ConciergeServiceSection />
       </main>
 
       <Footer />

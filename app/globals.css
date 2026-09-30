@@ -59,18 +59,6 @@ html {
   overflow-x: clip;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  [data-reveal="true"] {
-    opacity: 1 !important;
-    transform: none !important;
-    transition: none !important;
-  }
-}
-
 body {
   background-color: var(--background);
   color: var(--foreground);
@@ -93,3 +81,97 @@ html[dir="ltr"] body {
   color: var(--rwaq-obsidian);
 }
 
+/* ==========================================================================
+   Cinematic Hero Motion (Transform & Opacity Only — GPU Accelerated)
+   ========================================================================== */
+
+@keyframes rwaqHeroCameraDrift {
+  0% {
+    transform: scale3d(1, 1, 1) translate3d(0%, 0%, 0);
+  }
+  50% {
+    transform: scale3d(1.035, 1.035, 1) translate3d(-0.8%, -0.5%, 0);
+  }
+  100% {
+    transform: scale3d(1.055, 1.055, 1) translate3d(0.6%, -0.9%, 0);
+  }
+}
+
+@keyframes rwaqHeroCameraDriftMobile {
+  0% {
+    transform: scale3d(1, 1, 1) translate3d(0%, 0%, 0);
+  }
+  100% {
+    transform: scale3d(1.028, 1.028, 1) translate3d(0%, -0.6%, 0);
+  }
+}
+
+@keyframes rwaqLightSweep {
+  0% {
+    opacity: 0.22;
+    transform: translate3d(-12%, -4%, 0) scale(1);
+  }
+  50% {
+    opacity: 0.42;
+    transform: translate3d(6%, 2%, 0) scale(1.06);
+  }
+  100% {
+    opacity: 0.25;
+    transform: translate3d(14%, -3%, 0) scale(1.02);
+  }
+}
+
+@keyframes rwaqAmbientHaze {
+  0% {
+    opacity: 0.16;
+    transform: translate3d(0%, 2%, 0) scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: translate3d(-3%, -2%, 0) scale(1.04);
+  }
+  100% {
+    opacity: 0.18;
+    transform: translate3d(2%, -4%, 0) scale(1.02);
+  }
+}
+
+.rwaq-hero-motion {
+  will-change: transform;
+  animation: rwaqHeroCameraDriftMobile 20s ease-in-out infinite alternate;
+}
+
+@media (min-width: 768px) {
+  .rwaq-hero-motion {
+    animation: rwaqHeroCameraDrift 24s ease-in-out infinite alternate;
+  }
+}
+
+.rwaq-hero-light-sweep {
+  will-change: transform, opacity;
+  animation: rwaqLightSweep 18s ease-in-out infinite alternate;
+}
+
+.rwaq-hero-haze {
+  will-change: transform, opacity;
+  animation: rwaqAmbientHaze 22s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  [data-reveal="true"] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .rwaq-hero-motion,
+  .rwaq-hero-light-sweep,
+  .rwaq-hero-haze {
+    animation: none !important;
+    transform: none !important;
+  }
+}

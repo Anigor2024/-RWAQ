@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     template: '%s | رِواق RWAQ',
   },
   description:
-    'رِواق يصوغ العطر كذاكرة؛ دار عطور سعودية معاصرة تجمع أنقى خلاصات العود واللبان والورد الطائفي مع فن الإهداء الفاخر. RWAQ is a contemporary Saudi luxury fragrance house crafting perfume, oud, incense, and ceremonial gifting.',
+    'حضورٌ لا يُنسى، يبدأ بالعطر. رِواق يعيد صياغة العطر السعودي بروح معاصرة؛ العود والورد الطائفي والزعفران في تراكيب صُممت لصناعة حضور مميّز. RWAQ reimagines Saudi perfumery through a contemporary lens — oud, Taif rose and saffron composed for a distinctive presence.',
   keywords: [
     'رواق',
     'RWAQ',
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'رِواق | دار عطور سعودية معاصرة — RWAQ | A Saudi House of Scent',
     description:
-      'رِواق يصوغ العطر كذاكرة؛ مزيج من الأصالة السعودية والتعبير المعاصر. RWAQ crafts fragrance as memory — rooted in Saudi character, expressed with modern restraint.',
+      'حضورٌ لا يُنسى، يبدأ بالعطر. رِواق يعيد صياغة العطر السعودي بروح معاصرة. An unforgettable presence begins with scent — RWAQ reimagines Saudi perfumery through a contemporary lens.',
     type: 'website',
     locale: 'ar_SA',
     alternateLocale: ['en_US'],
