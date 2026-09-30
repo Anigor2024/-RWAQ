@@ -11,8 +11,8 @@ import React, {
 } from 'react';
 import {
   getDefaultPurchasableVariant,
-  getSafeMaxVariantQuantity,
-  isVariantPurchasable,
+  getSafeMaxProductVariantQuantity,
+  isProductVariantPurchasable,
   MAX_CART_QUANTITY_PER_LINE,
 } from '@/features/catalog/product-commerce';
 import { calculatePriceBreakdown } from '@/lib/money';

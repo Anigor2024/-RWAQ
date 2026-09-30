@@ -26,10 +26,13 @@ export {
   getDefaultPurchasableVariant,
   getProductDisplayOriginalPrice,
   getProductDisplayPrice,
+  getSafeMaxProductVariantQuantity,
   getSafeMaxVariantQuantity,
   isProductPurchasable,
+  isProductVariantPurchasable,
   isVariantPurchasable,
   MAX_CART_QUANTITY_PER_LINE,
+  resolveSelectedPurchasableVariant,
 } from './product-commerce';
 
 export interface StorefrontOpeningData {
