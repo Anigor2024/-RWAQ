@@ -1,0 +1,6 @@
+{
+  "name": "رِواق | RWAQ — A Saudi House of Scent",
+  "description": "دار عطور سعودية معاصرة؛ عطور فاخرة، عود، بخور، وإهداء راقٍ. A contemporary Saudi luxury fragrance house crafting perfume, oud, incense, and bespoke gifting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

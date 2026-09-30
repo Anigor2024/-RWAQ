@@ -1,0 +1,89 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+:root {
+  /* Base Brand Palette */
+  --rwaq-obsidian: #0B0B0A;
+  --rwaq-warm-ivory: #F5F0E8;
+  --rwaq-soft-ivory: #FFFDF9;
+  --rwaq-oud-brown: #4A3027;
+  --rwaq-bronze: #A77A50;
+  --rwaq-sand: #D8C8B2;
+  --rwaq-muted-stone: #918A80;
+  --rwaq-deep-olive: #35372F;
+
+  /* Semantic Tokens */
+  --background: #F5F0E8;
+  --foreground: #0B0B0A;
+  --muted-foreground: #665F57;
+  --border: #DFD3C3;
+  --accent: #A77A50;
+  --surface: #FFFDF9;
+  --surface-dark: #0B0B0A;
+  --destructive: #8C3A32;
+  --success: #354F3E;
+  --warning: #9C6B30;
+
+  /* Spacing & Container Scale */
+  --container-max: 1440px;
+  --container-narrow: 1080px;
+  --section-py-mobile: 5rem;
+  --section-py-desktop: 8.5rem;
+
+  /* Refined Architectural Radii (Never bubbly) */
+  --radius-none: 0px;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+
+  /* Subtle Editorial Shadows */
+  --shadow-subtle: 0 8px 30px -12px rgba(11, 11, 10, 0.08);
+  --shadow-elevated: 0 24px 60px -16px rgba(11, 11, 10, 0.22);
+
+  /* Motion Durations */
+  --duration-fast: 160ms;
+  --duration-base: 320ms;
+  --duration-slow: 650ms;
+
+  /* Z-Index Scale */
+  --z-header: 40;
+  --z-backdrop: 45;
+  --z-drawer: 50;
+  --z-toast: 60;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--background);
+  color: var(--foreground);
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+html[dir="rtl"] body {
+  font-family: var(--font-arabic), sans-serif;
+}
+
+html[dir="ltr"] body {
+  font-family: var(--font-sans-en), sans-serif;
+}
+
+::selection {
+  background-color: rgba(167, 122, 80, 0.22);
+  color: var(--rwaq-obsidian);
+}
+
