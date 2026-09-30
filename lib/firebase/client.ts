@@ -60,18 +60,15 @@ export function isFirebaseConfigured(): boolean {
 
 /**
  * Determines the active application data mode:
- * - 'demo': Uses typed portfolio seed data.
- * - 'live': Requires Firebase configuration and surfaces Firestore/schema errors explicitly.
+ * - 'live': Only when NEXT_PUBLIC_RWAQ_DATA_MODE is explicitly set to "live".
+ * - 'demo': Default for "demo", missing, or any unrecognised value, even if Firebase credentials exist.
  */
 export function getAppDataMode(): AppDataMode {
   const explicitMode = process.env.NEXT_PUBLIC_RWAQ_DATA_MODE?.trim().toLowerCase();
   if (explicitMode === 'live') {
     return 'live';
   }
-  if (explicitMode === 'demo') {
-    return 'demo';
-  }
-  return isFirebaseConfigured() ? 'live' : 'demo';
+  return 'demo';
 }
 
 export function getFirebaseApp(): FirebaseApp | null {

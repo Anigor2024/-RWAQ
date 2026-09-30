@@ -63,6 +63,7 @@ export function DemoModeProvider({ children }: { children: React.ReactNode }) {
     return hydrateAndSubscribeStorage(
       DEMO_PERSONA_STORAGE_KEY,
       parsePersistedDemoPersona,
+      'customer',
       (persistedPersona) => {
         setActivePersonaState(persistedPersona);
       }

@@ -51,16 +51,14 @@ service cloud.firestore {
 
     // Public Signature Collections (Read-Only from Client)
     match /collections/{collectionId} {
-      allow get: if isValidId(collectionId);
-      allow list: if resource.data.sortOrder is number;
-      allow create, update, delete: if false;
+      allow read: if true;
+      allow write: if false;
     }
 
     // Public Fragrance Products (Read-Only from Client)
     match /products/{productId} {
-      allow get: if isValidId(productId);
-      allow list: if resource.data.slug is string && resource.data.slug.size() <= 96;
-      allow create, update, delete: if false;
+      allow read: if true;
+      allow write: if false;
     }
 
     // House Letters Newsletter Subscriptions (Strict Create-Only, PII Read-Denied)

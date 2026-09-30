@@ -109,13 +109,17 @@ export function DrawerShell({
     };
   }, [isOpen, onClose]);
 
-  const slideOffset = dir === 'rtl' ? '-100%' : '100%';
+  const isRtl = dir === 'rtl';
+  const slideOffset = isRtl ? '-100%' : '100%';
+  const edgePositionClasses = isRtl
+    ? 'left-0 border-r border-[#F5F0E8]/12'
+    : 'right-0 border-l border-[#F5F0E8]/12';
 
   return (
     <AnimatePresence>
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 flex justify-end"
+          className="fixed inset-0 z-50"
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
@@ -131,7 +135,7 @@ export function DrawerShell({
             className="fixed inset-0 bg-[#0B0B0A]/72 backdrop-blur-xs"
           />
 
-          {/* Drawer Panel */}
+          {/* Drawer Panel: RTL anchored left & enters from left; LTR anchored right & enters from right */}
           <motion.div
             ref={panelRef}
             initial={prefersReducedMotion ? { opacity: 1 } : { x: slideOffset }}
@@ -141,7 +145,7 @@ export function DrawerShell({
               duration: prefersReducedMotion ? 0 : 0.3,
               ease: [0.16, 1, 0.3, 1],
             }}
-            className="relative z-10 flex h-full w-full max-w-lg flex-col border-s border-[#F5F0E8]/12 bg-[#0B0B0A] text-[#F5F0E8] shadow-2xl"
+            className={`fixed inset-y-0 z-10 flex h-full w-full max-w-lg flex-col bg-[#0B0B0A] text-[#F5F0E8] shadow-2xl ${edgePositionClasses}`}
           >
             {/* Accessible Dialog Header */}
             <div className="flex h-20 shrink-0 items-center justify-between border-b border-[#F5F0E8]/10 px-6 sm:px-8">

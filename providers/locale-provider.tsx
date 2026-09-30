@@ -43,11 +43,12 @@ export function LocaleProvider({
     return hydrateAndSubscribeStorage(
       LOCALE_STORAGE_KEY,
       parsePersistedLocale,
+      initialLocale,
       (persistedLocale) => {
         setLocaleState(persistedLocale);
       }
     );
-  }, []);
+  }, [initialLocale]);
 
   const dir = useMemo(() => getDirection(locale), [locale]);
   const t = useMemo(() => getDictionary(locale), [locale]);

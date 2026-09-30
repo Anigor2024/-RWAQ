@@ -69,6 +69,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
     const unsubBag = hydrateAndSubscribeStorage(
       BAG_STORAGE_KEY,
       parsePersistedBagItems,
+      [],
       (persistedBag) => {
         setBagItems(persistedBag);
       }
@@ -77,6 +78,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
     const unsubWishlist = hydrateAndSubscribeStorage(
       WISHLIST_STORAGE_KEY,
       parsePersistedWishlistIds,
+      [],
       (persistedWishlist) => {
         setWishlistProductIds(persistedWishlist);
       }
