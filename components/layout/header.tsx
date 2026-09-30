@@ -68,7 +68,7 @@ export function Header() {
 
           {/* Zone 2: Primary Editorial Navigation (Desktop) */}
           <nav
-            aria-label="Primary Navigation"
+            aria-label={t.a11y.primaryNavigation}
             className="hidden lg:flex items-center gap-9 text-sm font-normal text-[#F5F0E8]/85"
           >
             <a

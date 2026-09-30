@@ -31,8 +31,8 @@ export const SEED_HOMEPAGE_CONTENT: HomepageContent = {
     },
     media: {
       type: 'image',
-      imageUrl: '/src/assets/images/hero_rwaq_campaign_1790732049989.jpg',
-      posterUrl: '/src/assets/images/hero_rwaq_campaign_1790732049989.jpg',
+      imageUrl: '/images/rwaq/hero_rwaq_campaign_1790732049989.jpg',
+      posterUrl: '/images/rwaq/hero_rwaq_campaign_1790732049989.jpg',
       alt: {
         ar: 'زجاجة عطر رِواق المنحوتة من الزجاج المدخن والبرونز على الحجر الجيري النجدي ورمال الصحراء عند الغسق',
         en: 'RWAQ sculptural smoked-glass and bronze perfume flacon on raw Najdi limestone and desert sand at twilight',

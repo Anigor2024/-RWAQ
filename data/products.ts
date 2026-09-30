@@ -26,7 +26,7 @@ export const SEED_PRODUCTS: Product[] = [
     },
     price: createMoney(680),
     image: {
-      url: '/src/assets/images/collection_najd_amber_1790732060898.jpg',
+      url: '/images/rwaq/collection_najd_amber_1790732060898.jpg',
       alt: {
         ar: 'عطر سرى من رِواق — مجموعة نجد',
         en: 'SARA Extrait de Parfum by RWAQ — Najd Collection',
@@ -102,7 +102,7 @@ export const SEED_PRODUCTS: Product[] = [
     },
     price: createMoney(820),
     image: {
-      url: '/src/assets/images/collection_sahra_oud_1790732070469.jpg',
+      url: '/images/rwaq/collection_sahra_oud_1790732070469.jpg',
       alt: {
         ar: 'عطر أثر من رِواق — مجموعة صحراء',
         en: 'ATHAR Extrait de Parfum by RWAQ — Sahra Collection',
@@ -177,7 +177,7 @@ export const SEED_PRODUCTS: Product[] = [
     },
     price: createMoney(740),
     image: {
-      url: '/src/assets/images/collection_layl_musk_1790732079960.jpg',
+      url: '/images/rwaq/collection_layl_musk_1790732079960.jpg',
       alt: {
         ar: 'عطر وجد من رِواق — مجموعة ليل',
         en: 'WAJD Eau de Parfum Intense by RWAQ — Layl Collection',
@@ -251,7 +251,7 @@ export const SEED_PRODUCTS: Product[] = [
     },
     price: createMoney(590),
     image: {
-      url: '/src/assets/images/product_flacon_studio_1790732089787.jpg',
+      url: '/images/rwaq/product_flacon_studio_1790732089787.jpg',
       alt: {
         ar: 'عطر سكون من رِواق — مجموعة ليل',
         en: 'SUKOON Extrait de Parfum by RWAQ — Layl Collection',
@@ -325,7 +325,7 @@ export const SEED_PRODUCTS: Product[] = [
     price: createMoney(790),
     originalPrice: createMoney(860),
     image: {
-      url: '/src/assets/images/collection_sahra_oud_1790732070469.jpg',
+      url: '/images/rwaq/collection_sahra_oud_1790732070469.jpg',
       alt: {
         ar: 'عطر ظل من رِواق — مجموعة صحراء',
         en: 'ZILL Extrait de Parfum by RWAQ — Sahra Collection',
@@ -400,7 +400,7 @@ export const SEED_PRODUCTS: Product[] = [
     },
     price: createMoney(890),
     image: {
-      url: '/src/assets/images/product_flacon_studio_1790732089787.jpg',
+      url: '/images/rwaq/product_flacon_studio_1790732089787.jpg',
       alt: {
         ar: 'عطر مقام من رِواق — مجموعة نجد',
         en: 'MAQAM Parfum Absolu by RWAQ — Najd Collection',

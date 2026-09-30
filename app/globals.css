@@ -63,6 +63,12 @@ html {
   html {
     scroll-behavior: auto;
   }
+
+  [data-reveal="true"] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 body {

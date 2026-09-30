@@ -6,9 +6,15 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { calculatePriceBreakdown } from '@/lib/money';
+import { hydrateAndSubscribeStorage } from '@/lib/storage/persisted-store';
+import {
+  parsePersistedBagItems,
+  parsePersistedWishlistIds,
+} from '@/lib/validation/schemas';
 import type {
   CartItem,
   EntityId,
@@ -52,35 +58,35 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   const [selectedCollectionFilter, setSelectedCollectionFilter] = useState<
     Slug | 'all'
   >('all');
-  const [bagItems, setBagItems] = useState<CartItem[]>(() => {
-    if (typeof window === 'undefined') return [];
-    try {
-      const savedBag = window.localStorage.getItem(BAG_STORAGE_KEY);
-      if (savedBag) {
-        const parsed = JSON.parse(savedBag) as CartItem[];
-        if (Array.isArray(parsed)) return parsed;
-      }
-    } catch {
-      // Ignore storage access errors
-    }
-    return [];
-  });
+  // Deterministic empty arrays for SSR and initial client hydration
+  const [bagItems, setBagItems] = useState<CartItem[]>([]);
+  const [wishlistProductIds, setWishlistProductIds] = useState<EntityId[]>([]);
 
-  const [wishlistProductIds, setWishlistProductIds] = useState<EntityId[]>(
-    () => {
-      if (typeof window === 'undefined') return [];
-      try {
-        const savedWishlist = window.localStorage.getItem(WISHLIST_STORAGE_KEY);
-        if (savedWishlist) {
-          const parsedWishlist = JSON.parse(savedWishlist) as EntityId[];
-          if (Array.isArray(parsedWishlist)) return parsedWishlist;
-        }
-      } catch {
-        // Ignore storage access errors
+  // Stores the element that triggered the drawer so focus can be restored on close
+  const triggerElementRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const unsubBag = hydrateAndSubscribeStorage(
+      BAG_STORAGE_KEY,
+      parsePersistedBagItems,
+      (persistedBag) => {
+        setBagItems(persistedBag);
       }
-      return [];
-    }
-  );
+    );
+
+    const unsubWishlist = hydrateAndSubscribeStorage(
+      WISHLIST_STORAGE_KEY,
+      parsePersistedWishlistIds,
+      (persistedWishlist) => {
+        setWishlistProductIds(persistedWishlist);
+      }
+    );
+
+    return () => {
+      unsubBag();
+      unsubWishlist();
+    };
+  }, []);
 
   useEffect(() => {
     if (activeDrawer) {
@@ -94,11 +100,23 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   }, [activeDrawer]);
 
   const openDrawer = useCallback((drawer: Exclude<ActiveDrawer, null>) => {
+    if (
+      typeof document !== 'undefined' &&
+      document.activeElement instanceof HTMLElement
+    ) {
+      triggerElementRef.current = document.activeElement;
+    }
     setActiveDrawer(drawer);
   }, []);
 
   const closeDrawer = useCallback(() => {
     setActiveDrawer(null);
+    const triggerEl = triggerElementRef.current;
+    if (triggerEl && typeof triggerEl.focus === 'function') {
+      window.requestAnimationFrame(() => {
+        triggerEl.focus();
+      });
+    }
   }, []);
 
   const persistBag = useCallback((nextBag: CartItem[]) => {
@@ -110,48 +128,45 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const addToBag = useCallback(
-    (product: Product) => {
-      const defaultVariant = product.variants[0];
-      if (!defaultVariant) return;
+  const addToBag = useCallback((product: Product) => {
+    const defaultVariant = product.variants[0];
+    if (!defaultVariant) return;
 
-      setBagItems((prev) => {
-        const existingIndex = prev.findIndex(
-          (item) => item.variantId === defaultVariant.id
+    setBagItems((prev) => {
+      const existingIndex = prev.findIndex(
+        (item) => item.variantId === defaultVariant.id
+      );
+      let next: CartItem[];
+      if (existingIndex > -1) {
+        next = prev.map((item, idx) =>
+          idx === existingIndex
+            ? { ...item, quantity: Math.min(10, item.quantity + 1) }
+            : item
         );
-        let next: CartItem[];
-        if (existingIndex > -1) {
-          next = prev.map((item, idx) =>
-            idx === existingIndex
-              ? { ...item, quantity: Math.min(10, item.quantity + 1) }
-              : item
-          );
-        } else {
-          next = [
-            ...prev,
-            {
-              productId: product.id,
-              productSlug: product.slug,
-              variantId: defaultVariant.id,
-              name: product.name,
-              collectionName: product.collectionName,
-              sizeMl: defaultVariant.sizeMl,
-              unitPrice: defaultVariant.price,
-              quantity: 1,
-              imageUrl: product.image.url,
-            },
-          ];
-        }
-        try {
-          window.localStorage.setItem(BAG_STORAGE_KEY, JSON.stringify(next));
-        } catch {
-          // Ignore
-        }
-        return next;
-      });
-    },
-    []
-  );
+      } else {
+        next = [
+          ...prev,
+          {
+            productId: product.id,
+            productSlug: product.slug,
+            variantId: defaultVariant.id,
+            name: product.name,
+            collectionName: product.collectionName,
+            sizeMl: defaultVariant.sizeMl,
+            unitPrice: defaultVariant.price,
+            quantity: 1,
+            imageUrl: product.image.url,
+          },
+        ];
+      }
+      try {
+        window.localStorage.setItem(BAG_STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        // Ignore
+      }
+      return next;
+    });
+  }, []);
 
   const updateBagQuantity = useCallback(
     (variantId: EntityId, nextQuantity: number) => {

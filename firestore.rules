@@ -1,0 +1,73 @@
+rules_version = '2';
+
+// ============================================================================
+// RWAQ (رِواق) — Cloud Firestore Security Rules (Phase 1 Foundation)
+// ============================================================================
+// Security Posture:
+// 1. Default-deny catch-all across the entire database.
+// 2. Public storefront catalog (/collections, /products) permits read access
+//    only; all client-side writes are denied.
+// 3. Newsletter subscriptions (/newsletter_subscriptions) permit validated
+//    creation only (strict key allowlist, email format/length bounds,
+//    locale enum validation, and server timestamp enforcement).
+//    Reads, updates, and deletes from clients are strictly denied to protect PII.
+// 4. Demo Mode state is purely a client-side portfolio preview and NEVER grants
+//    Firestore privileges.
+// 5. Future Authenticated Role Enforcement Plan:
+//    - Customer / Subscriber / Corporate / Admin roles must be stored in a
+//      server-managed or strictly protected role collection (e.g., /user_roles/{uid})
+//      where clients have `allow write: if false`, and verified via `get()` or
+//      `exists()` alongside `request.auth.token.email_verified == true`.
+// ============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Default-Deny Catch-All
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Primitive Helpers
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function isValidNewsletterSubscription(data) {
+      return data.keys().hasAll(['email', 'locale', 'createdAt'])
+        && data.keys().hasOnly(['email', 'locale', 'createdAt'])
+        && data.email is string
+        && data.email.size() >= 5
+        && data.email.size() <= 254
+        && data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+        && data.locale is string
+        && (data.locale == 'ar' || data.locale == 'en')
+        && data.createdAt == request.time;
+    }
+
+    // Public Signature Collections (Read-Only from Client)
+    match /collections/{collectionId} {
+      allow get: if isValidId(collectionId);
+      allow list: if resource.data.sortOrder is number;
+      allow create, update, delete: if false;
+    }
+
+    // Public Fragrance Products (Read-Only from Client)
+    match /products/{productId} {
+      allow get: if isValidId(productId);
+      allow list: if resource.data.slug is string && resource.data.slug.size() <= 96;
+      allow create, update, delete: if false;
+    }
+
+    // House Letters Newsletter Subscriptions (Strict Create-Only, PII Read-Denied)
+    match /newsletter_subscriptions/{subscriptionId} {
+      allow read: if false;
+      allow create: if isValidId(subscriptionId) && isValidNewsletterSubscription(incoming());
+      allow update, delete: if false;
+    }
+  }
+}

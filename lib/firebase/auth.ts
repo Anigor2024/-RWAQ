@@ -5,7 +5,6 @@ import {
   signOut,
   type User,
 } from 'firebase/auth';
-import type { UserRole } from '@/types';
 import { getFirebaseAuth, isFirebaseConfigured } from './client';
 
 export interface AuthenticatedSession {
@@ -15,26 +14,11 @@ export interface AuthenticatedSession {
   emailVerified: boolean;
 }
 
-const ROLE_HIERARCHY: Record<UserRole, number> = {
-  customer: 1,
-  subscriber: 2,
-  corporate: 3,
-  admin: 10,
-};
-
 /**
- * Checks whether a given user role satisfies a required minimum role.
- * Note: Real privilege enforcement must always be backed by Firestore Security Rules
- * and server verification — never by Demo Mode state.
+ * Subscribes to Firebase authentication state when Firebase is configured.
+ * Note: An authenticated session represents identity only and does NOT automatically
+ * grant a verified application role. Roles must be verified from a trusted backend document.
  */
-export function hasRequiredRole(
-  actualRole: UserRole | null | undefined,
-  requiredRole: UserRole
-): boolean {
-  if (!actualRole) return false;
-  return ROLE_HIERARCHY[actualRole] >= ROLE_HIERARCHY[requiredRole];
-}
-
 export function subscribeToAuthState(
   callback: (session: AuthenticatedSession | null) => void
 ): () => void {

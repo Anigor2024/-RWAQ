@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { useReducedMotion } from 'motion/react';
+import { useReducedMotionSafe } from '@/hooks/use-reduced-motion-safe';
 import { localize } from '@/lib/i18n/config';
 import { useLocale } from '@/providers/locale-provider';
 import type { HeroMediaConfig } from '@/types';
@@ -18,7 +18,7 @@ interface HeroMediaProps {
  */
 export function HeroMedia({ media }: HeroMediaProps) {
   const { locale } = useLocale();
-  const prefersReducedMotion = useReducedMotion();
+  const prefersReducedMotion = useReducedMotionSafe();
   const [videoFailed, setVideoFailed] = useState(false);
 
   const shouldRenderVideo =

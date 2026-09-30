@@ -1,0 +1,31 @@
+rules_version = '2';
+
+// ============================================================================
+// RWAQ (رِواق) — Firebase Storage Security Rules (Phase 1 Foundation)
+// ============================================================================
+// Security Posture:
+// 1. Default-deny across all buckets and paths.
+// 2. Public catalog imagery under /public/catalog/{fileName} permits read-only
+//    access (`get`). All client uploads, modifications, and deletions are denied.
+// 3. Demo Mode never grants Storage write privileges.
+// 4. Future Admin / Corporate Asset Uploads:
+//    - Will be scoped to authenticated, email-verified users whose role is
+//      verified via `firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid))`
+//      with strict `request.resource.size` and `request.resource.contentType` checks.
+// ============================================================================
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Public Storefront Catalog Media (Read-Only)
+    match /public/catalog/{fileName} {
+      allow get: if fileName.size() >= 1 && fileName.size() <= 160;
+      allow list, write: if false;
+    }
+
+    // Global Default-Deny Catch-All
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

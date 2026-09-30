@@ -26,7 +26,7 @@ export const SEED_COLLECTIONS: Collection[] = [
       en: 'Diriyah & The Najd Plateau · Saudi Arabia',
     },
     image: {
-      url: '/src/assets/images/collection_najd_amber_1790732060898.jpg',
+      url: '/images/rwaq/collection_najd_amber_1790732060898.jpg',
       alt: {
         ar: 'زجاجة عطر من مجموعة نجد على حجر الترافرتين مع خيوط الزعفران وخشب الأرز',
         en: 'Najd collection amber perfume flacon on raw travertine stone with saffron threads and cedarwood',
@@ -61,7 +61,7 @@ export const SEED_COLLECTIONS: Collection[] = [
       en: 'Rub’ al Khali & Dahna Sands · Saudi Arabia',
     },
     image: {
-      url: '/src/assets/images/collection_sahra_oud_1790732070469.jpg',
+      url: '/images/rwaq/collection_sahra_oud_1790732070469.jpg',
       alt: {
         ar: 'زجاجة عطر صحراء الداكنة بجانب رقائق العود الطبيعي والجلد ورمال الصحراء',
         en: 'Sahra dark glass perfume flacon beside raw agarwood oud chips, burnished leather, and desert sand',
@@ -96,7 +96,7 @@ export const SEED_COLLECTIONS: Collection[] = [
       en: 'Taif Highlands & AlUla Night Skies · Saudi Arabia',
     },
     image: {
-      url: '/src/assets/images/collection_layl_musk_1790732079960.jpg',
+      url: '/images/rwaq/collection_layl_musk_1790732079960.jpg',
       alt: {
         ar: 'زجاجة عطر ليل على حجر البازلت الداكن مع بتلات الورد الطائفي والتين والمسك',
         en: 'Layl smoked glass perfume bottle on honed basalt stone with dark Taif rose petals and fig',

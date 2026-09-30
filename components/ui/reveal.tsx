@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { motion, useReducedMotion } from 'motion/react';
-import { cn } from '@/lib/utils';
+import { motion } from 'motion/react';
+import { useReducedMotionSafe } from '@/hooks/use-reduced-motion-safe';
 
 interface RevealProps {
   children: React.ReactNode;
@@ -14,7 +14,8 @@ interface RevealProps {
 
 /**
  * Restrained editorial reveal component respecting prefers-reduced-motion.
- * Uses only compositor properties (opacity, transform) for smooth 60fps rendering.
+ * Renders identical DOM structure and attributes during SSR and initial hydration
+ * to prevent hydration mismatches when reduced motion is enabled in the browser.
  */
 export function Reveal({
   children,
@@ -23,23 +24,24 @@ export function Reveal({
   yOffset = 18,
   duration = 0.7,
 }: RevealProps) {
-  const prefersReducedMotion = useReducedMotion();
-
-  if (prefersReducedMotion) {
-    return <div className={className}>{children}</div>;
-  }
+  const prefersReducedMotion = useReducedMotionSafe();
 
   return (
     <motion.div
+      data-reveal="true"
       initial={{ opacity: 0, y: yOffset }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{
-        duration,
-        delay,
-        ease: [0.16, 1, 0.3, 1],
-      }}
-      className={cn(className)}
+      transition={
+        prefersReducedMotion
+          ? { duration: 0, delay: 0 }
+          : {
+              duration,
+              delay,
+              ease: [0.16, 1, 0.3, 1],
+            }
+      }
+      className={className}
     >
       {children}
     </motion.div>

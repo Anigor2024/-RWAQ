@@ -16,3 +16,11 @@ export function getDictionary(locale: Locale): Dictionary {
 export function localize(value: LocalizedString, locale: Locale): string {
   return value[locale] || value[DEFAULT_LOCALE];
 }
+
+export function formatVolumeMl(sizeMl: number, locale: Locale): string {
+  const dict = getDictionary(locale);
+  const formattedNumber = new Intl.NumberFormat(
+    locale === 'ar' ? 'ar-SA' : 'en-US'
+  ).format(sizeMl);
+  return `${formattedNumber} ${dict.units.ml}`;
+}

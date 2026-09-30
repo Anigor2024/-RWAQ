@@ -8,6 +8,8 @@ import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
+export type AppDataMode = 'demo' | 'live';
+
 /**
  * Resolves public Firebase configuration from environment variables.
  * Never invents fake credentials and never exposes server-only secrets.
@@ -50,11 +52,26 @@ let cachedStorage: FirebaseStorage | null = null;
 
 /**
  * Returns true if public Firebase client configuration is present.
- * When false, the application operates cleanly in Portfolio / Demo Mode.
  */
 export function isFirebaseConfigured(): boolean {
   const { options } = resolveFirebaseOptions();
   return options !== null;
+}
+
+/**
+ * Determines the active application data mode:
+ * - 'demo': Uses typed portfolio seed data.
+ * - 'live': Requires Firebase configuration and surfaces Firestore/schema errors explicitly.
+ */
+export function getAppDataMode(): AppDataMode {
+  const explicitMode = process.env.NEXT_PUBLIC_RWAQ_DATA_MODE?.trim().toLowerCase();
+  if (explicitMode === 'live') {
+    return 'live';
+  }
+  if (explicitMode === 'demo') {
+    return 'demo';
+  }
+  return isFirebaseConfigured() ? 'live' : 'demo';
 }
 
 export function getFirebaseApp(): FirebaseApp | null {

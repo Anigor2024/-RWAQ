@@ -29,16 +29,25 @@ const cormorantGaramond = Cormorant_Garamond({
   display: 'swap',
 });
 
+/**
+ * Resolves metadataBase safely from APP_URL when configured.
+ * Falls back to localhost in development/portfolio environments rather than
+ * claiming an unconfigured external production domain.
+ */
 function resolveMetadataBase(): URL {
   const rawUrl = process.env.APP_URL?.trim();
-  if (rawUrl && (rawUrl.startsWith('http://') || rawUrl.startsWith('https://'))) {
+  if (
+    rawUrl &&
+    rawUrl !== 'MY_APP_URL' &&
+    (rawUrl.startsWith('http://') || rawUrl.startsWith('https://'))
+  ) {
     try {
       return new URL(rawUrl);
     } catch {
       // Fallback below
     }
   }
-  return new URL('https://rwaq.sa');
+  return new URL('http://localhost:3000');
 }
 
 export const metadata: Metadata = {
@@ -114,12 +123,8 @@ export default function RootLayout({
       lang="ar"
       dir="rtl"
       className={`${ibmPlexArabic.variable} ${plusJakartaSans.variable} ${cormorantGaramond.variable}`}
-      suppressHydrationWarning
     >
-      <body
-        className="min-h-screen bg-[#F5F0E8] text-[#0B0B0A] antialiased selection:bg-[#A77A50]/20"
-        suppressHydrationWarning
-      >
+      <body className="min-h-screen bg-[#F5F0E8] text-[#0B0B0A] antialiased selection:bg-[#A77A50]/20">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -129,4 +134,3 @@ export default function RootLayout({
     </html>
   );
 }
-

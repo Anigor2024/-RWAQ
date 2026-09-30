@@ -1,0 +1,87 @@
+{
+  "entities": {
+    "Collection": {
+      "title": "Collection",
+      "description": "A signature RWAQ fragrance collection.",
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 96,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "romanCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 12
+        },
+        "sortOrder": {
+          "type": "number"
+        }
+      },
+      "required": ["slug", "romanCode", "sortOrder"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "A signature RWAQ fragrance product.",
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 96,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "sku": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64
+        },
+        "collectionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      },
+      "required": ["slug", "sku", "collectionId"]
+    },
+    "NewsletterSubscription": {
+      "title": "NewsletterSubscription",
+      "description": "A public visitor subscription to RWAQ House Letters.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 5,
+          "maxLength": 254,
+          "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+        },
+        "locale": {
+          "type": "string",
+          "enum": ["ar", "en"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["email", "locale", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/collections/{collectionId}": {
+      "schema": "Collection",
+      "description": "Public read-only signature fragrance collections."
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Public read-only fragrance catalog products."
+    },
+    "/newsletter_subscriptions/{subscriptionId}": {
+      "schema": "NewsletterSubscription",
+      "description": "Write-only validated newsletter signup entries."
+    }
+  }
+}

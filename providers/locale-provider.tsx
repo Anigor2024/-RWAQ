@@ -15,7 +15,8 @@ import {
   LOCALE_STORAGE_KEY,
 } from '@/lib/i18n/config';
 import type { Dictionary } from '@/lib/i18n/dictionaries';
-import { localeSchema } from '@/lib/validation/schemas';
+import { hydrateAndSubscribeStorage } from '@/lib/storage/persisted-store';
+import { localeSchema, parsePersistedLocale } from '@/lib/validation/schemas';
 import type { Locale, TextDirection } from '@/types';
 
 interface LocaleContextValue {
@@ -35,31 +36,17 @@ export function LocaleProvider({
   children: React.ReactNode;
   initialLocale?: Locale;
 }) {
-  const [locale, setLocaleState] = useState<Locale>(() => {
-    if (typeof window === 'undefined') return initialLocale;
-    try {
-      const saved = window.localStorage.getItem(LOCALE_STORAGE_KEY);
-      if (saved) {
-        const parsed = localeSchema.safeParse(saved);
-        if (parsed.success) return parsed.data;
-      }
-    } catch {
-      // Ignore storage access errors in restricted environments
-    }
-    return initialLocale;
-  });
+  // Deterministic default state for both SSR and initial browser hydration
+  const [locale, setLocaleState] = useState<Locale>(initialLocale);
 
   useEffect(() => {
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key === LOCALE_STORAGE_KEY && event.newValue) {
-        const parsed = localeSchema.safeParse(event.newValue);
-        if (parsed.success) {
-          setLocaleState(parsed.data);
-        }
+    return hydrateAndSubscribeStorage(
+      LOCALE_STORAGE_KEY,
+      parsePersistedLocale,
+      (persistedLocale) => {
+        setLocaleState(persistedLocale);
       }
-    };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+    );
   }, []);
 
   const dir = useMemo(() => getDirection(locale), [locale]);

@@ -7,8 +7,12 @@ export interface Dictionary {
     tagline: string;
     origin: string;
   };
+  units: {
+    ml: string;
+  };
   a11y: {
     skipToContent: string;
+    primaryNavigation: string;
     openMenu: string;
     closeMenu: string;
     openSearch: string;
@@ -17,6 +21,7 @@ export interface Dictionary {
     openBag: string;
     switchLanguage: string;
     closeDrawer: string;
+    closeNotification: string;
     scrollToManifesto: string;
   };
   nav: {
@@ -78,6 +83,9 @@ export interface Dictionary {
     };
   };
   drawers: {
+    mobileMenu: {
+      title: string;
+    };
     search: {
       title: string;
       placeholder: string;
@@ -113,6 +121,8 @@ export interface Dictionary {
       demoModeBadge: string;
       demoModeExplanation: string;
       activePersonaLabel: string;
+      verifiedRoleLabel: string;
+      verifiedRoleNone: string;
       firebaseStatusLabel: string;
       firebaseConnected: string;
       firebasePortfolioMode: string;
@@ -150,8 +160,12 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       tagline: 'دار عطور سعودية معاصرة',
       origin: 'الرياض · المملكة العربية السعودية',
     },
+    units: {
+      ml: 'مل',
+    },
     a11y: {
       skipToContent: 'انتقل إلى المحتوى الرئيسي',
+      primaryNavigation: 'التنقل الرئيسي',
       openMenu: 'فتح قائمة التنقل',
       closeMenu: 'إغلاق القائمة',
       openSearch: 'البحث في العطور والمجموعات',
@@ -160,6 +174,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       openBag: 'عرض حقيبة التسوق',
       switchLanguage: 'التبديل إلى اللغة الإنجليزية (English)',
       closeDrawer: 'إغلاق النافذة الجانبية',
+      closeNotification: 'إغلاق الإشعار',
       scrollToManifesto: 'التمرير إلى البيان العطري',
     },
     nav: {
@@ -226,6 +241,9 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       },
     },
     drawers: {
+      mobileMenu: {
+        title: 'قائمة التنقل الرئيسية — رِواق',
+      },
       search: {
         title: 'البحث والاستكشاف العطري',
         placeholder: 'ابحث باسم العطر، النوتة (عود، زعفران، ورد طائفي، مسك)...',
@@ -235,7 +253,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       },
       bag: {
         title: 'حقيبة رِواق',
-        emptyTitle: 'حقيبتكِ فارغة حالياً',
+        emptyTitle: 'حقيبتك فارغة حالياً',
         emptyBody:
           'اختر من مجموعات نجد أو صحراء أو ليل لتجربة ابتكارات رِواق العطرية.',
         exploreButton: 'استكشف الابتكارات العطرية',
@@ -264,9 +282,11 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         demoModeBadge: 'وضع العرض التوضيحي للمحفظة (Portfolio Demo)',
         demoModeExplanation:
           'يتيح وضع العرض التوضيحي معاينة تجربة المنصة دون منح أي صلاحيات حقيقية على قاعدة البيانات.',
-        activePersonaLabel: 'المنظور النشط حالياً',
+        activePersonaLabel: 'منظور المعاينة النشط (Demo Persona)',
+        verifiedRoleLabel: 'الدور الموثق من الخادم',
+        verifiedRoleNone: 'غير مصادق (لا توجد صلاحيات خلفية)',
         firebaseStatusLabel: 'حالة البنية السحابية (Firebase)',
-        firebaseConnected: 'متصل بمشروع Firebase',
+        firebaseConnected: 'متصل بمشروع Firebase (الوضع الحي)',
         firebasePortfolioMode: 'وضع المحفظة المستقل (البيانات المرجعية الموثقة)',
         personas: {
           customer: {
@@ -313,8 +333,12 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       tagline: 'A Saudi House of Scent',
       origin: 'Riyadh · Kingdom of Saudi Arabia',
     },
+    units: {
+      ml: 'ml',
+    },
     a11y: {
       skipToContent: 'Skip to main content',
+      primaryNavigation: 'Primary Navigation',
       openMenu: 'Open navigation menu',
       closeMenu: 'Close navigation menu',
       openSearch: 'Search fragrances and collections',
@@ -323,6 +347,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       openBag: 'Open shopping bag',
       switchLanguage: 'Switch language to Arabic (العربية)',
       closeDrawer: 'Close drawer panel',
+      closeNotification: 'Close notification',
       scrollToManifesto: 'Scroll to brand manifesto',
     },
     nav: {
@@ -389,6 +414,9 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       },
     },
     drawers: {
+      mobileMenu: {
+        title: 'RWAQ Primary Navigation Menu',
+      },
       search: {
         title: 'Olfactory Discovery & Search',
         placeholder:
@@ -429,9 +457,11 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         demoModeBadge: 'Portfolio Demo Mode Active',
         demoModeExplanation:
           'Portfolio Demo Mode allows safe inspection of role states without granting real Firebase privileges or bypassing security boundaries.',
-        activePersonaLabel: 'Active Preview Persona',
+        activePersonaLabel: 'Active Preview Persona (Demo Only)',
+        verifiedRoleLabel: 'Verified Backend Role',
+        verifiedRoleNone: 'Unauthenticated (No backend privileges)',
         firebaseStatusLabel: 'Firebase Cloud Status',
-        firebaseConnected: 'Connected to Firebase Project',
+        firebaseConnected: 'Connected to Firebase Project (Live Mode)',
         firebasePortfolioMode: 'Standalone Portfolio Mode (Typed Seed Data)',
         personas: {
           customer: {

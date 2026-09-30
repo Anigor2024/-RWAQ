@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { X } from 'lucide-react';
+import { useLocale } from './locale-provider';
 
 export interface ToastMessage {
   id: string;
@@ -23,6 +24,7 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | null>(null);
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const { t } = useLocale();
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const dismissToast = useCallback((id: string) => {
@@ -69,7 +71,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 type="button"
                 onClick={() => dismissToast(toast.id)}
                 className="inline-flex h-7 w-7 shrink-0 items-center justify-center text-[#918A80] transition-colors hover:text-[#F5F0E8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
-                aria-label="Close notification"
+                aria-label={t.a11y.closeNotification}
               >
                 <X className="h-3.5 w-3.5" />
               </button>
