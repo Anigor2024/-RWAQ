@@ -75,6 +75,18 @@ export async function getSignatureCollections(): Promise<
 export async function getFeaturedProducts(): Promise<
   CatalogDataResult<Product[]>
 > {
+  return getCatalogProducts();
+}
+
+/**
+ * Retrieves the complete public fragrance catalog.
+ * - In 'demo' mode: returns all 18 typed RWAQ seed products.
+ * - In 'live' mode: queries Firestore, validates each document against firestoreProductSchema,
+ *   and surfaces any connection/permission/schema error explicitly without masking failures.
+ */
+export async function getCatalogProducts(): Promise<
+  CatalogDataResult<Product[]>
+> {
   const mode = getAppDataMode();
   if (mode === 'demo') {
     return { data: SEED_PRODUCTS, source: 'seed' };
@@ -84,7 +96,7 @@ export async function getFeaturedProducts(): Promise<
   const path = 'products';
 
   try {
-    const q = query(collection(db, path), limit(24));
+    const q = query(collection(db, path), limit(50));
     const snapshot = await getDocs(q);
     const items = snapshot.docs.map((docSnap) =>
       parseFirestoreProduct(

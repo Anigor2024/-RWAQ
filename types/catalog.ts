@@ -124,7 +124,7 @@ export interface Collection {
   sortOrder: number;
 }
 
-export type CatalogSortOption =
+export type CatalogSort =
   | 'featured'
   | 'newest'
   | 'price-asc'
@@ -132,10 +132,9 @@ export type CatalogSortOption =
   | 'bestsellers'
   | 'name';
 
-export type PriceRangeKey = 'under-650' | '650-800' | 'over-800';
+export type CatalogSortOption = CatalogSort;
 
-export interface CatalogFilterParams {
-  q?: string;
+export interface CatalogFilters {
   collection?: Slug;
   family?: OlfactoryFamilyKey;
   gender?: GenderPositioning;
@@ -143,9 +142,16 @@ export interface CatalogFilterParams {
   occasion?: OccasionSuitability;
   longevity?: LongevityLevel;
   projection?: ProjectionLevel;
-  priceRange?: PriceRangeKey;
   availability?: 'in-stock';
   isNew?: boolean;
   isBestSeller?: boolean;
-  sort?: CatalogSortOption;
+  minPrice?: number;
+  maxPrice?: number;
 }
+
+export interface CatalogQueryState extends CatalogFilters {
+  q: string;
+  sort: CatalogSort;
+}
+
+export type CatalogFilterParams = Partial<CatalogQueryState>;

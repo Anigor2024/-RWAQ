@@ -2,7 +2,13 @@
 
 import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
-import { Search } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
+import {
+  DEFAULT_CATALOG_QUERY_STATE,
+  normalizeSearchText,
+  queryCatalogProducts,
+} from '@/features/catalog/catalog-query';
 import { localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
 import { useLocale } from '@/providers/locale-provider';
@@ -24,37 +30,28 @@ const SUGGESTED_NOTES = [
 ];
 
 export function SearchDrawer({ products }: SearchDrawerProps) {
-  const { locale, t } = useLocale();
-  const { addToBag } = useUI();
+  const { locale, dir, t } = useLocale();
+  const { addToBag, closeDrawer } = useUI();
   const { showToast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
+  const DirectionalArrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
 
-  const filteredProducts = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return products;
+  const filteredProducts = useMemo(
+    () =>
+      queryCatalogProducts(
+        products,
+        {
+          ...DEFAULT_CATALOG_QUERY_STATE,
+          q: searchQuery,
+        },
+        locale
+      ),
+    [products, searchQuery, locale]
+  );
 
-    return products.filter((product) => {
-      const nameMatch =
-        product.name.ar.toLowerCase().includes(q) ||
-        product.name.en.toLowerCase().includes(q);
-      const subtitleMatch =
-        product.subtitle.ar.toLowerCase().includes(q) ||
-        product.subtitle.en.toLowerCase().includes(q);
-      const collectionMatch =
-        product.collectionName.ar.toLowerCase().includes(q) ||
-        product.collectionName.en.toLowerCase().includes(q);
-      const allNotes = [
-        ...product.notes.top,
-        ...product.notes.heart,
-        ...product.notes.base,
-      ];
-      const notesMatch = allNotes.some(
-        (n) => n.ar.toLowerCase().includes(q) || n.en.toLowerCase().includes(q)
-      );
-
-      return nameMatch || subtitleMatch || collectionMatch || notesMatch;
-    });
-  }, [products, searchQuery]);
+  const shopSearchHref = searchQuery.trim()
+    ? `/shop?q=${encodeURIComponent(searchQuery.trim())}`
+    : '/shop';
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto px-6 py-6 sm:px-8">
@@ -89,7 +86,8 @@ export function SearchDrawer({ products }: SearchDrawerProps) {
         <div className="mt-2.5 flex flex-wrap gap-2">
           {SUGGESTED_NOTES.map((note) => {
             const label = localize(note, locale);
-            const isActive = searchQuery.toLowerCase() === label.toLowerCase();
+            const isActive =
+              normalizeSearchText(searchQuery) === normalizeSearchText(label);
             return (
               <button
                 key={note.en}
@@ -108,7 +106,20 @@ export function SearchDrawer({ products }: SearchDrawerProps) {
         </div>
       </div>
 
-      <div className="mt-8 flex-1 space-y-5">
+      <div className="mt-5">
+        <Link
+          href={shopSearchHref}
+          onClick={closeDrawer}
+          className="group flex h-11 w-full items-center justify-between border border-[#A77A50]/50 bg-[#141311] px-4 text-xs font-medium text-[#F5F0E8] transition-colors hover:border-[#A77A50] hover:bg-[#A77A50] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+        >
+          <span>
+            {t.drawers.search.viewAllInShop} ({filteredProducts.length})
+          </span>
+          <DirectionalArrow className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+        </Link>
+      </div>
+
+      <div className="mt-6 flex-1 space-y-5">
         {filteredProducts.length === 0 ? (
           <p className="py-12 text-center text-sm text-[#918A80]">
             {t.drawers.search.noResults}

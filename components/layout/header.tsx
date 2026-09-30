@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   Heart,
   Menu,
@@ -16,6 +18,7 @@ import { useUI } from '@/providers/ui-provider';
 export function Header() {
   const { t, toggleLocale } = useLocale();
   const { openDrawer, bagCount, wishlistProductIds } = useUI();
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -28,6 +31,7 @@ export function Header() {
   }, []);
 
   const wishlistCount = wishlistProductIds.length;
+  const isShopRoute = pathname?.startsWith('/shop');
 
   return (
     <>
@@ -41,7 +45,7 @@ export function Header() {
       <header
         className={cn(
           'fixed top-0 inset-x-0 z-40 transition-[background-color,border-color,backdrop-filter] duration-300',
-          isScrolled
+          isScrolled || isShopRoute
             ? 'border-b border-[#F5F0E8]/14 bg-[#0B0B0A]/94 text-[#FFFDF9] backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.35)]'
             : 'border-b border-[#F5F0E8]/10 bg-gradient-to-b from-[#0B0B0A]/80 via-[#0B0B0A]/40 to-transparent text-[#FFFDF9]'
         )}
@@ -58,49 +62,60 @@ export function Header() {
               <Menu className="h-5 w-5 stroke-[1.6]" />
             </button>
 
-            <a
-              href="#top"
+            <Link
+              href="/"
               className="group inline-flex items-center py-1 text-[#FFFDF9] transition-opacity duration-200 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
             >
               <RwaqWordmark size="md" />
-            </a>
+            </Link>
           </div>
 
           {/* Zone 2: Primary Editorial Navigation (Desktop) */}
           <nav
             aria-label={t.a11y.primaryNavigation}
-            className="hidden lg:flex items-center gap-9 text-[0.9375rem] font-normal text-[#FFFDF9]/92"
+            className="hidden lg:flex items-center gap-8 text-[0.9375rem] font-normal text-[#FFFDF9]/92"
           >
-            <a
-              href="#creations"
+            <Link
+              href="/shop"
+              className={cn(
+                'relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:bg-[#A77A50] after:transition-transform after:duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]',
+                isShopRoute
+                  ? 'text-[#D8C8B2] after:scale-x-100'
+                  : 'after:scale-x-0 hover:after:scale-x-100'
+              )}
+            >
+              {t.nav.shop}
+            </Link>
+            <Link
+              href="/#creations"
               className="relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:scale-x-0 after:bg-[#A77A50] after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
             >
               {t.nav.creations}
-            </a>
-            <a
-              href="#collections"
+            </Link>
+            <Link
+              href="/#collections"
               className="relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:scale-x-0 after:bg-[#A77A50] after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
             >
               {t.nav.collections}
-            </a>
-            <a
-              href="#craft"
+            </Link>
+            <Link
+              href="/#craft"
               className="relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:scale-x-0 after:bg-[#A77A50] after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
             >
               {t.nav.craft}
-            </a>
-            <a
-              href="#manifesto"
+            </Link>
+            <Link
+              href="/#manifesto"
               className="relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:scale-x-0 after:bg-[#A77A50] after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
             >
               {t.nav.manifesto}
-            </a>
-            <a
-              href="#house"
+            </Link>
+            <Link
+              href="/#house"
               className="relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:scale-x-0 after:bg-[#A77A50] after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
             >
               {t.nav.house}
-            </a>
+            </Link>
           </nav>
 
           {/* Zone 3: Language & Utility Actions */}

@@ -33,7 +33,14 @@ export const SEED_COLLECTIONS: Collection[] = [
       },
       aspectRatio: '3:4',
     },
-    featuredProductSlugs: ['sara-extrait', 'maqam-saffron'],
+    featuredProductSlugs: [
+      'sara-extrait',
+      'maqam-saffron',
+      'sidr-amber',
+      'rihab-vetiver',
+      'mihrab-sandalwood',
+      'ahd-leather',
+    ],
     sortOrder: 1,
   },
   {
@@ -68,7 +75,14 @@ export const SEED_COLLECTIONS: Collection[] = [
       },
       aspectRatio: '4:3',
     },
-    featuredProductSlugs: ['athar-oud', 'zill-smoke'],
+    featuredProductSlugs: [
+      'athar-oud',
+      'zill-smoke',
+      'jamr-embers',
+      'washm-leather',
+      'sarab-resins',
+      'raml-amber',
+    ],
     sortOrder: 2,
   },
   {
@@ -103,7 +117,14 @@ export const SEED_COLLECTIONS: Collection[] = [
       },
       aspectRatio: '3:4',
     },
-    featuredProductSlugs: ['wajd-nocturne', 'sukoon-musk'],
+    featuredProductSlugs: [
+      'wajd-nocturne',
+      'sukoon-musk',
+      'nafas-jasmine',
+      'hala-ambergris',
+      'sahar-rose-oud',
+      'ghasaq-incense',
+    ],
     sortOrder: 3,
   },
 ];

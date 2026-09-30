@@ -20,6 +20,7 @@ import type {
   EntityId,
   PriceBreakdown,
   Product,
+  ProductVariant,
   Slug,
 } from '@/types';
 
@@ -40,7 +41,7 @@ interface UIContextValue {
   bagItems: CartItem[];
   bagCount: number;
   bagPricing: PriceBreakdown;
-  addToBag: (product: Product) => void;
+  addToBag: (product: Product, variant?: ProductVariant) => void;
   updateBagQuantity: (variantId: EntityId, nextQuantity: number) => void;
   removeFromBag: (variantId: EntityId) => void;
   wishlistProductIds: EntityId[];
@@ -130,45 +131,51 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const addToBag = useCallback((product: Product) => {
-    const defaultVariant = product.variants[0];
-    if (!defaultVariant) return;
+  const addToBag = useCallback(
+    (product: Product, selectedVariant?: ProductVariant) => {
+      const targetVariant =
+        selectedVariant ??
+        product.variants.find((v) => v.inStock) ??
+        product.variants[0];
+      if (!targetVariant) return;
 
-    setBagItems((prev) => {
-      const existingIndex = prev.findIndex(
-        (item) => item.variantId === defaultVariant.id
-      );
-      let next: CartItem[];
-      if (existingIndex > -1) {
-        next = prev.map((item, idx) =>
-          idx === existingIndex
-            ? { ...item, quantity: Math.min(10, item.quantity + 1) }
-            : item
+      setBagItems((prev) => {
+        const existingIndex = prev.findIndex(
+          (item) => item.variantId === targetVariant.id
         );
-      } else {
-        next = [
-          ...prev,
-          {
-            productId: product.id,
-            productSlug: product.slug,
-            variantId: defaultVariant.id,
-            name: product.name,
-            collectionName: product.collectionName,
-            sizeMl: defaultVariant.sizeMl,
-            unitPrice: defaultVariant.price,
-            quantity: 1,
-            imageUrl: product.image.url,
-          },
-        ];
-      }
-      try {
-        window.localStorage.setItem(BAG_STORAGE_KEY, JSON.stringify(next));
-      } catch {
-        // Ignore
-      }
-      return next;
-    });
-  }, []);
+        let next: CartItem[];
+        if (existingIndex > -1) {
+          next = prev.map((item, idx) =>
+            idx === existingIndex
+              ? { ...item, quantity: Math.min(10, item.quantity + 1) }
+              : item
+          );
+        } else {
+          next = [
+            ...prev,
+            {
+              productId: product.id,
+              productSlug: product.slug,
+              variantId: targetVariant.id,
+              name: product.name,
+              collectionName: product.collectionName,
+              sizeMl: targetVariant.sizeMl,
+              unitPrice: targetVariant.price,
+              quantity: 1,
+              imageUrl: product.image.url,
+            },
+          ];
+        }
+        try {
+          window.localStorage.setItem(BAG_STORAGE_KEY, JSON.stringify(next));
+        } catch {
+          // Ignore
+        }
+        return next;
+      });
+    },
+    []
+  );
 
   const updateBagQuantity = useCallback(
     (variantId: EntityId, nextQuantity: number) => {

@@ -1,4 +1,5 @@
 import {
+  getCatalogProducts,
   getFeaturedProducts,
   getHomepageContent,
   getSignatureCollections,
@@ -7,6 +8,12 @@ import type { Collection, HomepageContent, Product } from '@/types';
 
 export interface StorefrontOpeningData {
   homepage: HomepageContent;
+  collections: Collection[];
+  products: Product[];
+  dataSource: 'firestore' | 'seed';
+}
+
+export interface ShopCatalogData {
   collections: Collection[];
   products: Product[];
   dataSource: 'firestore' | 'seed';
@@ -27,6 +34,26 @@ export async function loadStorefrontOpeningData(): Promise<StorefrontOpeningData
 
   return {
     homepage: homepageResult.data,
+    collections: collectionsResult.data,
+    products: productsResult.data,
+    dataSource:
+      collectionsResult.source === 'firestore' ||
+      productsResult.source === 'firestore'
+        ? 'firestore'
+        : 'seed',
+  };
+}
+
+/**
+ * Domain service loading the complete RWAQ shop catalog and signature collections.
+ */
+export async function loadShopCatalogData(): Promise<ShopCatalogData> {
+  const [collectionsResult, productsResult] = await Promise.all([
+    getSignatureCollections(),
+    getCatalogProducts(),
+  ]);
+
+  return {
     collections: collectionsResult.data,
     products: productsResult.data,
     dataSource:

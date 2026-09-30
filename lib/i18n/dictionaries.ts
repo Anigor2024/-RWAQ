@@ -1,4 +1,12 @@
-import type { DemoPersona, Locale } from '@/types';
+import type {
+  CatalogSort,
+  DemoPersona,
+  GenderPositioning,
+  Locale,
+  OccasionSuitability,
+  OlfactoryFamilyKey,
+  SeasonSuitability,
+} from '@/types';
 
 export interface CraftMaterialEntry {
   id: string;
@@ -39,6 +47,7 @@ export interface Dictionary {
     scrollToManifesto: string;
   };
   nav: {
+    shop: string;
     collections: string;
     creations: string;
     craft: string;
@@ -110,6 +119,7 @@ export interface Dictionary {
     vatIncludedNote: string;
     inspectNotes: string;
     hideNotes: string;
+    exploreFullCatalog: string;
     longevityValues: {
       moderate: string;
       'long-lasting': string;
@@ -119,6 +129,80 @@ export interface Dictionary {
       intimate: string;
       moderate: string;
       commanding: string;
+    };
+  };
+  shop: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    allWorldsTab: string;
+    creationsCountUnit: string;
+    searchPlaceholder: string;
+    clearSearch: string;
+    showingResults: string;
+    filtersToggle: string;
+    hideFilters: string;
+    showFilters: string;
+    activeFiltersLabel: string;
+    resetAllFilters: string;
+    applyFilters: string;
+    sortLabel: string;
+    sortOptions: Record<CatalogSort, string>;
+    filterGroups: {
+      collection: string;
+      family: string;
+      projection: string;
+      longevity: string;
+      occasion: string;
+      season: string;
+      gender: string;
+      price: string;
+      curation: string;
+    };
+    allOption: string;
+    families: Record<OlfactoryFamilyKey, string>;
+    genders: Record<GenderPositioning, string>;
+    seasons: Record<SeasonSuitability, string>;
+    occasions: Record<OccasionSuitability, string>;
+    pricePresets: {
+      all: string;
+      under700: string;
+      from700To850: string;
+      above850: string;
+    };
+    curationFlags: {
+      bestsellersOnly: string;
+      newReleasesOnly: string;
+      inStockOnly: string;
+    };
+    card: {
+      selectSizeLabel: string;
+      inspectDossier: string;
+      inStockLabel: string;
+      limitedStockLabel: string;
+      skuLabel: string;
+    };
+    dossier: {
+      drawerTitle: string;
+      editorialHeading: string;
+      inspirationHeading: string;
+      ritualHeading: string;
+      whenToWearHeading: string;
+      accordsHeading: string;
+      ingredientsHeading: string;
+      variantsHeading: string;
+      characterLabel: string;
+      seasonLabel: string;
+      occasionLabel: string;
+      filterByCollectionAction: string;
+      filterByFamilyAction: string;
+    };
+    emptyState: {
+      eyebrow: string;
+      title: string;
+      description: string;
+      resetButton: string;
+      suggestedNotesTitle: string;
     };
   };
   craft: {
@@ -154,6 +238,7 @@ export interface Dictionary {
       noResults: string;
       suggestedNotesLabel: string;
       clearFilter: string;
+      viewAllInShop: string;
     };
     bag: {
       title: string;
@@ -240,6 +325,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       scrollToManifesto: 'التمرير إلى البيان العطري',
     },
     nav: {
+      shop: 'المتجر',
       collections: 'المجموعات',
       creations: 'الابتكارات العطرية',
       craft: 'الخامات والحِرفة',
@@ -340,6 +426,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       vatIncludedNote: 'شامل ضريبة القيمة المضافة 15%',
       inspectNotes: 'تفاصيل النوتات',
       hideNotes: 'إخفاء النوتات',
+      exploreFullCatalog: 'استكشف الكتالوج الكامل (18 ابتكاراً عطرياً)',
       longevityValues: {
         moderate: 'معتدل',
         'long-lasting': 'طويل الأمد',
@@ -349,6 +436,112 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         intimate: 'حميمي هادئ',
         moderate: 'متوازن',
         commanding: 'حضور لافت',
+      },
+    },
+    shop: {
+      eyebrow: 'دار رِواق · البوتيك العطري الكامل',
+      title: 'مقتنيات رِواق العطرية',
+      subtitle:
+        'ثمانية عشر ابتكاراً عطرياً موزعة على ثلاثية نَجد وصَحراء ولَيل؛ صِيغت في تراكيز إكسترايت وأبسولو عالية لصناعة حضورٍ لا يُنسى.',
+      allWorldsTab: 'جميع العوالم',
+      creationsCountUnit: 'عطراً',
+      searchPlaceholder:
+        'ابحث باسم العطر، النوتة (عود، زعفران، ورد طائفي، صندل، مسك)، أو الرمز...',
+      clearSearch: 'مسح البحث',
+      showingResults: 'عرض {shown} من أصل {total} ابتكاراً عطرياً',
+      filtersToggle: 'تصفية العطور',
+      hideFilters: 'إخفاء الفلاتر',
+      showFilters: 'إظهار الفلاتر',
+      activeFiltersLabel: 'الفلاتر النشطة',
+      resetAllFilters: 'إعادة تعيين الكل',
+      applyFilters: 'عرض الابتكارات المطابقة',
+      sortLabel: 'الترتيب حسب',
+      sortOptions: {
+        featured: 'مختارات الدار',
+        bestsellers: 'الأكثر طلباً',
+        newest: 'الأحدث إصداراً',
+        'price-asc': 'السعر: من الأقل إلى الأعلى',
+        'price-desc': 'السعر: من الأعلى إلى الأقل',
+        name: 'الترتيب الأبجدي',
+      },
+      filterGroups: {
+        collection: 'العالم العطري (المجموعة)',
+        family: 'العائلة العطرية',
+        projection: 'الفوحان والحضور',
+        longevity: 'درجة الثبات',
+        occasion: 'المناسبة الملائمة',
+        season: 'الموسم الموصى به',
+        gender: 'الطابع العطري',
+        price: 'نطاق السعر (ر.س)',
+        curation: 'الإصدارات والتوفر',
+      },
+      allOption: 'الكل',
+      families: {
+        'woody-amber': 'أخشاب وعنبر صخري',
+        'smoky-oud': 'عود مدخّن وجلد',
+        'floral-musk': 'ورد طائفي ومسك',
+        'spiced-oriental': 'توابل وقهوة شقراء',
+        'incense-resinous': 'لبان حوجري وراتنجات',
+        'leather-iris': 'جلد مصقول وسوسن',
+      },
+      genders: {
+        unisex: 'للجنسين (توقيع متوازن)',
+        'masculine-leaning': 'طابع مهيب وجاف',
+        'feminine-leaning': 'طابع زهري مخملي',
+      },
+      seasons: {
+        'all-season': 'جميع الفصول',
+        'autumn-winter': 'الخريف والشتاء',
+        'spring-summer': 'الربيع والصيف',
+        evening: 'الأمسيات والليل',
+      },
+      occasions: {
+        signature: 'توقيع يومي راقٍ',
+        majlis: 'المجالس والضيافة',
+        evening: 'أمسيات خاصة',
+        ceremonial: 'مراسم ومناسبات رسمية',
+        intimate: 'لقاءات حميمية هادئة',
+      },
+      pricePresets: {
+        all: 'جميع الأسعار',
+        under700: 'أقل من 700 ر.س',
+        from700To850: '700 – 850 ر.س',
+        above850: 'أكثر من 850 ر.س',
+      },
+      curationFlags: {
+        bestsellersOnly: 'الأكثر طلباً في الدار',
+        newReleasesOnly: 'الإصدارات الجديدة فقط',
+        inStockOnly: 'المتوفر للشحن الفوري',
+      },
+      card: {
+        selectSizeLabel: 'الحجم',
+        inspectDossier: 'الملف العطري',
+        inStockLabel: 'متوفر',
+        limitedStockLabel: 'إصدار محدود',
+        skuLabel: 'الرمز',
+      },
+      dossier: {
+        drawerTitle: 'الملف العطري التفصيلي',
+        editorialHeading: 'القصة والبناء العطري',
+        inspirationHeading: 'الإلهام المكاني',
+        ritualHeading: 'طقس الاستخدام',
+        whenToWearHeading: 'أوقات الارتداء الموصى بها',
+        accordsHeading: 'كثافة السمات العطرية',
+        ingredientsHeading: 'أبرز الخامات النبيلة',
+        variantsHeading: 'الأحجام والتراكيز المتوفرة',
+        characterLabel: 'الطابع',
+        seasonLabel: 'الموسم',
+        occasionLabel: 'المناسبة',
+        filterByCollectionAction: 'تصفح كامل مجموعة',
+        filterByFamilyAction: 'استكشف عائلة',
+      },
+      emptyState: {
+        eyebrow: 'لا توجد نتائج مطابقة',
+        title: 'لم نعثر على عطر يطابق معايير التصفية الحالية',
+        description:
+          'جرّب إزالة بعض الفلاتر النشطة، أو البحث بنوتة عطرية مختلفة، أو إعادة تعيين البحث لاستعراض جميع ابتكارات رِواق الثمانية عشر.',
+        resetButton: 'عرض جميع العطور (18)',
+        suggestedNotesTitle: 'أو ابدأ الاستكشاف عبر النوتة العطرية:',
       },
     },
     craft: {
@@ -474,6 +667,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         noResults: 'لم يتم العثور على عطور مطابقة لبحثك.',
         suggestedNotesLabel: 'استكشف حسب النوتة العطرية',
         clearFilter: 'مسح',
+        viewAllInShop: 'عرض جميع النتائج في المتجر',
       },
       bag: {
         title: 'حقيبة رِواق',
@@ -575,6 +769,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       scrollToManifesto: 'Scroll to brand manifesto',
     },
     nav: {
+      shop: 'The Shop',
       collections: 'Collections',
       creations: 'Creations',
       craft: 'Craft & Materials',
@@ -675,6 +870,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       vatIncludedNote: 'Includes 15% Saudi VAT',
       inspectNotes: 'Olfactory Notes',
       hideNotes: 'Hide Notes',
+      exploreFullCatalog: 'Explore the Complete 18-Creation Catalog',
       longevityValues: {
         moderate: 'Moderate',
         'long-lasting': 'Long-Lasting',
@@ -684,6 +880,112 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         intimate: 'Intimate',
         moderate: 'Balanced',
         commanding: 'Commanding',
+      },
+    },
+    shop: {
+      eyebrow: 'RWAQ House Boutique · Complete Curation',
+      title: 'The Olfactory Catalog',
+      subtitle:
+        'Eighteen high-concentration Extrait and Parfum Absolu compositions across the NAJD, SAHRA, and LAYL trilogy — crafted for an unforgettable presence.',
+      allWorldsTab: 'All Worlds',
+      creationsCountUnit: 'Creations',
+      searchPlaceholder:
+        'Search by creation name, note (oud, saffron, Taif rose, sandalwood, musk), or SKU...',
+      clearSearch: 'Clear search',
+      showingResults: 'Showing {shown} of {total} creations',
+      filtersToggle: 'Filter Creations',
+      hideFilters: 'Hide Filters',
+      showFilters: 'Show Filters',
+      activeFiltersLabel: 'Active Filters',
+      resetAllFilters: 'Reset All',
+      applyFilters: 'View Matching Creations',
+      sortLabel: 'Sort by',
+      sortOptions: {
+        featured: 'House Featured',
+        bestsellers: 'Bestsellers',
+        newest: 'Newest Releases',
+        'price-asc': 'Price: Low to High',
+        'price-desc': 'Price: High to Low',
+        name: 'Alphabetical',
+      },
+      filterGroups: {
+        collection: 'Olfactory World',
+        family: 'Olfactory Family',
+        projection: 'Sillage & Projection',
+        longevity: 'Longevity',
+        occasion: 'Occasion',
+        season: 'Season',
+        gender: 'Olfactory Character',
+        price: 'Price Range (SAR)',
+        curation: 'Curation & Availability',
+      },
+      allOption: 'All',
+      families: {
+        'woody-amber': 'Woody Amber',
+        'smoky-oud': 'Smoky Oud & Leather',
+        'floral-musk': 'Taif Rose & Floral Musk',
+        'spiced-oriental': 'Spiced Oriental',
+        'incense-resinous': 'Incense & Resins',
+        'leather-iris': 'Suede Leather & Iris',
+      },
+      genders: {
+        unisex: 'Unisex Signature',
+        'masculine-leaning': 'Masculine-Leaning',
+        'feminine-leaning': 'Feminine-Leaning',
+      },
+      seasons: {
+        'all-season': 'All Seasons',
+        'autumn-winter': 'Autumn & Winter',
+        'spring-summer': 'Spring & Summer',
+        evening: 'Nocturnal & Evening',
+      },
+      occasions: {
+        signature: 'Daily Signature',
+        majlis: 'Majlis & Hospitality',
+        evening: 'Evening Soirées',
+        ceremonial: 'Ceremonial & Protocol',
+        intimate: 'Intimate & Close',
+      },
+      pricePresets: {
+        all: 'All Prices',
+        under700: 'Under 700 SAR',
+        from700To850: '700 – 850 SAR',
+        above850: 'Above 850 SAR',
+      },
+      curationFlags: {
+        bestsellersOnly: 'House Signatures (Bestsellers)',
+        newReleasesOnly: 'New Releases Only',
+        inStockOnly: 'In Stock Only',
+      },
+      card: {
+        selectSizeLabel: 'Size',
+        inspectDossier: 'Olfactory Dossier',
+        inStockLabel: 'In Stock',
+        limitedStockLabel: 'Limited Allocation',
+        skuLabel: 'SKU',
+      },
+      dossier: {
+        drawerTitle: 'Olfactory Creation Dossier',
+        editorialHeading: 'Olfactory Composition',
+        inspirationHeading: 'Spatial Inspiration',
+        ritualHeading: 'Application Ritual',
+        whenToWearHeading: 'When to Wear',
+        accordsHeading: 'Accord Architecture',
+        ingredientsHeading: 'Noble Ingredient Highlights',
+        variantsHeading: 'Available Flacon Sizes',
+        characterLabel: 'Character',
+        seasonLabel: 'Season',
+        occasionLabel: 'Occasion',
+        filterByCollectionAction: 'Filter by Collection:',
+        filterByFamilyAction: 'Explore Family:',
+      },
+      emptyState: {
+        eyebrow: 'No Matching Creations',
+        title: 'No creations match your current selection',
+        description:
+          'Try removing one of your active filters, searching for a foundational note, or resetting your view to explore all eighteen RWAQ compositions.',
+        resetButton: 'Show All 18 Creations',
+        suggestedNotesTitle: 'Or explore by signature olfactory note:',
       },
     },
     craft: {
@@ -810,6 +1112,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         noResults: 'No creations matched your search query.',
         suggestedNotesLabel: 'Explore by Olfactory Note',
         clearFilter: 'Clear',
+        viewAllInShop: 'View all results in The Shop',
       },
       bag: {
         title: 'Your RWAQ Bag',

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { User } from 'lucide-react';
 import { localize } from '@/lib/i18n/config';
 import { useLocale } from '@/providers/locale-provider';
@@ -17,42 +18,52 @@ export function MobileMenuDrawer({ collections }: MobileMenuDrawerProps) {
 
   return (
     <div className="flex flex-1 flex-col justify-between overflow-y-auto px-6 py-8 sm:px-8">
-      <nav aria-label={t.a11y.primaryNavigation} className="flex flex-col space-y-5">
-        <a
-          href="#creations"
+      <nav
+        aria-label={t.a11y.primaryNavigation}
+        className="flex flex-col space-y-5"
+      >
+        <Link
+          href="/shop"
+          onClick={closeDrawer}
+          className="border-b border-[#F5F0E8]/10 pb-3.5 text-xl font-medium text-[#D8C8B2] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+        >
+          {t.nav.shop}
+        </Link>
+        <Link
+          href="/#creations"
           onClick={closeDrawer}
           className="border-b border-[#F5F0E8]/10 pb-3.5 text-xl font-light text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
         >
           {t.nav.creations}
-        </a>
-        <a
-          href="#collections"
+        </Link>
+        <Link
+          href="/#collections"
           onClick={closeDrawer}
           className="border-b border-[#F5F0E8]/10 pb-3.5 text-xl font-light text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
         >
           {t.nav.collections}
-        </a>
-        <a
-          href="#craft"
+        </Link>
+        <Link
+          href="/#craft"
           onClick={closeDrawer}
           className="border-b border-[#F5F0E8]/10 pb-3.5 text-xl font-light text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
         >
           {t.nav.craft}
-        </a>
-        <a
-          href="#manifesto"
+        </Link>
+        <Link
+          href="/#manifesto"
           onClick={closeDrawer}
           className="border-b border-[#F5F0E8]/10 pb-3.5 text-xl font-light text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
         >
           {t.nav.manifesto}
-        </a>
-        <a
-          href="#house"
+        </Link>
+        <Link
+          href="/#house"
           onClick={closeDrawer}
           className="border-b border-[#F5F0E8]/10 pb-3.5 text-xl font-light text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
         >
           {t.nav.house}
-        </a>
+        </Link>
 
         <div className="pt-4">
           <p className="mb-3 text-xs tracking-wider text-[#918A80]">
@@ -60,9 +71,9 @@ export function MobileMenuDrawer({ collections }: MobileMenuDrawerProps) {
           </p>
           <div className="space-y-3">
             {collections.map((col) => (
-              <a
+              <Link
                 key={col.id}
-                href={`#collection-${col.slug}`}
+                href={`/shop?collection=${col.slug}`}
                 onClick={closeDrawer}
                 className="flex items-center justify-between py-1.5 text-sm text-[#D8C8B2] transition-colors hover:text-[#F5F0E8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
               >
@@ -72,7 +83,7 @@ export function MobileMenuDrawer({ collections }: MobileMenuDrawerProps) {
                 <span className="text-xs text-[#918A80]">
                   {localize(col.accordSummary, locale)}
                 </span>
-              </a>
+              </Link>
             ))}
           </div>
         </div>
