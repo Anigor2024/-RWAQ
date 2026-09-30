@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { ChevronDown, ChevronUp, Heart, ShoppingBag } from 'lucide-react';
 import { OlfactoryNotes } from '@/components/home/olfactory-notes';
 import {
@@ -29,36 +30,42 @@ export function EditorialProductCard({ product }: EditorialProductCardProps) {
   const [isNotesExpanded, setIsNotesExpanded] = useState(false);
 
   const saved = isWishlisted(product.id);
-  const defaultVariant = getDefaultPurchasableVariant(product);
-  const purchasable = isProductPurchasable(product);
+  const defaultVariant =
+    getDefaultPurchasableVariant(product) ?? product.variants[0] ?? null;
   const displayPrice = getProductDisplayPrice(product);
   const displayOriginalPrice = getProductDisplayOriginalPrice(product);
-  const displayVolumeMl =
-    defaultVariant?.sizeMl ?? product.variants[0]?.sizeMl;
+  const canPurchase = isProductPurchasable(product);
+  const productHref = `/products/${product.slug}`;
 
   return (
     <article className="group flex h-full flex-col justify-between">
       <div>
         {/* Product Visual Container */}
         <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#181512]">
-          <Image
-            src={product.image.url}
-            alt={localize(product.image.alt, locale)}
-            fill
-            sizes="(max-width: 640px) 84vw, (max-width: 1024px) 48vw, 31vw"
-            className="object-cover brightness-[1.04] contrast-[1.03] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-            referrerPolicy="no-referrer"
-          />
+          <Link
+            href={productHref}
+            aria-label={`${localize(product.name, locale)} — ${t.shop.card.viewCreation}`}
+            className="block h-full w-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+          >
+            <Image
+              src={product.image.url}
+              alt={localize(product.image.alt, locale)}
+              fill
+              sizes="(max-width: 640px) 84vw, (max-width: 1024px) 48vw, 31vw"
+              className="object-cover brightness-[1.04] contrast-[1.03] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+              referrerPolicy="no-referrer"
+            />
 
-          {/* Subtle Bottom Vignette for Image Depth */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0B0B0A]/35 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80"
-          />
+            {/* Subtle Bottom Vignette for Image Depth */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0B0B0A]/35 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80"
+            />
+          </Link>
 
           {/* Single Quiet Kicker Status Text */}
           {(product.isNew || product.isBestSeller) && (
-            <span className="absolute top-4 start-4 border border-[#F5F0E8]/15 bg-[#0B0B0A]/80 px-3 py-1 text-[11px] tracking-wide text-[#FFFDF9] backdrop-blur-xs">
+            <span className="pointer-events-none absolute top-4 start-4 border border-[#F5F0E8]/15 bg-[#0B0B0A]/80 px-3 py-1 text-[11px] tracking-wide text-[#FFFDF9] backdrop-blur-xs">
               {product.isNew
                 ? t.creations.newCreation
                 : t.creations.houseSignature}
@@ -104,23 +111,26 @@ export function EditorialProductCard({ product }: EditorialProductCardProps) {
             </span>
             {localize(product.notes.olfactoryFamily, locale)}
           </span>
-          {displayVolumeMl !== undefined && (
+          {defaultVariant && (
             <span className="tabular-nums text-[#665F57]">
-              {formatVolumeMl(displayVolumeMl, locale)}
+              {formatVolumeMl(defaultVariant.sizeMl, locale)}
             </span>
           )}
         </div>
 
         {/* Title & SAR Price */}
         <div className="mt-2 flex items-baseline justify-between gap-4">
-          <div className="flex items-baseline gap-2.5">
-            <h3 className="text-xl font-medium text-[#0B0B0A] transition-colors group-hover:text-[#4A3027]">
+          <Link
+            href={productHref}
+            className="group/title flex items-baseline gap-2.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+          >
+            <h3 className="text-xl font-medium text-[#0B0B0A] transition-colors group-hover/title:text-[#4A3027]">
               {localize(product.name, locale)}
             </h3>
             <span className="font-[family-name:var(--font-display-en)] text-xs tracking-wider text-[#918A80]">
               {locale === 'ar' ? product.name.en : product.name.ar}
             </span>
-          </div>
+          </Link>
 
           <div className="flex items-baseline gap-2 tabular-nums">
             {displayOriginalPrice && (
@@ -163,11 +173,10 @@ export function EditorialProductCard({ product }: EditorialProductCardProps) {
       <div className="mt-5 flex items-center gap-2.5 pt-2">
         <button
           type="button"
-          disabled={!purchasable}
-          aria-disabled={!purchasable}
+          disabled={!canPurchase}
           onClick={() => {
-            if (!purchasable) return;
-            const added = addToBag(product, defaultVariant ?? undefined, 1);
+            if (!canPurchase) return;
+            const added = addToBag(product);
             if (added) {
               showToast(
                 `${localize(product.name, locale)} — ${t.creations.addedToBag}`
@@ -176,14 +185,14 @@ export function EditorialProductCard({ product }: EditorialProductCardProps) {
           }}
           className={cn(
             'inline-flex h-11 flex-1 items-center justify-center gap-2 px-5 text-xs font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap',
-            purchasable
+            canPurchase
               ? 'bg-[#0B0B0A] text-[#F5F0E8] hover:bg-[#4A3027]'
-              : 'cursor-not-allowed border border-[#DFD3C3] bg-[#F5F0E8] text-[#918A80] opacity-70'
+              : 'cursor-not-allowed border border-[#DFD3C3] bg-[#F5F0E8] text-[#918A80]'
           )}
         >
           <ShoppingBag className="h-3.5 w-3.5" />
           <span>
-            {purchasable ? t.creations.addToBag : t.shop.card.outOfStockLabel}
+            {canPurchase ? t.creations.addToBag : t.shop.card.outOfStockLabel}
           </span>
         </button>
 

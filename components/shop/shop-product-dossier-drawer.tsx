@@ -15,12 +15,9 @@ import {
   getDefaultPurchasableVariant,
   getProductDisplayOriginalPrice,
   getProductDisplayPrice,
-  isVariantPurchasable,
 } from '@/features/catalog/product-commerce';
-import { formatVolumeMl, localize } from '@/lib/i18n/config';
+import { localize } from '@/lib/i18n/config';
 import { useLocale } from '@/providers/locale-provider';
-import { useToast } from '@/providers/toast-provider';
-import { useUI } from '@/providers/ui-provider';
 import type { OlfactoryFamilyKey, Product, Slug } from '@/types';
 
 interface ShopProductDossierDrawerProps {
@@ -37,26 +34,23 @@ export function ShopProductDossierDrawer({
   onFilterByFamily,
 }: ShopProductDossierDrawerProps) {
   const { locale, t } = useLocale();
-  const { addToBag, isWishlisted, toggleWishlist } = useUI();
-  const { showToast } = useToast();
 
   const [selectedVariantId, setSelectedVariantId] = useState<string>('');
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
 
-  const productId = product?.id ?? '';
-
-  // Reset selected variant to the new product's default purchasable variant and gallery to index 0
-  // whenever product.id changes so state never leaks between creations.
+  // Reset selected variant and active gallery image whenever the inspected product changes
   useEffect(() => {
     if (!product) {
       setSelectedVariantId('');
       setSelectedImageIndex(0);
       return;
     }
-    const defaultVariant = getDefaultPurchasableVariant(product);
-    setSelectedVariantId(defaultVariant?.id ?? '');
+    const defaultPurchasable = getDefaultPurchasableVariant(product);
+    setSelectedVariantId(
+      defaultPurchasable?.id ?? product.variants[0]?.id ?? ''
+    );
     setSelectedImageIndex(0);
-  }, [productId, product]);
+  }, [product]);
 
   if (!product) {
     return (
@@ -70,48 +64,21 @@ export function ShopProductDossierDrawer({
     );
   }
 
-  const defaultPurchasableVariant = getDefaultPurchasableVariant(product);
+  const defaultPurchasable = getDefaultPurchasableVariant(product);
   const activeVariant =
-    product.variants.find(
-      (v) =>
-        v.id === selectedVariantId &&
-        product.inStock &&
-        isVariantPurchasable(v)
-    ) ?? defaultPurchasableVariant;
+    product.variants.find((v) => v.id === selectedVariantId) ??
+    defaultPurchasable ??
+    product.variants[0] ??
+    null;
 
-  const saved = isWishlisted(product.id);
+  const gallery =
+    product.gallery.length > 0 ? product.gallery : [product.image];
   const displayPrice = activeVariant
     ? activeVariant.price
     : getProductDisplayPrice(product);
   const displayOriginalPrice = activeVariant
-    ? (activeVariant.originalPrice ?? product.originalPrice)
+    ? activeVariant.originalPrice ?? product.originalPrice
     : getProductDisplayOriginalPrice(product);
-
-  const handleAddToBag = () => {
-    if (!activeVariant || !isVariantPurchasable(activeVariant)) {
-      return;
-    }
-    const added = addToBag(product, activeVariant, 1);
-    if (added) {
-      showToast(
-        `${localize(product.name, locale)} (${formatVolumeMl(
-          activeVariant.sizeMl,
-          locale
-        )}) — ${t.creations.addedToBag}`
-      );
-    }
-  };
-
-  const handleToggleWishlist = () => {
-    const nowSaved = toggleWishlist(product.id);
-    showToast(
-      `${localize(product.name, locale)} — ${
-        nowSaved
-          ? t.creations.saveToWishlist
-          : t.creations.removeFromWishlist
-      }`
-    );
-  };
 
   return (
     <DrawerShell
@@ -122,8 +89,10 @@ export function ShopProductDossierDrawer({
       <div className="flex-1 overflow-y-auto px-6 py-6 sm:px-8 space-y-7 text-[#F5F0E8]">
         <DossierGallery
           product={product}
+          gallery={gallery}
           selectedImageIndex={selectedImageIndex}
-          onSelectImageIndex={setSelectedImageIndex}
+          onSelectImage={setSelectedImageIndex}
+          onClose={onClose}
         />
 
         <DossierHeader
@@ -131,6 +100,7 @@ export function ShopProductDossierDrawer({
           activeVariant={activeVariant}
           displayPrice={displayPrice}
           displayOriginalPrice={displayOriginalPrice}
+          onClose={onClose}
         />
 
         <div className="border-y border-[#F5F0E8]/12 py-4">
@@ -140,10 +110,9 @@ export function ShopProductDossierDrawer({
             onSelectVariant={setSelectedVariantId}
           />
           <DossierPurchaseActions
+            product={product}
             activeVariant={activeVariant}
-            isWishlisted={saved}
-            onAddToBag={handleAddToBag}
-            onToggleWishlist={handleToggleWishlist}
+            onClose={onClose}
           />
         </div>
 
@@ -153,9 +122,9 @@ export function ShopProductDossierDrawer({
 
         <DossierDiscoveryShortcuts
           product={product}
+          onClose={onClose}
           onFilterByCollection={onFilterByCollection}
           onFilterByFamily={onFilterByFamily}
-          onClose={onClose}
         />
       </div>
     </DrawerShell>

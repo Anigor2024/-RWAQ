@@ -41,31 +41,33 @@ export function FeaturedCreations({
   const { showToast } = useToast();
   const DirectionalArrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
 
-  // Curate top 6 featured creations on homepage while full 18-creation catalog lives at /shop
-  const curatedPool = products.slice(0, 6);
-
   const visibleProducts =
     selectedCollectionFilter === 'all'
-      ? curatedPool
-      : products
-          .filter((p) => p.collectionSlug === selectedCollectionFilter)
-          .slice(0, 6);
+      ? products
+          .filter((p) => p.isFeatured || p.isBestSeller)
+          .slice(0, 6)
+      : products.filter((p) => p.collectionSlug === selectedCollectionFilter);
 
   const flagshipProduct = visibleProducts[0];
-  const supportingProducts = visibleProducts.slice(1);
+  const supportingProducts = visibleProducts.slice(1, 6);
   const flagshipVariant = flagshipProduct
-    ? (getDefaultPurchasableVariant(flagshipProduct) ??
-      flagshipProduct.variants[0])
+    ? getDefaultPurchasableVariant(flagshipProduct) ??
+      flagshipProduct.variants[0]
+    : undefined;
+  const flagshipPrice = flagshipProduct
+    ? getProductDisplayPrice(flagshipProduct)
     : undefined;
   const flagshipPurchasable = flagshipProduct
     ? isProductPurchasable(flagshipProduct)
     : false;
-  const flagshipDisplayPrice = flagshipProduct
-    ? getProductDisplayPrice(flagshipProduct)
-    : undefined;
   const flagshipSaved = flagshipProduct
     ? isWishlisted(flagshipProduct.id)
     : false;
+
+  const shopCatalogHref =
+    selectedCollectionFilter === 'all'
+      ? '/shop'
+      : `/shop?collection=${selectedCollectionFilter}`;
 
   return (
     <section
@@ -143,22 +145,28 @@ export function FeaturedCreations({
         </div>
 
         {/* Oversized Editorial Flagship Creation Spotlight */}
-        {flagshipProduct && flagshipDisplayPrice && (
+        {flagshipProduct && (
           <Reveal delay={0.14}>
             <article className="mt-14 border border-[#DFD3C3] bg-[#F5F0E8]/65 p-5 sm:p-8 lg:p-12">
               <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-14">
                 {/* Flagship Large-Format Studio Imagery */}
                 <div className="lg:col-span-6">
                   <div className="group relative aspect-[4/5] w-full overflow-hidden bg-[#181512] sm:aspect-[5/6]">
-                    <Image
-                      src={flagshipProduct.image.url}
-                      alt={localize(flagshipProduct.image.alt, locale)}
-                      fill
-                      sizes="(max-width: 1024px) 100vw, 50vw"
-                      className="object-cover brightness-[1.05] contrast-[1.03] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                      referrerPolicy="no-referrer"
-                    />
-                    <span className="absolute top-4 start-4 border border-[#F5F0E8]/20 bg-[#0B0B0A]/80 px-3.5 py-1.5 text-xs tracking-wide text-[#FFFDF9] backdrop-blur-xs">
+                    <Link
+                      href={`/products/${flagshipProduct.slug}`}
+                      aria-label={`${localize(flagshipProduct.name, locale)} — ${t.shop.card.viewCreation}`}
+                      className="block h-full w-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                    >
+                      <Image
+                        src={flagshipProduct.image.url}
+                        alt={localize(flagshipProduct.image.alt, locale)}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                        className="object-cover brightness-[1.05] contrast-[1.03] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                        referrerPolicy="no-referrer"
+                      />
+                    </Link>
+                    <span className="pointer-events-none absolute top-4 start-4 border border-[#F5F0E8]/20 bg-[#0B0B0A]/80 px-3.5 py-1.5 text-xs tracking-wide text-[#FFFDF9] backdrop-blur-xs">
                       {t.creations.flagshipBadge}
                     </span>
 
@@ -213,12 +221,15 @@ export function FeaturedCreations({
                     </div>
 
                     <div className="mt-4 flex flex-wrap items-baseline justify-between gap-4">
-                      <div className="flex items-baseline gap-3">
+                      <Link
+                        href={`/products/${flagshipProduct.slug}`}
+                        className="group/title flex items-baseline gap-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                      >
                         <Typography
                           variant="h1"
                           as="h3"
                           serifInEnglish
-                          className="text-[#0B0B0A]"
+                          className="text-[#0B0B0A] transition-colors group-hover/title:text-[#4A3027]"
                         >
                           {localize(flagshipProduct.name, locale)}
                         </Typography>
@@ -227,16 +238,18 @@ export function FeaturedCreations({
                             ? flagshipProduct.name.en
                             : flagshipProduct.name.ar}
                         </span>
-                      </div>
+                      </Link>
 
-                      <div className="text-end">
-                        <span className="block text-xl sm:text-2xl font-medium tabular-nums text-[#0B0B0A]">
-                          {formatMoney(flagshipDisplayPrice, locale)}
-                        </span>
-                        <span className="block text-[11px] text-[#665F57]">
-                          {t.creations.vatIncludedNote}
-                        </span>
-                      </div>
+                      {flagshipPrice && (
+                        <div className="text-end">
+                          <span className="block text-xl sm:text-2xl font-medium tabular-nums text-[#0B0B0A]">
+                            {formatMoney(flagshipPrice, locale)}
+                          </span>
+                          <span className="block text-[11px] text-[#665F57]">
+                            {t.creations.vatIncludedNote}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     <p className="mt-2 text-sm font-medium text-[#4A3027]">
@@ -292,7 +305,6 @@ export function FeaturedCreations({
                     <button
                       type="button"
                       disabled={!flagshipPurchasable}
-                      aria-disabled={!flagshipPurchasable}
                       onClick={() => {
                         if (!flagshipPurchasable) return;
                         const added = addToBag(flagshipProduct);
@@ -308,7 +320,7 @@ export function FeaturedCreations({
                         'inline-flex h-13 flex-1 sm:flex-initial items-center justify-center gap-3 px-9 text-xs sm:text-sm font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap',
                         flagshipPurchasable
                           ? 'bg-[#0B0B0A] text-[#F5F0E8] hover:bg-[#4A3027]'
-                          : 'cursor-not-allowed border border-[#DFD3C3] bg-[#F5F0E8] text-[#918A80] opacity-70'
+                          : 'cursor-not-allowed border border-[#DFD3C3] bg-[#F5F0E8] text-[#918A80]'
                       )}
                     >
                       <ShoppingBag className="h-4 w-4" />
@@ -318,6 +330,14 @@ export function FeaturedCreations({
                           : t.shop.card.outOfStockLabel}
                       </span>
                     </button>
+
+                    <Link
+                      href={`/products/${flagshipProduct.slug}`}
+                      className="inline-flex h-13 items-center justify-center gap-2 border border-[#DFD3C3] bg-[#FFFDF9] px-6 text-xs sm:text-sm font-medium text-[#0B0B0A] transition-colors duration-200 hover:border-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
+                    >
+                      <span>{t.shop.card.viewCreation}</span>
+                      <DirectionalArrow className="h-3.5 w-3.5 text-[#A77A50]" />
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -350,18 +370,14 @@ export function FeaturedCreations({
           </div>
         )}
 
-        {/* Direct CTA to Complete 18-Creation Shop */}
-        <div className="mt-16 flex justify-center border-t border-[#DFD3C3] pt-12">
+        {/* Direct Editorial Bridge to /shop */}
+        <div className="mt-16 flex justify-center border-t border-[#DFD3C3] pt-10">
           <Link
-            href={
-              selectedCollectionFilter === 'all'
-                ? '/shop'
-                : `/shop?collection=${selectedCollectionFilter}`
-            }
-            className="group inline-flex h-13 items-center justify-center gap-3.5 border border-[#0B0B0A] bg-[#0B0B0A] px-8 text-xs sm:text-sm font-medium text-[#F5F0E8] transition-colors duration-200 hover:border-[#4A3027] hover:bg-[#4A3027] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
+            href={shopCatalogHref}
+            className="group inline-flex h-13 items-center justify-center gap-3 border border-[#0B0B0A] bg-[#0B0B0A] px-9 text-xs sm:text-sm font-medium text-[#F5F0E8] transition-colors duration-200 hover:bg-[#4A3027] hover:border-[#4A3027] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
           >
             <span>{t.creations.exploreFullCatalog}</span>
-            <DirectionalArrow className="h-4 w-4 text-[#D8C8B2] transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+            <DirectionalArrow className="h-4 w-4 text-[#A77A50] transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
           </Link>
         </div>
       </div>

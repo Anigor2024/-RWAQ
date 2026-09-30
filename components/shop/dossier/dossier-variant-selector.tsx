@@ -20,12 +20,7 @@ export function DossierVariantSelector({
   onSelectVariant,
 }: DossierVariantSelectorProps) {
   const { locale, t } = useLocale();
-
-  const statusText = !activeVariant
-    ? t.shop.card.outOfStockLabel
-    : activeVariant.stockQuantity <= 18
-      ? t.shop.card.limitedStockLabel
-      : t.shop.card.inStockLabel;
+  const activePurchasable = isVariantPurchasable(activeVariant);
 
   return (
     <div>
@@ -33,30 +28,37 @@ export function DossierVariantSelector({
         <span className="text-[#918A80]">
           {t.shop.dossier.variantsHeading}
         </span>
-        <span
-          className={cn(
-            activeVariant ? 'text-[#D8C8B2]' : 'text-[#918A80]'
-          )}
-        >
-          {statusText}
-        </span>
+        {activeVariant && (
+          <span
+            className={cn(
+              activePurchasable ? 'text-[#D8C8B2]' : 'text-[#918A80]'
+            )}
+          >
+            {!activePurchasable
+              ? t.shop.card.outOfStockLabel
+              : activeVariant.stockQuantity <= 18
+                ? t.shop.card.limitedStockLabel
+                : t.shop.card.inStockLabel}
+          </span>
+        )}
       </div>
 
       <div
-        role="group"
+        role="radiogroup"
         aria-label={t.shop.dossier.variantsHeading}
         className="mt-3 grid grid-cols-2 gap-2.5"
       >
         {product.variants.map((variant) => {
-          const purchasable = product.inStock && isVariantPurchasable(variant);
-          const isSelected = purchasable && activeVariant?.id === variant.id;
+          const isSelected = activeVariant?.id === variant.id;
+          const purchasable = isVariantPurchasable(variant);
+
           return (
             <button
               key={variant.id}
               type="button"
+              role="radio"
+              aria-checked={isSelected}
               disabled={!purchasable}
-              aria-disabled={!purchasable}
-              aria-pressed={isSelected}
               onClick={() => {
                 if (purchasable) {
                   onSelectVariant(variant.id);
@@ -65,7 +67,7 @@ export function DossierVariantSelector({
               className={cn(
                 'flex flex-col items-start justify-between border p-3 text-start transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
                 !purchasable
-                  ? 'cursor-not-allowed border-[#F5F0E8]/10 bg-[#141311]/50 text-[#918A80]/60 opacity-55'
+                  ? 'cursor-not-allowed border-[#F5F0E8]/10 bg-[#141311]/50 text-[#918A80]/50 opacity-60'
                   : isSelected
                     ? 'border-[#A77A50] bg-[#A77A50]/15 text-[#FFFDF9]'
                     : 'border-[#F5F0E8]/15 bg-[#141311] text-[#D8C8B2] hover:border-[#F5F0E8]/35'
@@ -85,9 +87,9 @@ export function DossierVariantSelector({
                 </span>
               </div>
               <span className="mt-1 text-[11px] text-[#918A80]">
-                {purchasable
-                  ? localize(variant.concentration, locale)
-                  : t.shop.card.outOfStockLabel}
+                {!purchasable
+                  ? t.shop.card.outOfStockLabel
+                  : localize(variant.concentration, locale)}
               </span>
             </button>
           );

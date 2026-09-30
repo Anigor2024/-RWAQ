@@ -112,7 +112,7 @@ export const persistedCartItemSchema = z
     sizeMl: z.number().int().positive().max(2000),
     unitPrice: moneySchema,
     quantity: z.number().int().min(1).max(10),
-    maxStockQuantity: z.number().int().min(1).max(10000).optional(),
+    maxStockQuantity: z.number().int().min(1).max(1000).optional(),
     imageUrl: z
       .string()
       .trim()
@@ -122,13 +122,10 @@ export const persistedCartItemSchema = z
     giftWrapRequested: z.boolean().optional(),
   })
   .transform((item) => {
-    const maxAllowed =
-      item.maxStockQuantity !== undefined
-        ? Math.min(10, Math.max(1, item.maxStockQuantity))
-        : 10;
+    const safeCap = Math.min(10, item.maxStockQuantity ?? 10);
     return {
       ...item,
-      quantity: Math.min(maxAllowed, Math.max(1, item.quantity)),
+      quantity: Math.max(1, Math.min(safeCap, item.quantity)),
     };
   });
 

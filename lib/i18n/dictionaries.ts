@@ -178,6 +178,7 @@ export interface Dictionary {
     card: {
       selectSizeLabel: string;
       inspectDossier: string;
+      viewCreation: string;
       inStockLabel: string;
       limitedStockLabel: string;
       outOfStockLabel: string;
@@ -197,6 +198,7 @@ export interface Dictionary {
       occasionLabel: string;
       filterByCollectionAction: string;
       filterByFamilyAction: string;
+      viewFullCreationPage: string;
     };
     emptyState: {
       eyebrow: string;
@@ -205,6 +207,63 @@ export interface Dictionary {
       resetButton: string;
       suggestedNotesTitle: string;
     };
+  };
+  pdp: {
+    breadcrumbAriaLabel: string;
+    homeLabel: string;
+    shopLabel: string;
+    galleryAriaLabel: string;
+    previousImage: string;
+    nextImage: string;
+    selectImage: string;
+    selectSizeLabel: string;
+    quantityLabel: string;
+    decreaseQuantity: string;
+    increaseQuantity: string;
+    maxQuantityNote: string;
+    inStockStatus: string;
+    limitedStockStatus: string;
+    outOfStockStatus: string;
+    viewBagAction: string;
+    mobileStickyBarAria: string;
+    reassurance: Array<{
+      code: string;
+      title: string;
+      detail: string;
+    }>;
+    storyEyebrow: string;
+    storyHeading: string;
+    inspirationHeading: string;
+    architecturalContextLabel: string;
+    pyramidEyebrow: string;
+    pyramidHeading: string;
+    pyramidSubtitle: string;
+    topTierDescription: string;
+    heartTierDescription: string;
+    baseTierDescription: string;
+    accordsEyebrow: string;
+    accordsHeading: string;
+    accordsSubtitle: string;
+    performanceEyebrow: string;
+    performanceHeading: string;
+    performanceSubtitle: string;
+    longevityTitle: string;
+    projectionTitle: string;
+    seasonTitle: string;
+    occasionTitle: string;
+    characterTitle: string;
+    ingredientsEyebrow: string;
+    ingredientsHeading: string;
+    ingredientsSubtitle: string;
+    originLabel: string;
+    ritualEyebrow: string;
+    ritualHeading: string;
+    applicationHeading: string;
+    whenToWearHeading: string;
+    relatedEyebrow: string;
+    relatedHeading: string;
+    relatedSubtitle: string;
+    returnToCatalog: string;
   };
   craft: {
     sectionEyebrow: string;
@@ -326,7 +385,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       scrollToManifesto: 'التمرير إلى البيان العطري',
     },
     nav: {
-      shop: 'المتجر',
+      shop: 'العطور',
       collections: 'المجموعات',
       creations: 'الابتكارات العطرية',
       craft: 'الخامات والحِرفة',
@@ -440,11 +499,11 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       },
     },
     shop: {
-      eyebrow: 'دار رِواق · البوتيك العطري الكامل',
-      title: 'مقتنيات رِواق العطرية',
+      eyebrow: 'دار رِواق · المجموعة العطرية الكاملة',
+      title: 'عطور رِواق',
       subtitle:
-        'ثمانية عشر ابتكاراً عطرياً موزعة على ثلاثية نَجد وصَحراء ولَيل؛ صِيغت في تراكيز إكسترايت وأبسولو عالية لصناعة حضورٍ لا يُنسى.',
-      allWorldsTab: 'جميع العوالم',
+        'مجموعة من التركيبات السعودية المعاصرة، من العود والزعفران إلى الورد الطائفي والمسك.',
+      allWorldsTab: 'جميع المجموعات',
       creationsCountUnit: 'عطراً',
       searchPlaceholder:
         'ابحث باسم العطر، النوتة (عود، زعفران، ورد طائفي، صندل، مسك)، أو الرمز...',
@@ -516,14 +575,15 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       },
       card: {
         selectSizeLabel: 'الحجم',
-        inspectDossier: 'الملف العطري',
+        inspectDossier: 'معاينة سريعة',
+        viewCreation: 'صفحة العطر',
         inStockLabel: 'متوفر',
-        limitedStockLabel: 'إصدار محدود',
+        limitedStockLabel: 'تخصيص محدود',
         outOfStockLabel: 'غير متوفر حالياً',
         skuLabel: 'الرمز',
       },
       dossier: {
-        drawerTitle: 'الملف العطري التفصيلي',
+        drawerTitle: 'معاينة سريعة · الملف العطري',
         editorialHeading: 'القصة والبناء العطري',
         inspirationHeading: 'الإلهام المكاني',
         ritualHeading: 'طقس الاستخدام',
@@ -536,15 +596,90 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         occasionLabel: 'المناسبة',
         filterByCollectionAction: 'تصفح كامل مجموعة',
         filterByFamilyAction: 'استكشف عائلة',
+        viewFullCreationPage: 'استعراض صفحة العطر الكاملة',
       },
       emptyState: {
         eyebrow: 'لا توجد نتائج مطابقة',
-        title: 'لم نعثر على عطر يطابق معايير التصفية الحالية',
+        title: 'لم نجد عطراً يطابق هذه الاختيارات.',
         description:
-          'جرّب إزالة بعض الفلاتر النشطة، أو البحث بنوتة عطرية مختلفة، أو إعادة تعيين البحث لاستعراض جميع ابتكارات رِواق الثمانية عشر.',
-        resetButton: 'عرض جميع العطور (18)',
+          'جرّب إزالة بعض الفلاتر النشطة، أو البحث بنوتة عطرية مختلفة، أو مسح عوامل التصفية لاستعراض جميع ابتكارات رِواق الثمانية عشر.',
+        resetButton: 'مسح عوامل التصفية',
         suggestedNotesTitle: 'أو ابدأ الاستكشاف عبر النوتة العطرية:',
       },
+    },
+    pdp: {
+      breadcrumbAriaLabel: 'مسار التنقل التفصيلي',
+      homeLabel: 'الرئيسية',
+      shopLabel: 'المتجر العطري',
+      galleryAriaLabel: 'معرض صور العطر',
+      previousImage: 'الصورة السابقة',
+      nextImage: 'الصورة التالية',
+      selectImage: 'عرض الصورة رقم',
+      selectSizeLabel: 'اختر حجم الزجاجة',
+      quantityLabel: 'الكمية',
+      decreaseQuantity: 'إنقاص الكمية',
+      increaseQuantity: 'زيادة الكمية',
+      maxQuantityNote: 'الحد الأقصى المتاح للطلب الفوري',
+      inStockStatus: 'متوفر للشحن الفوري داخل المملكة',
+      limitedStockStatus: 'إصدار بكمية محدودة متبقية',
+      outOfStockStatus: 'نفدت الكمية المخصصة حالياً',
+      viewBagAction: 'معاينة الحقيبة',
+      mobileStickyBarAria: 'شريط الاقتناء السريع',
+      reassurance: [
+        {
+          code: 'I',
+          title: 'تجرِبة العينات المرفقة',
+          detail: 'يرفق مع كل زجاجة عينتان استكشافيتان (2 مل) لتجربة العطر على البشرة قبل فضّ الختم.',
+        },
+        {
+          code: 'II',
+          title: 'مقصورة الإهداء النجدية',
+          detail: 'تُقدّم الزجاجة داخل علبة معمارية مكسوة بنسيج الحجر الجيري وتفاصيل البرونز المصقول.',
+        },
+        {
+          code: 'III',
+          title: 'توصيل خاص داخل المملكة',
+          detail: 'شحن مبرد ومؤمّن لجميع مدن المملكة العربية السعودية (مجاني للطلبات فوق 500 ر.س).',
+        },
+      ],
+      storyEyebrow: 'الفصل الأول · القصة والإلهام',
+      storyHeading: 'البناء العطري والذاكرة المكانية',
+      inspirationHeading: 'الإلهام المعماري والجغرافي',
+      architecturalContextLabel: 'توقيع دار رِواق · الرياض',
+      pyramidEyebrow: 'الفصل الثاني · الهندسة العطرية',
+      pyramidHeading: 'هرم النوتات العطرية',
+      pyramidSubtitle:
+        'يتكشف العطر على البشرة عبر ثلاث طبقات متتابعة؛ من إشراقة الافتتاحية وحتى استقرار القاعدة العميقة.',
+      topTierDescription: 'الانطباع الأول والمقدمة المشرقة فور ملامسة العطر للهواء',
+      heartTierDescription: 'المحور العطري النابض الذي يتبلور بعد دقائق على البشرة',
+      baseTierDescription: 'الأثر العميق والراتنجات النبيلة التي تدوم لساعات طويلة',
+      accordsEyebrow: 'البصمة الحسية · توازن التركيبة',
+      accordsHeading: 'معمارية السمات العطرية',
+      accordsSubtitle:
+        'توزيع الكثافة النسبية للسمات العطرية الرئيسية التي تشكل شخصية هذا الابتكار.',
+      performanceEyebrow: 'الفصل الثالث · الأداء والطابع',
+      performanceHeading: 'ملف الثبات والفوحان والملاءمة',
+      performanceSubtitle:
+        'قراءة معمارية لدرجة الثبات وانتشار الأثر العطري والأوقات الموصى بها لارتدائه.',
+      longevityTitle: 'درجة الثبات',
+      projectionTitle: 'الفوحان والحضور',
+      seasonTitle: 'الموسم الموصى به',
+      occasionTitle: 'المناسبة الملائمة',
+      characterTitle: 'الطابع العطري',
+      ingredientsEyebrow: 'الفصل الرابع · الخامات النبيلة',
+      ingredientsHeading: 'أبرز المكونات ومصادر الإلهام',
+      ingredientsSubtitle:
+        'خامات عطرية مختارة بعناية تشكّل العمود الفقري لهذا التركيب وتمنحه عمقه المميز.',
+      originLabel: 'المنشأ والسمة',
+      ritualEyebrow: 'الفصل الخامس · مراسم الارتداء',
+      ritualHeading: 'طقس الاستخدام وأوقات الارتداء',
+      applicationHeading: 'طقس التطبيق الموصى به',
+      whenToWearHeading: 'الأوقات والمجالس الملائمة',
+      relatedEyebrow: 'استكشاف متصل · من أروقة الدار',
+      relatedHeading: 'ابتكارات عطرية ذات صلة',
+      relatedSubtitle:
+        'تراكيب مختارة تشترك في العالم العطري أو تتناغم مع العائلة العطرية لهذا الإصدار.',
+      returnToCatalog: 'العودة إلى المتجر الكامل',
     },
     craft: {
       sectionEyebrow: 'الحِرفة والخامات · لغة التصميم العطري',
@@ -771,7 +906,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       scrollToManifesto: 'Scroll to brand manifesto',
     },
     nav: {
-      shop: 'The Shop',
+      shop: 'Shop',
       collections: 'Collections',
       creations: 'Creations',
       craft: 'Craft & Materials',
@@ -886,10 +1021,10 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     },
     shop: {
       eyebrow: 'RWAQ House Boutique · Complete Curation',
-      title: 'The Olfactory Catalog',
+      title: 'RWAQ Creations',
       subtitle:
-        'Eighteen high-concentration Extrait and Parfum Absolu compositions across the NAJD, SAHRA, and LAYL trilogy — crafted for an unforgettable presence.',
-      allWorldsTab: 'All Worlds',
+        'A contemporary Saudi fragrance collection shaped by oud, saffron, Taif rose, musk and modern restraint.',
+      allWorldsTab: 'All Collections',
       creationsCountUnit: 'Creations',
       searchPlaceholder:
         'Search by creation name, note (oud, saffron, Taif rose, sandalwood, musk), or SKU...',
@@ -961,14 +1096,15 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       },
       card: {
         selectSizeLabel: 'Size',
-        inspectDossier: 'Olfactory Dossier',
+        inspectDossier: 'Quick Olfactory View',
+        viewCreation: 'View Creation',
         inStockLabel: 'In Stock',
         limitedStockLabel: 'Limited Allocation',
-        outOfStockLabel: 'Unavailable',
+        outOfStockLabel: 'Currently Unavailable',
         skuLabel: 'SKU',
       },
       dossier: {
-        drawerTitle: 'Olfactory Creation Dossier',
+        drawerTitle: 'Quick Olfactory View · Dossier',
         editorialHeading: 'Olfactory Composition',
         inspirationHeading: 'Spatial Inspiration',
         ritualHeading: 'Application Ritual',
@@ -981,15 +1117,90 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         occasionLabel: 'Occasion',
         filterByCollectionAction: 'Filter by Collection:',
         filterByFamilyAction: 'Explore Family:',
+        viewFullCreationPage: 'Explore Full Creation Page',
       },
       emptyState: {
         eyebrow: 'No Matching Creations',
-        title: 'No creations match your current selection',
+        title: 'No fragrances matched these selections.',
         description:
-          'Try removing one of your active filters, searching for a foundational note, or resetting your view to explore all eighteen RWAQ compositions.',
-        resetButton: 'Show All 18 Creations',
+          'Try removing one of your active filters, searching for a foundational note, or clearing filters to explore all eighteen RWAQ compositions.',
+        resetButton: 'Clear Filters',
         suggestedNotesTitle: 'Or explore by signature olfactory note:',
       },
+    },
+    pdp: {
+      breadcrumbAriaLabel: 'Breadcrumb navigation',
+      homeLabel: 'Home',
+      shopLabel: 'The Shop',
+      galleryAriaLabel: 'Product image gallery',
+      previousImage: 'Previous image',
+      nextImage: 'Next image',
+      selectImage: 'Select image',
+      selectSizeLabel: 'Select Flacon Volume',
+      quantityLabel: 'Quantity',
+      decreaseQuantity: 'Decrease quantity',
+      increaseQuantity: 'Increase quantity',
+      maxQuantityNote: 'Maximum immediate allocation',
+      inStockStatus: 'In Stock · Ready for KSA Dispatch',
+      limitedStockStatus: 'Limited Allocation Remaining',
+      outOfStockStatus: 'Currently Out of Stock',
+      viewBagAction: 'View Bag',
+      mobileStickyBarAria: 'Quick purchase bar',
+      reassurance: [
+        {
+          code: 'I',
+          title: 'The Discovery Vial Ritual',
+          detail: 'Includes two complimentary 2ml discovery vials to experience on skin before unsealing the flacon.',
+        },
+        {
+          code: 'II',
+          title: 'Najdi Limestone Coffret',
+          detail: 'Housed in an architectural stone-textured presentation box finished with brushed bronze.',
+        },
+        {
+          code: 'III',
+          title: 'KSA Concierge Delivery',
+          detail: 'Temperature-controlled delivery across Saudi Arabia (complimentary on orders above 500 SAR).',
+        },
+      ],
+      storyEyebrow: 'Chapter I · The Story & Origin',
+      storyHeading: 'Olfactory Narrative & Spatial Memory',
+      inspirationHeading: 'Architectural & Geographic Inspiration',
+      architecturalContextLabel: 'RWAQ House Composition · Riyadh',
+      pyramidEyebrow: 'Chapter II · Olfactory Architecture',
+      pyramidHeading: 'The Note Pyramid',
+      pyramidSubtitle:
+        'Unfolding across three distinct movements — from the luminous first impression to the enduring resinous dry-down.',
+      topTierDescription: 'The radiant opening movement upon first contact with air',
+      heartTierDescription: 'The central thematic core emerging as the composition warms on skin',
+      baseTierDescription: 'The structural foundation and noble resins that linger for hours',
+      accordsEyebrow: 'Sensory Proportion · Accord Balance',
+      accordsHeading: 'Accord Profile',
+      accordsSubtitle:
+        'Relative intensity across the primary olfactory accords shaping this creation.',
+      performanceEyebrow: 'Chapter III · Performance & Character',
+      performanceHeading: 'Longevity, Sillage & Wearing Profile',
+      performanceSubtitle:
+        'An architectural reading of endurance, spatial projection, and recommended wearing context.',
+      longevityTitle: 'Longevity',
+      projectionTitle: 'Sillage & Projection',
+      seasonTitle: 'Recommended Season',
+      occasionTitle: 'Occasion',
+      characterTitle: 'Olfactory Character',
+      ingredientsEyebrow: 'Chapter IV · Noble Materials',
+      ingredientsHeading: 'Key Ingredient Highlights',
+      ingredientsSubtitle:
+        'Foundational raw materials selected to give this composition its structural depth and poise.',
+      originLabel: 'Origin & Character',
+      ritualEyebrow: 'Chapter V · The Wearing Ritual',
+      ritualHeading: 'Application & Wearing Guidance',
+      applicationHeading: 'Application Ritual',
+      whenToWearHeading: 'When to Wear',
+      relatedEyebrow: 'Continued Discovery · From the House',
+      relatedHeading: 'Related Creations',
+      relatedSubtitle:
+        'Compositions sharing this creation’s olfactory world or resonant family character.',
+      returnToCatalog: 'Return to Full Catalog',
     },
     craft: {
       sectionEyebrow: 'Craft & Materials · Olfactory Design Language',

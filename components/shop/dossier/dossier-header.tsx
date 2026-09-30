@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
 import { useLocale } from '@/providers/locale-provider';
@@ -11,6 +12,7 @@ interface DossierHeaderProps {
   activeVariant: ProductVariant | null;
   displayPrice: Money;
   displayOriginalPrice?: Money;
+  onClose: () => void;
 }
 
 export function DossierHeader({
@@ -18,6 +20,7 @@ export function DossierHeader({
   activeVariant,
   displayPrice,
   displayOriginalPrice,
+  onClose,
 }: DossierHeaderProps) {
   const { locale, t } = useLocale();
 
@@ -39,14 +42,18 @@ export function DossierHeader({
       </div>
 
       <div className="mt-2.5 flex items-baseline justify-between gap-4">
-        <div className="flex items-baseline gap-3">
-          <h3 className="text-2xl font-medium text-[#FFFDF9]">
+        <Link
+          href={`/products/${product.slug}`}
+          onClick={onClose}
+          className="group/title flex items-baseline gap-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+        >
+          <h3 className="text-2xl font-medium text-[#FFFDF9] transition-colors group-hover/title:text-[#A77A50]">
             {localize(product.name, locale)}
           </h3>
           <span className="font-[family-name:var(--font-display-en)] text-sm tracking-[0.2em] text-[#918A80]">
             {locale === 'ar' ? product.name.en : product.name.ar}
           </span>
-        </div>
+        </Link>
 
         <div className="text-end tabular-nums">
           {displayOriginalPrice && (

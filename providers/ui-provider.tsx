@@ -49,7 +49,7 @@ interface UIContextValue {
   bagPricing: PriceBreakdown;
   addToBag: (
     product: Product,
-    variant?: ProductVariant,
+    variant?: ProductVariant | null,
     quantity?: number
   ) => boolean;
   updateBagQuantity: (variantId: EntityId, nextQuantity: number) => void;
@@ -144,8 +144,8 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   const addToBag = useCallback(
     (
       product: Product,
-      selectedVariant?: ProductVariant,
-      quantity = 1
+      selectedVariant?: ProductVariant | null,
+      quantity: number = 1
     ): boolean => {
       if (!product.inStock) {
         return false;
@@ -153,12 +153,10 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
 
       const targetVariant =
         selectedVariant !== undefined
-          ? isVariantPurchasable(selectedVariant)
-            ? selectedVariant
-            : null
+          ? selectedVariant
           : getDefaultPurchasableVariant(product);
 
-      if (!targetVariant || !isVariantPurchasable(targetVariant)) {
+      if (!isVariantPurchasable(targetVariant)) {
         return false;
       }
 
@@ -167,19 +165,10 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
 
-      if (!Number.isFinite(quantity)) {
-        return false;
-      }
-
-      const requestedQuantity = Math.floor(quantity);
-      if (requestedQuantity <= 0) {
-        return false;
-      }
-
-      const clampedInitialQuantity = Math.min(
-        maxAllowed,
-        Math.max(1, requestedQuantity)
-      );
+      const requestedQty = Number.isFinite(quantity)
+        ? Math.max(1, Math.round(quantity))
+        : 1;
+      const safeAddQty = Math.min(maxAllowed, requestedQty);
 
       setBagItems((prev) => {
         const existingIndex = prev.findIndex(
@@ -191,11 +180,8 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
             idx === existingIndex
               ? {
                   ...item,
-                  maxStockQuantity: targetVariant.stockQuantity,
-                  quantity: Math.min(
-                    maxAllowed,
-                    item.quantity + clampedInitialQuantity
-                  ),
+                  maxStockQuantity: maxAllowed,
+                  quantity: Math.min(maxAllowed, item.quantity + safeAddQty),
                 }
               : item
           );
@@ -210,8 +196,8 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
               collectionName: product.collectionName,
               sizeMl: targetVariant.sizeMl,
               unitPrice: targetVariant.price,
-              quantity: clampedInitialQuantity,
-              maxStockQuantity: targetVariant.stockQuantity,
+              quantity: safeAddQty,
+              maxStockQuantity: maxAllowed,
               imageUrl: product.image.url,
             },
           ];
@@ -231,28 +217,20 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
 
   const updateBagQuantity = useCallback(
     (variantId: EntityId, nextQuantity: number) => {
-      if (!Number.isFinite(nextQuantity) || Math.floor(nextQuantity) <= 0) {
+      if (nextQuantity <= 0) {
         persistBag(bagItems.filter((item) => item.variantId !== variantId));
         return;
       }
-
-      const targetQty = Math.floor(nextQuantity);
-
       persistBag(
         bagItems.map((item) => {
-          if (item.variantId !== variantId) {
-            return item;
-          }
-          const maxAllowed =
-            item.maxStockQuantity !== undefined && item.maxStockQuantity > 0
-              ? Math.min(
-                  MAX_CART_QUANTITY_PER_LINE,
-                  Math.floor(item.maxStockQuantity)
-                )
-              : MAX_CART_QUANTITY_PER_LINE;
+          if (item.variantId !== variantId) return item;
+          const cap = Math.min(
+            MAX_CART_QUANTITY_PER_LINE,
+            item.maxStockQuantity ?? MAX_CART_QUANTITY_PER_LINE
+          );
           return {
             ...item,
-            quantity: Math.min(maxAllowed, Math.max(1, targetQty)),
+            quantity: Math.max(1, Math.min(cap, Math.round(nextQuantity))),
           };
         })
       );

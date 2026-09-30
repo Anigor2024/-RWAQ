@@ -15,7 +15,7 @@ export function DossierOlfactoryProfile({
   const { locale, t } = useLocale();
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-6">
       {/* Olfactory Notes Pyramid */}
       <div className="rounded-none border border-[#F5F0E8]/12 bg-[#141311] p-4 text-[#F5F0E8]">
         <div className="space-y-2.5 text-xs">
@@ -49,7 +49,7 @@ export function DossierOlfactoryProfile({
       {/* Accord Intensity Architecture */}
       {product.accords.length > 0 && (
         <div className="space-y-3">
-          <h4 className="text-xs font-medium tracking-wider uppercase text-[#A77A50]">
+          <h4 className="text-xs font-medium tracking-wider text-[#A77A50]">
             {t.shop.dossier.accordsHeading}
           </h4>
           <div className="space-y-2.5">
@@ -78,7 +78,7 @@ export function DossierOlfactoryProfile({
       {/* Ingredient Highlights */}
       {product.ingredientHighlights.length > 0 && (
         <div className="space-y-3 border-t border-[#F5F0E8]/12 pt-5">
-          <h4 className="text-xs font-medium tracking-wider uppercase text-[#A77A50]">
+          <h4 className="text-xs font-medium tracking-wider text-[#A77A50]">
             {t.shop.dossier.ingredientsHeading}
           </h4>
           <div className="space-y-3">

@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Heart, X } from 'lucide-react';
 import {
   getProductDisplayPrice,
@@ -21,7 +22,7 @@ interface WishlistDrawerProps {
 
 export function WishlistDrawer({ products }: WishlistDrawerProps) {
   const { locale, t } = useLocale();
-  const { wishlistProductIds, toggleWishlist, addToBag } = useUI();
+  const { wishlistProductIds, toggleWishlist, addToBag, closeDrawer } = useUI();
   const { showToast } = useToast();
 
   const wishlistedProducts = useMemo(
@@ -44,29 +45,39 @@ export function WishlistDrawer({ products }: WishlistDrawerProps) {
       ) : (
         <div className="space-y-5">
           {wishlistedProducts.map((product) => {
-            const purchasable = isProductPurchasable(product);
             const displayPrice = getProductDisplayPrice(product);
+            const canPurchase = isProductPurchasable(product);
+            const productHref = `/products/${product.slug}`;
+
             return (
               <div
                 key={product.id}
                 className="flex gap-4 border-b border-[#F5F0E8]/10 pb-5"
               >
-                <div className="relative h-24 w-20 shrink-0 overflow-hidden bg-[#1C1A17]">
+                <Link
+                  href={productHref}
+                  onClick={closeDrawer}
+                  className="relative h-24 w-20 shrink-0 overflow-hidden bg-[#1C1A17] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                >
                   <Image
                     src={product.image.url}
                     alt={localize(product.image.alt, locale)}
                     fill
                     sizes="80px"
-                    className="object-cover"
+                    className="object-cover transition-transform duration-300 hover:scale-105"
                     referrerPolicy="no-referrer"
                   />
-                </div>
+                </Link>
                 <div className="flex flex-1 flex-col justify-between">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h3 className="text-base font-medium text-[#F5F0E8]">
+                      <Link
+                        href={productHref}
+                        onClick={closeDrawer}
+                        className="text-base font-medium text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                      >
                         {localize(product.name, locale)}
-                      </h3>
+                      </Link>
                       <p className="text-xs text-[#918A80]">
                         {localize(product.collectionName, locale)} ·{' '}
                         {formatMoney(displayPrice, locale)}
@@ -85,10 +96,9 @@ export function WishlistDrawer({ products }: WishlistDrawerProps) {
                   <div className="mt-3 flex justify-end">
                     <button
                       type="button"
-                      disabled={!purchasable}
-                      aria-disabled={!purchasable}
+                      disabled={!canPurchase}
                       onClick={() => {
-                        if (!purchasable) return;
+                        if (!canPurchase) return;
                         const added = addToBag(product);
                         if (added) {
                           toggleWishlist(product.id);
@@ -98,13 +108,13 @@ export function WishlistDrawer({ products }: WishlistDrawerProps) {
                         }
                       }}
                       className={cn(
-                        'px-3.5 py-1.5 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
-                        purchasable
-                          ? 'border border-[#A77A50] text-[#F5F0E8] hover:bg-[#A77A50] hover:text-[#0B0B0A]'
-                          : 'cursor-not-allowed border border-[#F5F0E8]/15 text-[#918A80] opacity-60'
+                        'border px-3.5 py-1.5 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
+                        canPurchase
+                          ? 'border-[#A77A50] text-[#F5F0E8] hover:bg-[#A77A50] hover:text-[#0B0B0A]'
+                          : 'cursor-not-allowed border-[#F5F0E8]/15 text-[#918A80]'
                       )}
                     >
-                      {purchasable
+                      {canPurchase
                         ? t.drawers.wishlist.moveToBag
                         : t.shop.card.outOfStockLabel}
                     </button>

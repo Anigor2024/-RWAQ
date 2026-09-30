@@ -44,33 +44,42 @@ export function BagDrawer() {
         <>
           <div className="space-y-5">
             {bagItems.map((item) => {
-              const maxAllowed =
-                item.maxStockQuantity !== undefined && item.maxStockQuantity > 0
-                  ? Math.min(MAX_CART_QUANTITY_PER_LINE, item.maxStockQuantity)
-                  : MAX_CART_QUANTITY_PER_LINE;
-              const isAtMaxQuantity = item.quantity >= maxAllowed;
+              const maxAllowed = Math.min(
+                MAX_CART_QUANTITY_PER_LINE,
+                item.maxStockQuantity ?? MAX_CART_QUANTITY_PER_LINE
+              );
+              const isAtMax = item.quantity >= maxAllowed;
+              const productHref = `/products/${item.productSlug}`;
 
               return (
                 <div
                   key={item.variantId}
                   className="flex gap-4 border-b border-[#F5F0E8]/10 pb-5"
                 >
-                  <div className="relative h-24 w-20 shrink-0 overflow-hidden bg-[#1C1A17]">
+                  <Link
+                    href={productHref}
+                    onClick={closeDrawer}
+                    className="relative h-24 w-20 shrink-0 overflow-hidden bg-[#1C1A17] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                  >
                     <Image
                       src={item.imageUrl}
                       alt={localize(item.name, locale)}
                       fill
                       sizes="80px"
-                      className="object-cover"
+                      className="object-cover transition-transform duration-300 hover:scale-105"
                       referrerPolicy="no-referrer"
                     />
-                  </div>
+                  </Link>
                   <div className="flex flex-1 flex-col justify-between">
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <h3 className="text-base font-medium text-[#F5F0E8]">
+                        <Link
+                          href={productHref}
+                          onClick={closeDrawer}
+                          className="text-base font-medium text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                        >
                           {localize(item.name, locale)}
-                        </h3>
+                        </Link>
                         <p className="text-xs text-[#918A80]">
                           {localize(item.collectionName, locale)} ·{' '}
                           {formatVolumeMl(item.sizeMl, locale)}
@@ -103,10 +112,9 @@ export function BagDrawer() {
                         </span>
                         <button
                           type="button"
-                          disabled={isAtMaxQuantity}
-                          aria-disabled={isAtMaxQuantity}
+                          disabled={isAtMax}
                           onClick={() => {
-                            if (!isAtMaxQuantity) {
+                            if (!isAtMax) {
                               updateBagQuantity(
                                 item.variantId,
                                 item.quantity + 1
@@ -116,8 +124,8 @@ export function BagDrawer() {
                           aria-label={t.drawers.bag.increaseQty}
                           className={cn(
                             'flex h-8 w-8 items-center justify-center text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
-                            isAtMaxQuantity
-                              ? 'cursor-not-allowed opacity-35'
+                            isAtMax
+                              ? 'cursor-not-allowed opacity-40'
                               : 'hover:bg-[#F5F0E8]/10'
                           )}
                         >

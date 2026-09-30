@@ -3,17 +3,15 @@
 import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Heart, Search } from 'lucide-react';
 import {
   DEFAULT_CATALOG_QUERY_STATE,
   getCuratedEmptySearchProducts,
-  normalizeSearchText,
-  queryCatalogProducts,
-} from '@/features/catalog/catalog-query';
-import {
   getProductDisplayPrice,
   isProductPurchasable,
-} from '@/features/catalog/product-commerce';
+  normalizeSearchText,
+  queryCatalogProducts,
+} from '@/features/catalog/service';
 import { localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
 import { cn } from '@/lib/utils';
@@ -26,8 +24,6 @@ interface SearchDrawerProps {
   products: Product[];
 }
 
-const MAX_SEARCH_DRAWER_PREVIEW = 6;
-
 const SUGGESTED_NOTES = [
   { ar: 'عود', en: 'Oud' },
   { ar: 'زعفران', en: 'Saffron' },
@@ -39,40 +35,40 @@ const SUGGESTED_NOTES = [
 
 export function SearchDrawer({ products }: SearchDrawerProps) {
   const { locale, dir, t } = useLocale();
-  const { addToBag, closeDrawer } = useUI();
+  const { addToBag, closeDrawer, isWishlisted, toggleWishlist } = useUI();
   const { showToast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const DirectionalArrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
 
-  const trimmedQuery = searchQuery.trim();
+  const hasActiveQuery = searchQuery.trim().length > 0;
 
-  const matchingProducts = useMemo(
+  const filteredProducts = useMemo(
     () =>
       queryCatalogProducts(
         products,
         {
           ...DEFAULT_CATALOG_QUERY_STATE,
-          q: trimmedQuery,
+          q: searchQuery,
         },
         locale
       ),
-    [products, trimmedQuery, locale]
+    [products, searchQuery, locale]
   );
 
-  // When query is empty: show a curated maximum of 6 products prioritizing:
-  // 1. isFeatured, 2. isBestSeller, 3. stable catalog order.
-  // When query is non-empty: show first 6 actual search matches.
-  const previewProducts = useMemo(() => {
-    if (!trimmedQuery) {
-      return getCuratedEmptySearchProducts(products, MAX_SEARCH_DRAWER_PREVIEW);
-    }
-    return matchingProducts.slice(0, MAX_SEARCH_DRAWER_PREVIEW);
-  }, [products, matchingProducts, trimmedQuery]);
+  const previewProducts = useMemo(
+    () =>
+      hasActiveQuery
+        ? filteredProducts.slice(0, 6)
+        : getCuratedEmptySearchProducts(products, 6),
+    [filteredProducts, hasActiveQuery, products]
+  );
 
-  const totalMatchingCount = matchingProducts.length;
+  const totalMatchingCount = hasActiveQuery
+    ? filteredProducts.length
+    : products.length;
 
-  const shopSearchHref = trimmedQuery
-    ? `/shop?q=${encodeURIComponent(trimmedQuery)}`
+  const shopSearchHref = hasActiveQuery
+    ? `/shop?q=${encodeURIComponent(searchQuery.trim())}`
     : '/shop';
 
   return (
@@ -128,6 +124,7 @@ export function SearchDrawer({ products }: SearchDrawerProps) {
         </div>
       </div>
 
+      {/* View All Results in /shop Action */}
       <div className="mt-5">
         <Link
           href={shopSearchHref}
@@ -141,6 +138,7 @@ export function SearchDrawer({ products }: SearchDrawerProps) {
         </Link>
       </div>
 
+      {/* Limited Preview List (up to 6 creations) */}
       <div className="mt-6 flex-1 space-y-5">
         {previewProducts.length === 0 ? (
           <p className="py-12 text-center text-sm text-[#918A80]">
@@ -148,29 +146,40 @@ export function SearchDrawer({ products }: SearchDrawerProps) {
           </p>
         ) : (
           previewProducts.map((product) => {
-            const purchasable = isProductPurchasable(product);
+            const saved = isWishlisted(product.id);
             const displayPrice = getProductDisplayPrice(product);
+            const canPurchase = isProductPurchasable(product);
+            const productHref = `/products/${product.slug}`;
+
             return (
               <div
                 key={product.id}
                 className="flex gap-4 border-b border-[#F5F0E8]/10 pb-5"
               >
-                <div className="relative h-24 w-20 shrink-0 overflow-hidden bg-[#1C1A17]">
+                <Link
+                  href={productHref}
+                  onClick={closeDrawer}
+                  className="relative h-24 w-20 shrink-0 overflow-hidden bg-[#1C1A17] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                >
                   <Image
                     src={product.image.url}
                     alt={localize(product.image.alt, locale)}
                     fill
                     sizes="80px"
-                    className="object-cover"
+                    className="object-cover transition-transform duration-300 hover:scale-105"
                     referrerPolicy="no-referrer"
                   />
-                </div>
+                </Link>
                 <div className="flex flex-1 flex-col justify-between">
                   <div>
                     <div className="flex items-baseline justify-between gap-2">
-                      <h3 className="text-base font-medium text-[#F5F0E8]">
+                      <Link
+                        href={productHref}
+                        onClick={closeDrawer}
+                        className="text-base font-medium text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                      >
                         {localize(product.name, locale)}
-                      </h3>
+                      </Link>
                       <span className="text-sm tabular-nums text-[#D8C8B2]">
                         {formatMoney(displayPrice, locale)}
                       </span>
@@ -188,30 +197,59 @@ export function SearchDrawer({ products }: SearchDrawerProps) {
                         .map((n) => localize(n, locale))
                         .join(' · ')}
                     </span>
-                    <button
-                      type="button"
-                      disabled={!purchasable}
-                      aria-disabled={!purchasable}
-                      onClick={() => {
-                        if (!purchasable) return;
-                        const added = addToBag(product);
-                        if (added) {
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const nowSaved = toggleWishlist(product.id);
                           showToast(
-                            `${localize(product.name, locale)} — ${t.creations.addedToBag}`
+                            `${localize(product.name, locale)} — ${
+                              nowSaved
+                                ? t.creations.saveToWishlist
+                                : t.creations.removeFromWishlist
+                            }`
                           );
+                        }}
+                        aria-label={
+                          saved
+                            ? t.creations.removeFromWishlist
+                            : t.creations.saveToWishlist
                         }
-                      }}
-                      className={cn(
-                        'px-3 py-1 text-xs transition-colors whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
-                        purchasable
-                          ? 'border border-[#A77A50]/60 text-[#F5F0E8] hover:bg-[#A77A50] hover:text-[#0B0B0A]'
-                          : 'cursor-not-allowed border border-[#F5F0E8]/15 text-[#918A80] opacity-60'
-                      )}
-                    >
-                      {purchasable
-                        ? t.creations.addToBag
-                        : t.shop.card.outOfStockLabel}
-                    </button>
+                        className="inline-flex h-8 w-8 items-center justify-center border border-[#F5F0E8]/20 text-[#F5F0E8] transition-colors hover:border-[#A77A50] hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                      >
+                        <Heart
+                          className={cn(
+                            'h-3.5 w-3.5',
+                            saved ? 'fill-[#A77A50] text-[#A77A50]' : ''
+                          )}
+                        />
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={!canPurchase}
+                        onClick={() => {
+                          if (!canPurchase) return;
+                          const added = addToBag(product);
+                          if (added) {
+                            showToast(
+                              `${localize(product.name, locale)} — ${t.creations.addedToBag}`
+                            );
+                          }
+                        }}
+                        className={cn(
+                          'border px-3 py-1 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap',
+                          canPurchase
+                            ? 'border-[#A77A50]/60 text-[#F5F0E8] hover:bg-[#A77A50] hover:text-[#0B0B0A]'
+                            : 'cursor-not-allowed border-[#F5F0E8]/15 text-[#918A80]'
+                        )}
+                      >
+                        {canPurchase
+                          ? t.creations.addToBag
+                          : t.shop.card.outOfStockLabel}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

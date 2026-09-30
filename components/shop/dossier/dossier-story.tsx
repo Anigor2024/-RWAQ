@@ -13,10 +13,10 @@ export function DossierStory({ product }: DossierStoryProps) {
   const { locale, t } = useLocale();
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-6">
       {/* Editorial Composition Story */}
       <div className="space-y-3">
-        <h4 className="text-xs font-medium tracking-wider uppercase text-[#A77A50]">
+        <h4 className="text-xs font-medium tracking-wider text-[#A77A50]">
           {t.shop.dossier.editorialHeading}
         </h4>
         <p className="text-sm leading-relaxed text-[#D8C8B2]">

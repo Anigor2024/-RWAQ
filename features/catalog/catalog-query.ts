@@ -3,7 +3,6 @@ import {
   isProductPurchasable,
 } from '@/features/catalog/product-commerce';
 import type {
-  CatalogFilters,
   CatalogQueryState,
   CatalogSort,
   GenderPositioning,
@@ -341,10 +340,7 @@ export function searchCatalog(products: Product[], rawQuery: string): Product[] 
   const queryTokens = normalizedQuery
     ? normalizedQuery.split(' ').filter(Boolean)
     : [];
-
-  if (queryTokens.length === 0) {
-    return products;
-  }
+  if (queryTokens.length === 0) return products;
 
   return products.filter((product) => {
     const searchCorpus = buildProductSearchIndex(product);
@@ -353,43 +349,16 @@ export function searchCatalog(products: Product[], rawQuery: string): Product[] 
 }
 
 /**
- * Curates up to `limit` products for empty-query search drawer state:
- * 1. isFeatured
- * 2. isBestSeller
- * 3. stable catalog order
- */
-export function getCuratedEmptySearchProducts(
-  products: Product[],
-  limit = 6
-): Product[] {
-  const indexed = products.map((product, index) => ({ product, index }));
-  indexed.sort((a, b) => {
-    const aFeatured = Boolean(a.product.isFeatured);
-    const bFeatured = Boolean(b.product.isFeatured);
-    if (aFeatured !== bFeatured) {
-      return aFeatured ? -1 : 1;
-    }
-
-    const aBest = Boolean(a.product.isBestSeller);
-    const bBest = Boolean(b.product.isBestSeller);
-    if (aBest !== bBest) {
-      return aBest ? -1 : 1;
-    }
-
-    return a.index - b.index;
-  });
-
-  return indexed.slice(0, limit).map((entry) => entry.product);
-}
-
-/**
- * Applies structured catalog filters using the central public display-price and purchasability policies.
+ * Combinable catalog filter evaluation across all supported RWAQ product attributes.
+ * Uses central display price and purchasability rules.
  */
 export function filterCatalog(
   products: Product[],
-  filters: CatalogFilters
+  filters: Partial<CatalogQueryState>
 ): Product[] {
   return products.filter((product) => {
+    const displayPriceAmount = getProductDisplayPrice(product).amount;
+
     if (filters.collection && product.collectionSlug !== filters.collection) {
       return false;
     }
@@ -411,10 +380,7 @@ export function filterCatalog(
     if (filters.projection && product.projection !== filters.projection) {
       return false;
     }
-    if (
-      filters.availability === 'in-stock' &&
-      !isProductPurchasable(product)
-    ) {
+    if (filters.availability === 'in-stock' && !isProductPurchasable(product)) {
       return false;
     }
     if (filters.isNew && !product.isNew) {
@@ -423,28 +389,25 @@ export function filterCatalog(
     if (filters.isBestSeller && !product.isBestSeller) {
       return false;
     }
-
-    const displayAmount = getProductDisplayPrice(product).amount;
-
     if (
       filters.minPrice !== undefined &&
-      displayAmount < filters.minPrice
+      displayPriceAmount < filters.minPrice
     ) {
       return false;
     }
     if (
       filters.maxPrice !== undefined &&
-      displayAmount > filters.maxPrice
+      displayPriceAmount > filters.maxPrice
     ) {
       return false;
     }
-
     return true;
   });
 }
 
 /**
- * Sorts catalog products deterministically using the central public display-price policy.
+ * Deterministic catalog comparator and sorting function.
+ * Uses central display price policy (`getProductDisplayPrice`).
  */
 export function sortCatalog(
   products: Product[],
@@ -510,16 +473,64 @@ export function sortCatalog(
 }
 
 /**
- * Searches, filters, and sorts the catalog products according to the active CatalogQueryState.
+ * Filters, searches, and sorts the catalog products according to the active CatalogQueryState.
  */
 export function queryCatalogProducts(
   products: Product[],
   state: CatalogQueryState,
   locale: Locale
 ): Product[] {
-  const searched = searchCatalog(products, state.q);
-  const filtered = filterCatalog(searched, state);
-  return sortCatalog(filtered, state.sort, locale);
+  const afterFilter = filterCatalog(products, state);
+  const afterSearch = searchCatalog(afterFilter, state.q);
+  return sortCatalog(afterSearch, state.sort, locale);
+}
+
+/**
+ * Curated empty-query Search Drawer preview:
+ * Selects a balanced preview across NAJD, SAHRA, and LAYL (2 creations per collection),
+ * prioritizing featured and bestselling creations within each collection.
+ */
+export function getCuratedEmptySearchProducts(
+  products: Product[],
+  limitCount: number = 6
+): Product[] {
+  const perCollectionTarget = Math.max(
+    1,
+    Math.floor(limitCount / VALID_COLLECTION_SLUGS.length)
+  );
+  const selected: Product[] = [];
+  const selectedIds = new Set<string>();
+
+  for (const slug of VALID_COLLECTION_SLUGS) {
+    const collectionCandidates = products
+      .filter((p) => p.collectionSlug === slug)
+      .sort((a, b) => {
+        if (Boolean(a.isFeatured) !== Boolean(b.isFeatured)) {
+          return a.isFeatured ? -1 : 1;
+        }
+        if (a.isBestSeller !== b.isBestSeller) {
+          return a.isBestSeller ? -1 : 1;
+        }
+        return a.sku.localeCompare(b.sku);
+      });
+
+    for (const candidate of collectionCandidates.slice(0, perCollectionTarget)) {
+      selected.push(candidate);
+      selectedIds.add(candidate.id);
+    }
+  }
+
+  if (selected.length < limitCount) {
+    for (const product of products) {
+      if (selected.length >= limitCount) break;
+      if (!selectedIds.has(product.id)) {
+        selected.push(product);
+        selectedIds.add(product.id);
+      }
+    }
+  }
+
+  return selected.slice(0, limitCount);
 }
 
 export interface CatalogFacetCounts {

@@ -59,20 +59,17 @@ export function ShopCatalogView({
   queryStateRef.current = queryState;
 
   /**
-   * Path A — COMMITTED DISCOVERY ACTIONS:
-   * Uses `router.push(..., { scroll: false })` so Browser Back/Forward navigates
-   * through committed filter, collection, sort, chip-removal, and Clear All states.
+   * A. COMMITTED DISCOVERY ACTIONS:
+   * Pushes a new browser history entry so Back/Forward navigates filter & sort steps cleanly.
    */
   const commitCatalogState = useCallback(
     (nextState: CatalogQueryState) => {
       const currentSerialized = buildCatalogSearchParams(queryStateRef.current);
       const nextSerialized = buildCatalogSearchParams(nextState);
-      const nextHref = nextSerialized ? `${pathname}?${nextSerialized}` : pathname;
-
       queryStateRef.current = nextState;
       setQueryState(nextState);
-
       if (currentSerialized !== nextSerialized) {
+        const nextHref = nextSerialized ? `${pathname}?${nextSerialized}` : pathname;
         router.push(nextHref, { scroll: false });
       }
     },
@@ -80,27 +77,24 @@ export function ShopCatalogView({
   );
 
   /**
-   * Path B — LIVE SEARCH TYPING:
-   * Uses `router.replace(..., { scroll: false })` so debounced keystrokes
-   * update the URL in place without polluting browser history per keystroke.
+   * B. LIVE SEARCH TYPING:
+   * Replaces the current URL entry during debounced search typing to avoid per-keystroke history clutter.
    */
   const replaceCatalogSearchState = useCallback(
     (nextState: CatalogQueryState) => {
       const currentSerialized = buildCatalogSearchParams(queryStateRef.current);
       const nextSerialized = buildCatalogSearchParams(nextState);
-      const nextHref = nextSerialized ? `${pathname}?${nextSerialized}` : pathname;
-
       queryStateRef.current = nextState;
       setQueryState(nextState);
-
       if (currentSerialized !== nextSerialized) {
+        const nextHref = nextSerialized ? `${pathname}?${nextSerialized}` : pathname;
         router.replace(nextHref, { scroll: false });
       }
     },
     [pathname, router]
   );
 
-  // Synchronize local state when URL searchParams change externally (e.g., Browser Back/Forward)
+  // Synchronize local state when URL searchParams change externally (e.g., Browser Back/Forward or nav links)
   useEffect(() => {
     const parsedFromUrl = parseCatalogSearchParams(
       new URLSearchParams(urlQueryString)
@@ -299,8 +293,8 @@ export function ShopCatalogView({
               <div
                 className={
                   isDesktopSidebarOpen
-                    ? 'grid grid-cols-1 gap-7 md:grid-cols-2 xl:grid-cols-3'
-                    : 'grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3'
+                    ? 'grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3'
+                    : 'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'
                 }
               >
                 {filteredProducts.map((product) => (
@@ -354,7 +348,7 @@ export function ShopCatalogView({
         </div>
       </DrawerShell>
 
-      {/* 5. Olfactory Dossier Drawer */}
+      {/* 5. Quick Olfactory View (Dossier Drawer) */}
       <ShopProductDossierDrawer
         product={inspectedProduct}
         onClose={() => setInspectedProduct(null)}

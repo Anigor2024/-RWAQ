@@ -6,8 +6,9 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  where,
 } from 'firebase/firestore';
-import type { Collection, HomepageContent, Locale, Product } from '@/types';
+import type { Collection, HomepageContent, Locale, Product, Slug } from '@/types';
 import { SEED_COLLECTIONS } from '@/data/collections';
 import { SEED_HOMEPAGE_CONTENT } from '@/data/homepage';
 import { SEED_PRODUCTS } from '@/data/products';
@@ -15,7 +16,7 @@ import {
   parseFirestoreCollection,
   parseFirestoreProduct,
 } from '@/lib/validation/firestore-parsers';
-import { newsletterSubscriptionSchema } from '@/lib/validation/schemas';
+import { newsletterSubscriptionSchema, slugSchema } from '@/lib/validation/schemas';
 import { getAppDataMode, getFirebaseDb } from './client';
 import { handleFirestoreError, OperationType } from './errors';
 
@@ -108,6 +109,66 @@ export async function getCatalogProducts(): Promise<
   } catch (error) {
     handleFirestoreError(error, OperationType.LIST, path);
   }
+}
+
+/**
+ * Retrieves a single fragrance product by its canonical URL slug.
+ * - Validates slug format before querying.
+ * - In 'demo' mode: resolves from typed RWAQ seed products.
+ * - In 'live' mode: queries Firestore directly, validates with parseFirestoreProduct,
+ *   and NEVER silently falls back to seed data.
+ */
+export async function getCatalogProductBySlug(
+  rawSlug: string
+): Promise<CatalogDataResult<Product | null>> {
+  const slugValidation = slugSchema.safeParse(rawSlug);
+  const mode = getAppDataMode();
+
+  if (!slugValidation.success) {
+    return {
+      data: null,
+      source: mode === 'demo' ? 'seed' : 'firestore',
+    };
+  }
+
+  const normalizedSlug = slugValidation.data;
+
+  if (mode === 'demo') {
+    const found =
+      SEED_PRODUCTS.find((product) => product.slug === normalizedSlug) ?? null;
+    return { data: found, source: 'seed' };
+  }
+
+  const db = requireLiveFirestore();
+  const path = 'products';
+
+  try {
+    const q = query(
+      collection(db, path),
+      where('slug', '==', normalizedSlug),
+      limit(1)
+    );
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) {
+      return { data: null, source: 'firestore' };
+    }
+
+    const docSnap = snapshot.docs[0];
+    const validated = parseFirestoreProduct(
+      docSnap.id,
+      docSnap.data() as Record<string, unknown>
+    );
+    return { data: validated, source: 'firestore' };
+  } catch (error) {
+    handleFirestoreError(error, OperationType.GET, `${path}?slug=${normalizedSlug}`);
+  }
+}
+
+/**
+ * Returns the canonical list of seed product slugs for static route generation.
+ */
+export function getSeedProductSlugs(): Slug[] {
+  return SEED_PRODUCTS.map((product) => product.slug);
 }
 
 /**

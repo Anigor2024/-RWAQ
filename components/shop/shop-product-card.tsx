@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Eye, Heart, ShoppingBag } from 'lucide-react';
 import {
   getDefaultPurchasableVariant,
@@ -19,7 +20,7 @@ import type { Product } from '@/types';
 
 interface ShopProductCardProps {
   product: Product;
-  onInspectDossier: (product: Product) => void;
+  onInspectDossier?: (product: Product) => void;
 }
 
 export function ShopProductCard({
@@ -30,48 +31,44 @@ export function ShopProductCard({
   const { addToBag, isWishlisted, toggleWishlist } = useUI();
   const { showToast } = useToast();
 
-  const defaultPurchasableVariant = getDefaultPurchasableVariant(product);
-
+  const defaultPurchasable = getDefaultPurchasableVariant(product);
   const [selectedVariantId, setSelectedVariantId] = useState<string>(
-    defaultPurchasableVariant?.id ?? ''
+    defaultPurchasable?.id ?? product.variants[0]?.id ?? ''
   );
 
   const activeVariant =
-    product.variants.find(
-      (v) =>
-        v.id === selectedVariantId &&
-        product.inStock &&
-        isVariantPurchasable(v)
-    ) ?? defaultPurchasableVariant;
-
-  const canAddToBag = Boolean(
-    product.inStock && activeVariant && isVariantPurchasable(activeVariant)
-  );
+    product.variants.find((v) => v.id === selectedVariantId) ??
+    defaultPurchasable ??
+    product.variants[0] ??
+    null;
 
   const saved = isWishlisted(product.id);
   const displayPrice = activeVariant
     ? activeVariant.price
     : getProductDisplayPrice(product);
   const displayOriginalPrice = activeVariant
-    ? (activeVariant.originalPrice ?? product.originalPrice)
+    ? activeVariant.originalPrice ?? product.originalPrice
     : getProductDisplayOriginalPrice(product);
+
+  const canAddActiveVariant =
+    product.inStock && isVariantPurchasable(activeVariant);
+  const productHref = `/products/${product.slug}`;
 
   return (
     <article className="group flex h-full flex-col justify-between border border-[#DFD3C3]/80 bg-[#FFFDF9] p-4 sm:p-5 transition-colors duration-300 hover:border-[#A77A50]/65">
       <div>
         {/* Studio Visual Container */}
         <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#181512]">
-          <button
-            type="button"
-            onClick={() => onInspectDossier(product)}
-            aria-label={`${localize(product.name, locale)} — ${t.shop.card.inspectDossier}`}
+          <Link
+            href={productHref}
+            aria-label={`${localize(product.name, locale)} — ${t.shop.card.viewCreation}`}
             className="block h-full w-full text-start focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
           >
             <Image
               src={product.image.url}
               alt={localize(product.image.alt, locale)}
               fill
-              sizes="(max-width: 767px) 92vw, (max-width: 1279px) 46vw, 30vw"
+              sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 30vw"
               className="object-cover brightness-[1.04] contrast-[1.03] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
               referrerPolicy="no-referrer"
             />
@@ -79,7 +76,7 @@ export function ShopProductCard({
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0B0B0A]/45 to-transparent opacity-65 transition-opacity duration-300 group-hover:opacity-85"
             />
-          </button>
+          </Link>
 
           {/* Single Quiet Kicker Status Text */}
           {(product.isNew || product.isBestSeller) && (
@@ -137,9 +134,8 @@ export function ShopProductCard({
 
         {/* Bilingual Title & Dynamic SAR Price */}
         <div className="mt-2 flex items-baseline justify-between gap-3">
-          <button
-            type="button"
-            onClick={() => onInspectDossier(product)}
+          <Link
+            href={productHref}
             className="group/title flex items-baseline gap-2 text-start focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
           >
             <h2 className="text-xl font-medium text-[#0B0B0A] transition-colors group-hover/title:text-[#4A3027]">
@@ -148,7 +144,7 @@ export function ShopProductCard({
             <span className="font-[family-name:var(--font-display-en)] text-xs tracking-wider text-[#918A80]">
               {locale === 'ar' ? product.name.en : product.name.ar}
             </span>
-          </button>
+          </Link>
 
           <div className="flex items-baseline gap-1.5 tabular-nums">
             {displayOriginalPrice && (
@@ -208,22 +204,20 @@ export function ShopProductCard({
               {t.shop.card.selectSizeLabel}:
             </span>
             <div
-              role="group"
+              role="radiogroup"
               aria-label={t.shop.card.selectSizeLabel}
               className="flex flex-wrap items-center gap-1.5"
             >
               {product.variants.map((variant) => {
-                const purchasable =
-                  product.inStock && isVariantPurchasable(variant);
-                const isSelected =
-                  purchasable && activeVariant?.id === variant.id;
+                const isSelected = activeVariant?.id === variant.id;
+                const purchasable = isVariantPurchasable(variant);
                 return (
                   <button
                     key={variant.id}
                     type="button"
+                    role="radio"
+                    aria-checked={isSelected}
                     disabled={!purchasable}
-                    aria-disabled={!purchasable}
-                    aria-pressed={isSelected}
                     onClick={() => {
                       if (purchasable) {
                         setSelectedVariantId(variant.id);
@@ -232,7 +226,7 @@ export function ShopProductCard({
                     className={cn(
                       'px-2.5 py-1 text-xs tabular-nums transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
                       !purchasable
-                        ? 'cursor-not-allowed border border-[#DFD3C3]/60 bg-[#F5F0E8]/40 text-[#918A80] line-through opacity-60'
+                        ? 'cursor-not-allowed border border-[#DFD3C3]/50 bg-[#F5F0E8]/60 text-[#918A80] line-through opacity-60'
                         : isSelected
                           ? 'bg-[#0B0B0A] text-[#F5F0E8] font-medium'
                           : 'border border-[#DFD3C3] bg-transparent text-[#665F57] hover:border-[#0B0B0A] hover:text-[#0B0B0A]'
@@ -251,10 +245,9 @@ export function ShopProductCard({
       <div className="mt-5 flex items-center gap-2 pt-1">
         <button
           type="button"
-          disabled={!canAddToBag}
-          aria-disabled={!canAddToBag}
+          disabled={!canAddActiveVariant}
           onClick={() => {
-            if (!canAddToBag || !activeVariant) return;
+            if (!canAddActiveVariant || !activeVariant) return;
             const added = addToBag(product, activeVariant, 1);
             if (added) {
               showToast(
@@ -267,25 +260,36 @@ export function ShopProductCard({
           }}
           className={cn(
             'inline-flex h-11 flex-1 items-center justify-center gap-2 px-4 text-xs font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap',
-            canAddToBag
+            canAddActiveVariant
               ? 'bg-[#0B0B0A] text-[#F5F0E8] hover:bg-[#4A3027]'
-              : 'cursor-not-allowed border border-[#DFD3C3] bg-[#F5F0E8] text-[#918A80] opacity-70'
+              : 'cursor-not-allowed border border-[#DFD3C3] bg-[#F5F0E8] text-[#918A80]'
           )}
         >
           <ShoppingBag className="h-3.5 w-3.5" />
           <span>
-            {canAddToBag ? t.creations.addToBag : t.shop.card.outOfStockLabel}
+            {canAddActiveVariant
+              ? t.creations.addToBag
+              : t.shop.card.outOfStockLabel}
           </span>
         </button>
 
-        <button
-          type="button"
-          onClick={() => onInspectDossier(product)}
-          className="inline-flex h-11 items-center justify-center gap-1.5 border border-[#DFD3C3] bg-transparent px-3.5 text-xs font-medium text-[#0B0B0A] transition-colors duration-200 hover:border-[#0B0B0A] hover:bg-[#F5F0E8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
-        >
-          <Eye className="h-3.5 w-3.5 text-[#4A3027]" />
-          <span>{t.shop.card.inspectDossier}</span>
-        </button>
+        {onInspectDossier ? (
+          <button
+            type="button"
+            onClick={() => onInspectDossier(product)}
+            className="inline-flex h-11 items-center justify-center gap-1.5 border border-[#DFD3C3] bg-transparent px-3.5 text-xs font-medium text-[#0B0B0A] transition-colors duration-200 hover:border-[#0B0B0A] hover:bg-[#F5F0E8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
+          >
+            <Eye className="h-3.5 w-3.5 text-[#4A3027]" />
+            <span>{t.shop.card.inspectDossier}</span>
+          </button>
+        ) : (
+          <Link
+            href={productHref}
+            className="inline-flex h-11 items-center justify-center gap-1.5 border border-[#DFD3C3] bg-transparent px-3.5 text-xs font-medium text-[#0B0B0A] transition-colors duration-200 hover:border-[#0B0B0A] hover:bg-[#F5F0E8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
+          >
+            <span>{t.shop.card.viewCreation}</span>
+          </Link>
+        )}
       </div>
     </article>
   );

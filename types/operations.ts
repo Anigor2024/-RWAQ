@@ -55,14 +55,16 @@ export interface HeroMediaConfig {
 
 export type HeroCtaConfig =
   | {
-      type: 'route';
+      type?: 'route';
       label: LocalizedString;
       href: string;
+      targetSectionId?: string;
     }
   | {
-      type: 'section';
+      type?: 'section';
       label: LocalizedString;
       targetSectionId: string;
+      href?: string;
     };
 
 export interface HomepageContent {
