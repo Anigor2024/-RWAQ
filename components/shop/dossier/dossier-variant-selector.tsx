@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { isVariantPurchasable } from '@/features/catalog/product-commerce';
+import { isProductVariantPurchasable } from '@/features/catalog/product-commerce';
 import { formatVolumeMl, localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
 import { cn } from '@/lib/utils';
@@ -20,7 +20,7 @@ export function DossierVariantSelector({
   onSelectVariant,
 }: DossierVariantSelectorProps) {
   const { locale, t } = useLocale();
-  const activePurchasable = isVariantPurchasable(activeVariant);
+  const activePurchasable = isProductVariantPurchasable(product, activeVariant);
 
   return (
     <div>
@@ -28,19 +28,17 @@ export function DossierVariantSelector({
         <span className="text-[#918A80]">
           {t.shop.dossier.variantsHeading}
         </span>
-        {activeVariant && (
-          <span
-            className={cn(
-              activePurchasable ? 'text-[#D8C8B2]' : 'text-[#918A80]'
-            )}
-          >
-            {!activePurchasable
-              ? t.shop.card.outOfStockLabel
-              : activeVariant.stockQuantity <= 18
-                ? t.shop.card.limitedStockLabel
-                : t.shop.card.inStockLabel}
-          </span>
-        )}
+        <span
+          className={cn(
+            activePurchasable ? 'text-[#D8C8B2]' : 'text-[#918A80]'
+          )}
+        >
+          {!activePurchasable
+            ? t.shop.card.outOfStockLabel
+            : activeVariant.stockQuantity <= 18
+              ? t.shop.card.limitedStockLabel
+              : t.shop.card.inStockLabel}
+        </span>
       </div>
 
       <div
@@ -49,8 +47,8 @@ export function DossierVariantSelector({
         className="mt-3 grid grid-cols-2 gap-2.5"
       >
         {product.variants.map((variant) => {
-          const isSelected = activeVariant?.id === variant.id;
-          const purchasable = isVariantPurchasable(variant);
+          const purchasable = isProductVariantPurchasable(product, variant);
+          const isSelected = purchasable && activeVariant?.id === variant.id;
 
           return (
             <button

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { isVariantPurchasable } from '@/features/catalog/product-commerce';
+import { isProductVariantPurchasable } from '@/features/catalog/product-commerce';
 import { formatVolumeMl, localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
 import { cn } from '@/lib/utils';
@@ -20,7 +20,10 @@ export function ProductVariantSelector({
   onSelectVariant,
 }: ProductVariantSelectorProps) {
   const { locale, t } = useLocale();
-  const activePurchasable = isVariantPurchasable(selectedVariant);
+  const activePurchasable = isProductVariantPurchasable(
+    product,
+    selectedVariant
+  );
 
   return (
     <div className="space-y-3">
@@ -29,24 +32,22 @@ export function ProductVariantSelector({
           {t.pdp.selectSizeLabel}
         </span>
 
-        {selectedVariant && (
-          <span
-            className={cn(
-              'text-xs',
-              !activePurchasable
-                ? 'text-[#918A80]'
-                : selectedVariant.stockQuantity <= 18
-                  ? 'font-medium text-[#A77A50]'
-                  : 'text-[#665F57]'
-            )}
-          >
-            {!activePurchasable
-              ? t.pdp.outOfStockStatus
+        <span
+          className={cn(
+            'text-xs',
+            !activePurchasable
+              ? 'text-[#918A80]'
               : selectedVariant.stockQuantity <= 18
-                ? t.pdp.limitedStockStatus
-                : t.pdp.inStockStatus}
-          </span>
-        )}
+                ? 'font-medium text-[#A77A50]'
+                : 'text-[#665F57]'
+          )}
+        >
+          {!activePurchasable
+            ? t.pdp.outOfStockStatus
+            : selectedVariant.stockQuantity <= 18
+              ? t.pdp.limitedStockStatus
+              : t.pdp.inStockStatus}
+        </span>
       </div>
 
       <div
@@ -55,8 +56,8 @@ export function ProductVariantSelector({
         className="grid grid-cols-1 gap-3 sm:grid-cols-2"
       >
         {product.variants.map((variant) => {
-          const isSelected = selectedVariant?.id === variant.id;
-          const purchasable = isVariantPurchasable(variant);
+          const purchasable = isProductVariantPurchasable(product, variant);
+          const isSelected = purchasable && selectedVariant?.id === variant.id;
 
           return (
             <button

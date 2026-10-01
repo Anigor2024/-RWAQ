@@ -51,9 +51,8 @@ export function FeaturedCreations({
   const flagshipProduct = visibleProducts[0];
   const supportingProducts = visibleProducts.slice(1, 6);
   const flagshipVariant = flagshipProduct
-    ? getDefaultPurchasableVariant(flagshipProduct) ??
-      flagshipProduct.variants[0]
-    : undefined;
+    ? getDefaultPurchasableVariant(flagshipProduct)
+    : null;
   const flagshipPrice = flagshipProduct
     ? getProductDisplayPrice(flagshipProduct)
     : undefined;

@@ -15,6 +15,7 @@ import {
   getDefaultPurchasableVariant,
   getProductDisplayOriginalPrice,
   getProductDisplayPrice,
+  resolveSelectedPurchasableVariant,
 } from '@/features/catalog/product-commerce';
 import { localize } from '@/lib/i18n/config';
 import { useLocale } from '@/providers/locale-provider';
@@ -45,10 +46,7 @@ export function ShopProductDossierDrawer({
       setSelectedImageIndex(0);
       return;
     }
-    const defaultPurchasable = getDefaultPurchasableVariant(product);
-    setSelectedVariantId(
-      defaultPurchasable?.id ?? product.variants[0]?.id ?? ''
-    );
+    setSelectedVariantId(getDefaultPurchasableVariant(product)?.id ?? '');
     setSelectedImageIndex(0);
   }, [product]);
 
@@ -64,12 +62,10 @@ export function ShopProductDossierDrawer({
     );
   }
 
-  const defaultPurchasable = getDefaultPurchasableVariant(product);
-  const activeVariant =
-    product.variants.find((v) => v.id === selectedVariantId) ??
-    defaultPurchasable ??
-    product.variants[0] ??
-    null;
+  const activeVariant = resolveSelectedPurchasableVariant(
+    product,
+    selectedVariantId
+  );
 
   const gallery =
     product.gallery.length > 0 ? product.gallery : [product.image];

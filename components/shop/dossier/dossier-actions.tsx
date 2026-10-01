@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Heart, ShoppingBag } from 'lucide-react';
-import { isVariantPurchasable } from '@/features/catalog/product-commerce';
+import { isProductVariantPurchasable } from '@/features/catalog/product-commerce';
 import { formatVolumeMl, localize } from '@/lib/i18n/config';
 import { cn } from '@/lib/utils';
 import { useLocale } from '@/providers/locale-provider';
@@ -28,8 +28,7 @@ export function DossierPurchaseActions({
   const DirectionalArrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
 
   const saved = isWishlisted(product.id);
-  const canAddToBag =
-    product.inStock && isVariantPurchasable(activeVariant);
+  const canAddToBag = isProductVariantPurchasable(product, activeVariant);
 
   return (
     <div className="mt-4 space-y-2.5">

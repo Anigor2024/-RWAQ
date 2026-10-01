@@ -30,8 +30,7 @@ export function EditorialProductCard({ product }: EditorialProductCardProps) {
   const [isNotesExpanded, setIsNotesExpanded] = useState(false);
 
   const saved = isWishlisted(product.id);
-  const defaultVariant =
-    getDefaultPurchasableVariant(product) ?? product.variants[0] ?? null;
+  const defaultVariant = getDefaultPurchasableVariant(product);
   const displayPrice = getProductDisplayPrice(product);
   const displayOriginalPrice = getProductDisplayOriginalPrice(product);
   const canPurchase = isProductPurchasable(product);

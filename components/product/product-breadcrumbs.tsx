@@ -43,10 +43,12 @@ export function ProductBreadcrumbs({ product }: ProductBreadcrumbsProps) {
             /
           </li>
           <li>
-            {/* Collection label rendered as non-linked text until /collections/[slug] routes exist */}
-            <span className="text-[#4A3027]">
+            <Link
+              href={`/shop?collection=${encodeURIComponent(product.collectionSlug)}`}
+              className="text-[#4A3027] transition-colors hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+            >
               {localize(product.collectionName, locale)}
-            </span>
+            </Link>
           </li>
           <li aria-hidden="true" className="text-[#918A80]">
             /

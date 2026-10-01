@@ -74,7 +74,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   const [wishlistProductIds, setWishlistProductIds] = useState<EntityId[]>([]);
 
   // Stores the element that triggered the drawer so focus can be restored on close
-  const triggerElementRef = useRef<HTMLElement | null>(null);
+  const triggerElementRef = useRef<HTMLMetaElement | HTMLElement | null>(null);
 
   useEffect(() => {
     const unsubBag = hydrateAndSubscribeStorage(
@@ -147,20 +147,19 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
       selectedVariant?: ProductVariant | null,
       quantity: number = 1
     ): boolean => {
-      if (!product.inStock) {
-        return false;
-      }
-
       const targetVariant =
         selectedVariant !== undefined
           ? selectedVariant
           : getDefaultPurchasableVariant(product);
 
-      if (!isVariantPurchasable(targetVariant)) {
+      if (!isProductVariantPurchasable(product, targetVariant)) {
         return false;
       }
 
-      const maxAllowed = getSafeMaxVariantQuantity(targetVariant);
+      const maxAllowed = getSafeMaxProductVariantQuantity(
+        product,
+        targetVariant
+      );
       if (maxAllowed <= 0) {
         return false;
       }

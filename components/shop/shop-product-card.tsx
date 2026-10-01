@@ -8,7 +8,8 @@ import {
   getDefaultPurchasableVariant,
   getProductDisplayOriginalPrice,
   getProductDisplayPrice,
-  isVariantPurchasable,
+  isProductVariantPurchasable,
+  resolveSelectedPurchasableVariant,
 } from '@/features/catalog/product-commerce';
 import { formatVolumeMl, localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
@@ -31,16 +32,14 @@ export function ShopProductCard({
   const { addToBag, isWishlisted, toggleWishlist } = useUI();
   const { showToast } = useToast();
 
-  const defaultPurchasable = getDefaultPurchasableVariant(product);
   const [selectedVariantId, setSelectedVariantId] = useState<string>(
-    defaultPurchasable?.id ?? product.variants[0]?.id ?? ''
+    getDefaultPurchasableVariant(product)?.id ?? ''
   );
 
-  const activeVariant =
-    product.variants.find((v) => v.id === selectedVariantId) ??
-    defaultPurchasable ??
-    product.variants[0] ??
-    null;
+  const activeVariant = resolveSelectedPurchasableVariant(
+    product,
+    selectedVariantId
+  );
 
   const saved = isWishlisted(product.id);
   const displayPrice = activeVariant
@@ -50,8 +49,10 @@ export function ShopProductCard({
     ? activeVariant.originalPrice ?? product.originalPrice
     : getProductDisplayOriginalPrice(product);
 
-  const canAddActiveVariant =
-    product.inStock && isVariantPurchasable(activeVariant);
+  const canAddActiveVariant = isProductVariantPurchasable(
+    product,
+    activeVariant
+  );
   const productHref = `/products/${product.slug}`;
 
   return (
@@ -209,8 +210,12 @@ export function ShopProductCard({
               className="flex flex-wrap items-center gap-1.5"
             >
               {product.variants.map((variant) => {
-                const isSelected = activeVariant?.id === variant.id;
-                const purchasable = isVariantPurchasable(variant);
+                const purchasable = isProductVariantPurchasable(
+                  product,
+                  variant
+                );
+                const isSelected =
+                  purchasable && activeVariant?.id === variant.id;
                 return (
                   <button
                     key={variant.id}

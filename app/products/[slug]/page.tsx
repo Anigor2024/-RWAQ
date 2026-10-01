@@ -13,22 +13,14 @@ import {
   isProductPurchasable,
   loadProductDetailPageData,
 } from '@/features/catalog/service';
+import {
+  getConfiguredPublicOrigin,
+  isAbsolutePublicHttpUrl,
+} from '@/lib/seo/public-origin';
 import type { Product } from '@/types';
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
-}
-
-function resolveBaseOrigin(): string {
-  const rawUrl = process.env.APP_URL?.trim();
-  if (
-    rawUrl &&
-    rawUrl !== 'MY_APP_URL' &&
-    (rawUrl.startsWith('http://') || rawUrl.startsWith('https://'))
-  ) {
-    return rawUrl.replace(/\/+$/, '');
-  }
-  return 'http://localhost:3000';
 }
 
 export async function generateStaticParams() {
@@ -49,8 +41,8 @@ export async function generateMetadata({
   }
 
   const title = `${product.name.ar} — ${product.name.en}`;
-  const ogTitle = `${product.name.ar} | رِواق — RWAQ (${product.name.en})`;
-  const description = `${product.shortDescription.ar} ${product.shortDescription.en}`;
+  const socialTitle = `${product.name.ar} — ${product.name.en} | رِواق — RWAQ`;
+  const description = `${product.name.ar} (${product.subtitle.ar}) — ${product.shortDescription.ar}`;
   const canonicalPath = `/products/${product.slug}`;
 
   return {
@@ -60,7 +52,7 @@ export async function generateMetadata({
       canonical: canonicalPath,
     },
     openGraph: {
-      title: ogTitle,
+      title: socialTitle,
       description,
       url: canonicalPath,
       type: 'website',
@@ -76,7 +68,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title: ogTitle,
+      title: socialTitle,
       description,
       images: [product.image.url],
     },
@@ -84,19 +76,35 @@ export async function generateMetadata({
 }
 
 function buildProductJsonLd(product: Product) {
-  const baseOrigin = resolveBaseOrigin();
-  const productUrl = `${baseOrigin}/products/${product.slug}`;
+  const publicOrigin = getConfiguredPublicOrigin();
+  const productUrl = publicOrigin
+    ? `${publicOrigin}/products/${product.slug}`
+    : null;
+  const collectionUrl = publicOrigin
+    ? `${publicOrigin}/shop?collection=${encodeURIComponent(
+        product.collectionSlug
+      )}`
+    : null;
+
   const defaultVariant = getDefaultPurchasableVariant(product);
   const displayPrice = getProductDisplayPrice(product);
   const purchasable = isProductPurchasable(product);
 
-  const imageUrls = Array.from(
-    new Set(
-      [product.image.url, ...product.gallery.map((g) => g.url)].map((url) =>
-        url.startsWith('http') ? url : `${baseOrigin}${url}`
-      )
-    )
+  const rawMediaUrls = Array.from(
+    new Set([product.image.url, ...product.gallery.map((g) => g.url)])
   );
+
+  const resolvedImages = rawMediaUrls
+    .map((url) => {
+      if (isAbsolutePublicHttpUrl(url)) {
+        return url;
+      }
+      if (publicOrigin && url.startsWith('/')) {
+        return `${publicOrigin}${url}`;
+      }
+      return null;
+    })
+    .filter((url): url is string => Boolean(url));
 
   return {
     '@context': 'https://schema.org',
@@ -105,7 +113,7 @@ function buildProductJsonLd(product: Product) {
         '@type': 'Product',
         name: `${product.name.ar} — ${product.name.en}`,
         description: product.shortDescription.ar,
-        image: imageUrls,
+        ...(resolvedImages.length > 0 ? { image: resolvedImages } : {}),
         sku: defaultVariant?.sku ?? product.sku,
         brand: {
           '@type': 'Brand',
@@ -113,7 +121,7 @@ function buildProductJsonLd(product: Product) {
         },
         offers: {
           '@type': 'Offer',
-          url: productUrl,
+          ...(productUrl ? { url: productUrl } : {}),
           priceCurrency: displayPrice.currency,
           price: String(displayPrice.amount),
           availability: purchasable
@@ -128,19 +136,25 @@ function buildProductJsonLd(product: Product) {
             '@type': 'ListItem',
             position: 1,
             name: 'الرئيسية | Home',
-            item: `${baseOrigin}/`,
+            ...(publicOrigin ? { item: `${publicOrigin}/` } : {}),
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: 'المتجر العطري | The Shop',
-            item: `${baseOrigin}/shop`,
+            ...(publicOrigin ? { item: `${publicOrigin}/shop` } : {}),
           },
           {
             '@type': 'ListItem',
             position: 3,
+            name: `${product.collectionName.ar} — ${product.collectionName.en}`,
+            ...(collectionUrl ? { item: collectionUrl } : {}),
+          },
+          {
+            '@type': 'ListItem',
+            position: 4,
             name: `${product.name.ar} — ${product.name.en}`,
-            item: productUrl,
+            ...(productUrl ? { item: productUrl } : {}),
           },
         ],
       },
@@ -160,10 +174,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   const jsonLd = buildProductJsonLd(product);
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-[#F5F0E8] text-[#0B0B0A]">
+    <div className="relative flex min-h-screen flex-col bg-[#F5F0E8] pb-20 text-[#0B0B0A] lg:pb-0">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+        }}
       />
 
       <Header />
