@@ -528,6 +528,143 @@ export interface Dictionary {
     emptyCatalogTitle: string;
     emptyCatalogSubtitle: string;
   };
+  checkout: {
+    title: string;
+    reassuranceNote: string;
+    returnToBagAction: string;
+    returnToShopAction: string;
+    progressAriaLabel: string;
+    stepLabel: string;
+    stages: {
+      contact: {
+        code: string;
+        label: string;
+      };
+      delivery: {
+        code: string;
+        label: string;
+      };
+      review: {
+        code: string;
+        label: string;
+      };
+    };
+    emptyEyebrow: string;
+    emptyTitle: string;
+    emptyDescription: string;
+    exploreFragrancesCta: string;
+    giftAtelierCta: string;
+    blockedEyebrow: string;
+    blockedTitle: string;
+    blockedDescription: string;
+    blockedIssueUnavailable: string;
+    blockedIssueStock: string;
+    blockedIssueGiftBundle: string;
+    reviewBagCta: string;
+    continueShoppingCta: string;
+    priceChangedNotice: string;
+    contact: {
+      eyebrow: string;
+      heading: string;
+      subtitle: string;
+      fullNameLabel: string;
+      fullNamePlaceholder: string;
+      emailLabel: string;
+      emailPlaceholder: string;
+      phoneLabel: string;
+      phonePlaceholder: string;
+      phoneHint: string;
+      continueToDeliveryCta: string;
+      errors: {
+        invalid_full_name: string;
+        invalid_email: string;
+        invalid_phone: string;
+      };
+    };
+    delivery: {
+      eyebrow: string;
+      heading: string;
+      subtitle: string;
+      useContactDetailsAction: string;
+      recipientNameLabel: string;
+      recipientNamePlaceholder: string;
+      recipientPhoneLabel: string;
+      recipientPhonePlaceholder: string;
+      countryLabel: string;
+      countryValue: string;
+      cityLabel: string;
+      cityPlaceholder: string;
+      districtLabel: string;
+      districtPlaceholder: string;
+      streetLabel: string;
+      streetPlaceholder: string;
+      additionalDetailsToggle: string;
+      additionalDetailsOptionalTag: string;
+      buildingNumberLabel: string;
+      buildingNumberPlaceholder: string;
+      postalCodeLabel: string;
+      postalCodePlaceholder: string;
+      nationalShortCodeLabel: string;
+      nationalShortCodePlaceholder: string;
+      deliveryNotesLabel: string;
+      deliveryNotesPlaceholder: string;
+      deliveryNotesCounter: string;
+      deliveryMethodSectionTitle: string;
+      standardDeliveryTitle: string;
+      standardDeliveryDescription: string;
+      complimentaryStandardDelivery: string;
+      backToContactAction: string;
+      continueToReviewCta: string;
+      errors: {
+        invalid_recipient_name: string;
+        invalid_phone: string;
+        invalid_city: string;
+        invalid_district: string;
+        invalid_street: string;
+        invalid_building_number: string;
+        invalid_postal_code: string;
+        invalid_national_short_code: string;
+        invalid_delivery_notes: string;
+      };
+    };
+    review: {
+      eyebrow: string;
+      heading: string;
+      subtitle: string;
+      contactSummaryTitle: string;
+      editContactAction: string;
+      deliverySummaryTitle: string;
+      editDeliveryAction: string;
+      deliveryMethodSummaryTitle: string;
+      itemsSectionTitle: string;
+      standaloneItemsHeading: string;
+      giftBundlesHeading: string;
+      quantityLabel: string;
+      unitPriceLabel: string;
+      lineTotalLabel: string;
+      giftAtelierBadge: string;
+      giftPresentationValue: string;
+      giftSlotPrefix: string;
+      giftDedicationHeading: string;
+      giftDedicationTo: string;
+      giftDedicationFrom: string;
+      giftDedicationBlank: string;
+      reviewFooterNotice: string;
+      backToDeliveryAction: string;
+    };
+    summary: {
+      title: string;
+      mobileShowSummary: string;
+      mobileHideSummary: string;
+      subtotalLabel: string;
+      deliveryLabel: string;
+      vatIncludedBreakdownLabel: string;
+      totalLabel: string;
+      vatRetailCopy: string;
+      unitCountLabel: string;
+      singleUnitLabel: string;
+    };
+  };
 }
 
 export const DICTIONARIES: Record<Locale, Dictionary> = {
@@ -1251,6 +1388,160 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       emptyCatalogTitle: 'مشغل الهدايا غير متاح مؤقتاً',
       emptyCatalogSubtitle:
         'لا تتوفر حالياً ابتكارات عطرية قابلة للاقتناء في الكتالوج لتنسيق صندوق هدية.',
+    },
+    checkout: {
+      title: 'إتمام الطلب',
+      reassuranceNote: 'بياناتك لا تشمل معلومات الدفع في هذه المرحلة.',
+      returnToBagAction: 'مراجعة الحقيبة',
+      returnToShopAction: 'متابعة التسوق',
+      progressAriaLabel: 'مراحل إتمام الطلب',
+      stepLabel: 'المرحلة',
+      stages: {
+        contact: {
+          code: '01',
+          label: 'التواصل',
+        },
+        delivery: {
+          code: '02',
+          label: 'التوصيل',
+        },
+        review: {
+          code: '03',
+          label: 'المراجعة',
+        },
+      },
+      emptyEyebrow: 'حقيبة التسوق فارغة',
+      emptyTitle: 'لا توجد مقتنيات في حقيبتك لإتمام الطلب',
+      emptyDescription:
+        'ابدأ باستكشاف ابتكارات دار رِواق العطرية أو نسّق صندوق إهداء خاص في مشغل الهدايا قبل المتابعة إلى إتمام الطلب.',
+      exploreFragrancesCta: 'استكشف العطور',
+      giftAtelierCta: 'مشغل الهدايا',
+      blockedEyebrow: 'مراجعة الحقيبة مطلوبة',
+      blockedTitle: 'تحتاج حقيبتك إلى مراجعة قبل إتمام الطلب.',
+      blockedDescription:
+        'طرأ تحديث على توفر أحد العطور أو الكميات المتاحة في حقيبتك. يرجى مراجعة الحقيبة لتحديث اختياراتك قبل متابعة إتمام الطلب.',
+      blockedIssueUnavailable:
+        'أحد الابتكارات أو الأحجام المختارة لم يعد متوفراً للاقتناء حالياً.',
+      blockedIssueStock:
+        'الكمية المطلوبة لأحد الأحجام تتجاوز الحد المتاح حالياً في المخزون.',
+      blockedIssueGiftBundle:
+        'أحد صناديق الإهداء في الحقيبة يحتاج إلى مراجعة لضمان اكتمال مواضعه.',
+      reviewBagCta: 'مراجعة الحقيبة',
+      continueShoppingCta: 'متابعة التسوق',
+      priceChangedNotice: 'تم تحديث سعر أحد المنتجات ليطابق السعر الحالي.',
+      contact: {
+        eyebrow: 'المرحلة 01 · بيانات التواصل',
+        heading: 'بيانات التواصل',
+        subtitle:
+          'تُستخدم هذه البيانات لإرسال تأكيد الطلب والتنسيق المباشر عند التوصيل. يمكنك المتابعة كضيف دون الحاجة إلى حساب.',
+        fullNameLabel: 'الاسم الكامل',
+        fullNamePlaceholder: 'مثال: فيصل العتيبي',
+        emailLabel: 'البريد الإلكتروني',
+        emailPlaceholder: 'name@example.com',
+        phoneLabel: 'رقم الجوال',
+        phonePlaceholder: '05XXXXXXXX أو +9665XXXXXXXX',
+        phoneHint:
+          'يُقبل الرقم السعودي بالصيغة المحلية أو الدولية ويُحفظ تلقائياً بصيغة +9665XXXXXXXX.',
+        continueToDeliveryCta: 'المتابعة إلى التوصيل',
+        errors: {
+          invalid_full_name: 'يرجى إدخال الاسم الكامل (حرفين على الأقل).',
+          invalid_email: 'يرجى إدخال بريد إلكتروني صحيح.',
+          invalid_phone:
+            'يرجى إدخال رقم جوال سعودي صحيح يبدأ بـ 05 أو +9665.',
+        },
+      },
+      delivery: {
+        eyebrow: 'المرحلة 02 · التوصيل داخل المملكة',
+        heading: 'عنوان التوصيل وطريقة الشحن',
+        subtitle:
+          'أدخل تفاصيل عنوان التوصيل داخل المملكة العربية السعودية.',
+        useContactDetailsAction: 'استخدام الاسم ورقم الجوال من بيانات التواصل',
+        recipientNameLabel: 'اسم المستلم',
+        recipientNamePlaceholder: 'الاسم الكامل للمستلم',
+        recipientPhoneLabel: 'رقم الجوال',
+        recipientPhonePlaceholder: '05XXXXXXXX أو +9665XXXXXXXX',
+        countryLabel: 'الدولة',
+        countryValue: 'السعودية',
+        cityLabel: 'المدينة',
+        cityPlaceholder: 'مثال: الرياض، جدة، الخبر',
+        districtLabel: 'الحي',
+        districtPlaceholder: 'مثال: حي السفارات، حي العليا',
+        streetLabel: 'الشارع',
+        streetPlaceholder: 'اسم الشارع أو الطريق الرئيسي',
+        additionalDetailsToggle: 'تفاصيل عنوان إضافية',
+        additionalDetailsOptionalTag: 'اختياري',
+        buildingNumberLabel: 'رقم المبنى',
+        buildingNumberPlaceholder: 'مثال: 4210',
+        postalCodeLabel: 'الرمز البريدي',
+        postalCodePlaceholder: '5 أرقام (مثال: 12512)',
+        nationalShortCodeLabel: 'العنوان الوطني المختصر',
+        nationalShortCodePlaceholder: 'مثال: RRRD2929',
+        deliveryNotesLabel: 'ملاحظات التوصيل',
+        deliveryNotesPlaceholder:
+          'أي إرشادات إضافية لتسهيل الوصول إلى الموقع...',
+        deliveryNotesCounter: '{count} / {max} حرفاً',
+        deliveryMethodSectionTitle: 'طريقة التوصيل',
+        standardDeliveryTitle: 'التوصيل الاعتيادي',
+        standardDeliveryDescription:
+          'توصيل معتمد للعطور وصناديق الإهداء داخل المملكة العربية السعودية.',
+        complimentaryStandardDelivery: 'توصيل اعتيادي مجاني',
+        backToContactAction: 'العودة إلى التواصل',
+        continueToReviewCta: 'المتابعة إلى المراجعة',
+        errors: {
+          invalid_recipient_name: 'يرجى إدخال اسم المستلم (حرفين على الأقل).',
+          invalid_phone:
+            'يرجى إدخال رقم جوال سعودي صحيح يبدأ بـ 05 أو +9665.',
+          invalid_city: 'يرجى إدخال اسم المدينة.',
+          invalid_district: 'يرجى إدخال اسم الحي.',
+          invalid_street: 'يرجى إدخال اسم الشارع.',
+          invalid_building_number: 'رقم المبنى المدخل غير صالح.',
+          invalid_postal_code:
+            'يجب أن يتكون الرمز البريدي من 5 أرقام عند إدخاله.',
+          invalid_national_short_code:
+            'العنوان الوطني المختصر يحتوي على رموز غير مدعومة.',
+          invalid_delivery_notes:
+            'يرجى ألا تتجاوز ملاحظات التوصيل 240 حرفاً.',
+        },
+      },
+      review: {
+        eyebrow: 'المرحلة 03 · المراجعة النهائية',
+        heading: 'مراجعة تفاصيل الطلب',
+        subtitle:
+          'تحقق من بيانات التواصل وعنوان التوصيل ومحتويات الحقيبة المعتمدة وفق الأسعار الحالية.',
+        contactSummaryTitle: 'بيانات التواصل',
+        editContactAction: 'تعديل التواصل',
+        deliverySummaryTitle: 'عنوان التوصيل',
+        editDeliveryAction: 'تعديل التوصيل',
+        deliveryMethodSummaryTitle: 'طريقة التوصيل',
+        itemsSectionTitle: 'مقتنيات الطلب المعتمدة',
+        standaloneItemsHeading: 'العطور المفردة',
+        giftBundlesHeading: 'صناديق مشغل الهدايا',
+        quantityLabel: 'الكمية',
+        unitPriceLabel: 'سعر الوحدة',
+        lineTotalLabel: 'المجموع',
+        giftAtelierBadge: 'مشغل هدايا رِواق',
+        giftPresentationValue: 'صندوق رِواق — مشمول مجاناً',
+        giftSlotPrefix: 'الموضع',
+        giftDedicationHeading: 'بطاقة الإهداء',
+        giftDedicationTo: 'إلى:',
+        giftDedicationFrom: 'من:',
+        giftDedicationBlank: 'بطاقة رِواق فارغة للكتابة اليدوية',
+        reviewFooterNotice:
+          'تمت مطابقة محتويات الحقيبة وبيانات التوصيل بنجاح. يمكنك تعديل أي من المراحل أعلاه أو مراجعة الحقيبة.',
+        backToDeliveryAction: 'العودة إلى التوصيل',
+      },
+      summary: {
+        title: 'ملخص الطلب',
+        mobileShowSummary: 'عرض ملخص الطلب',
+        mobileHideSummary: 'إخفاء ملخص الطلب',
+        subtotalLabel: 'المجموع الفرعي',
+        deliveryLabel: 'التوصيل',
+        vatIncludedBreakdownLabel: 'ضريبة القيمة المضافة المتضمنة (15%)',
+        totalLabel: 'الإجمالي',
+        vatRetailCopy: 'شامل ضريبة القيمة المضافة 15%',
+        unitCountLabel: '{count} قطع',
+        singleUnitLabel: 'قطعة واحدة',
+      },
     },
   },
   en: {
@@ -1976,6 +2267,163 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       emptyCatalogTitle: 'The Gift Atelier is temporarily unavailable',
       emptyCatalogSubtitle:
         'No purchasable fragrance creations are currently available in the catalog to compose a gift.',
+    },
+    checkout: {
+      title: 'Checkout',
+      reassuranceNote: 'No payment information is collected at this stage.',
+      returnToBagAction: 'Review Bag',
+      returnToShopAction: 'Continue Shopping',
+      progressAriaLabel: 'Checkout stages',
+      stepLabel: 'Stage',
+      stages: {
+        contact: {
+          code: '01',
+          label: 'Contact',
+        },
+        delivery: {
+          code: '02',
+          label: 'Delivery',
+        },
+        review: {
+          code: '03',
+          label: 'Review',
+        },
+      },
+      emptyEyebrow: 'Empty Shopping Bag',
+      emptyTitle: 'Your bag is currently empty',
+      emptyDescription:
+        'Explore RWAQ signature fragrances or compose a bespoke gift coffret in the Gift Atelier before proceeding to checkout.',
+      exploreFragrancesCta: 'Explore Fragrances',
+      giftAtelierCta: 'Gift Atelier',
+      blockedEyebrow: 'Bag Review Required',
+      blockedTitle: 'Your bag needs a quick review before checkout.',
+      blockedDescription:
+        'Availability or stock limits for one or more items in your bag have changed. Please review your bag to adjust your selections before continuing.',
+      blockedIssueUnavailable:
+        'One of the selected creations or bottle formats is no longer available.',
+      blockedIssueStock:
+        'The requested quantity for one of your selections exceeds current available stock.',
+      blockedIssueGiftBundle:
+        'A gift coffret in your bag requires review to ensure all selections are complete.',
+      reviewBagCta: 'Review Bag',
+      continueShoppingCta: 'Continue Shopping',
+      priceChangedNotice:
+        'A product price has been updated to its current price.',
+      contact: {
+        eyebrow: 'Stage 01 · Guest Contact',
+        heading: 'Contact Information',
+        subtitle:
+          'Used strictly for order confirmation and delivery coordination. No account is required to check out.',
+        fullNameLabel: 'Full Name',
+        fullNamePlaceholder: 'e.g., Faisal Alotaibi',
+        emailLabel: 'Email Address',
+        emailPlaceholder: 'name@example.com',
+        phoneLabel: 'Mobile Number',
+        phonePlaceholder: '05XXXXXXXX or +9665XXXXXXXX',
+        phoneHint:
+          'Accepts local or international Saudi mobile formats (05XXXXXXXX or +9665XXXXXXXX) and normalizes automatically.',
+        continueToDeliveryCta: 'Continue to Delivery',
+        errors: {
+          invalid_full_name:
+            'Please enter your full name (at least 2 characters).',
+          invalid_email: 'Please enter a valid email address.',
+          invalid_phone:
+            'Please enter a valid Saudi mobile number starting with 05 or +9665.',
+        },
+      },
+      delivery: {
+        eyebrow: 'Stage 02 · Saudi Delivery',
+        heading: 'Delivery Address & Shipping',
+        subtitle:
+          'Provide your delivery address within the Kingdom of Saudi Arabia.',
+        useContactDetailsAction: 'Use contact name and mobile number',
+        recipientNameLabel: 'Recipient Name',
+        recipientNamePlaceholder: 'Recipient full name',
+        recipientPhoneLabel: 'Mobile Number',
+        recipientPhonePlaceholder: '05XXXXXXXX or +9665XXXXXXXX',
+        countryLabel: 'Country',
+        countryValue: 'Saudi Arabia',
+        cityLabel: 'City',
+        cityPlaceholder: 'e.g., Riyadh, Jeddah, Al Khobar',
+        districtLabel: 'District',
+        districtPlaceholder: 'e.g., Al Olaya, Diplomatic Quarter',
+        streetLabel: 'Street',
+        streetPlaceholder: 'Street or main road name',
+        additionalDetailsToggle: 'Additional address details',
+        additionalDetailsOptionalTag: 'Optional',
+        buildingNumberLabel: 'Building Number',
+        buildingNumberPlaceholder: 'e.g., 4210',
+        postalCodeLabel: 'Postal Code',
+        postalCodePlaceholder: '5 digits (e.g., 12512)',
+        nationalShortCodeLabel: 'National Address Short Code',
+        nationalShortCodePlaceholder: 'e.g., RRRD2929',
+        deliveryNotesLabel: 'Delivery Notes',
+        deliveryNotesPlaceholder:
+          'Gate code, landmark, or preferred delivery instructions...',
+        deliveryNotesCounter: '{count} / {max} characters',
+        deliveryMethodSectionTitle: 'Delivery Method',
+        standardDeliveryTitle: 'Standard Delivery',
+        standardDeliveryDescription:
+          'Careful delivery for RWAQ fragrances and gift coffrets within Saudi Arabia.',
+        complimentaryStandardDelivery: 'Complimentary standard delivery',
+        backToContactAction: 'Back to Contact',
+        continueToReviewCta: 'Continue to Review',
+        errors: {
+          invalid_recipient_name:
+            'Please enter the recipient name (at least 2 characters).',
+          invalid_phone:
+            'Please enter a valid Saudi mobile number starting with 05 or +9665.',
+          invalid_city: 'Please enter the city.',
+          invalid_district: 'Please enter the district.',
+          invalid_street: 'Please enter the street.',
+          invalid_building_number: 'Please enter a valid building number.',
+          invalid_postal_code:
+            'Postal code must be exactly 5 digits when provided.',
+          invalid_national_short_code:
+            'National address short code contains unsupported characters.',
+          invalid_delivery_notes:
+            'Delivery notes must not exceed 240 characters.',
+        },
+      },
+      review: {
+        eyebrow: 'Stage 03 · Final Review',
+        heading: 'Review Your Order',
+        subtitle:
+          'Verify your contact details, Saudi delivery address, and reconciled bag contents priced from the current catalog.',
+        contactSummaryTitle: 'Contact Details',
+        editContactAction: 'Edit Contact',
+        deliverySummaryTitle: 'Delivery Address',
+        editDeliveryAction: 'Edit Delivery',
+        deliveryMethodSummaryTitle: 'Delivery Method',
+        itemsSectionTitle: 'Reconciled Order Items',
+        standaloneItemsHeading: 'Individual Creations',
+        giftBundlesHeading: 'RWAQ Gift Atelier Coffrets',
+        quantityLabel: 'Qty',
+        unitPriceLabel: 'Unit Price',
+        lineTotalLabel: 'Line Total',
+        giftAtelierBadge: 'RWAQ Gift Atelier',
+        giftPresentationValue: 'Signature Box — Complimentary',
+        giftSlotPrefix: 'Slot',
+        giftDedicationHeading: 'Dedication Card',
+        giftDedicationTo: 'To:',
+        giftDedicationFrom: 'From:',
+        giftDedicationBlank: 'Blank RWAQ linen card enclosed for handwritten note',
+        reviewFooterNotice:
+          'Your contact details, delivery address, and bag items have been verified. You may edit any stage above or review your bag.',
+        backToDeliveryAction: 'Back to Delivery',
+      },
+      summary: {
+        title: 'Order Summary',
+        mobileShowSummary: 'Show order summary',
+        mobileHideSummary: 'Hide order summary',
+        subtotalLabel: 'Subtotal',
+        deliveryLabel: 'Delivery',
+        vatIncludedBreakdownLabel: 'Included VAT (15%)',
+        totalLabel: 'Total',
+        vatRetailCopy: 'Includes 15% VAT',
+        unitCountLabel: '{count} items',
+        singleUnitLabel: '1 item',
+      },
     },
   },
 };

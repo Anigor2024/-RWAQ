@@ -8,17 +8,23 @@ import {
 } from '@/features/catalog/product-commerce';
 import {
   calculateCheckoutQuote,
+  canNavigateToCheckoutStage,
   checkoutContactSchema,
   checkoutDraftSchema,
   checkoutShippingAddressSchema,
   DEFAULT_CHECKOUT_DRAFT,
   getMaximumAllowedCheckoutStage,
+  hasOptionalShippingAddressFields,
   isCheckoutContactComplete,
   isCheckoutDeliveryComplete,
   parsePersistedCheckoutDraft,
   reconcileBagForCheckout,
   validateCheckoutContact,
+  validateCheckoutContactFields,
   validateCheckoutShippingAddress,
+  validateCheckoutShippingAddressFields,
+  validateSingleCheckoutAddressField,
+  validateSingleCheckoutContactField,
 } from '@/features/checkout/service';
 import type { CheckoutDraft } from '@/features/checkout/types';
 import { buildGiftBundleCartItems } from '@/features/gift-builder/service';
@@ -912,5 +918,117 @@ describe('RWAQ Checkout Domain Foundation (Phase 05A)', () => {
         parsePersistedCheckoutDraft(JSON.stringify(candidate))
       ).toBeNull();
     }
+  });
+
+  it('28. validates individual and combined checkout contact fields without duplicating regexes', () => {
+    const invalidAll = validateCheckoutContactFields({
+      fullName: ' ',
+      email: 'not-an-email',
+      phone: '0112223344',
+    });
+    expect(invalidAll.valid).toBe(false);
+    if (!invalidAll.valid) {
+      expect(invalidAll.errors).toEqual({
+        fullName: 'invalid_full_name',
+        email: 'invalid_email',
+        phone: 'invalid_phone',
+      });
+    }
+
+    const phoneBlur = validateSingleCheckoutContactField(
+      'phone',
+      '055 987 6543'
+    );
+    expect(phoneBlur.valid).toBe(true);
+    if (phoneBlur.valid) {
+      expect(phoneBlur.value).toBe('+966559876543');
+    }
+
+    const emailBlur = validateSingleCheckoutContactField(
+      'email',
+      '  Guest@Rwaq.sa '
+    );
+    expect(emailBlur.valid).toBe(true);
+    if (emailBlur.valid) {
+      expect(emailBlur.value).toBe('guest@rwaq.sa');
+    }
+  });
+
+  it('29. validates Saudi delivery address fields and stage navigation reachability', () => {
+    const badAddress = validateCheckoutShippingAddressFields({
+      recipientName: 'أ',
+      phone: '12345',
+      countryCode: 'SA',
+      city: '',
+      district: '',
+      street: '',
+      postalCode: '123',
+      nationalAddressShortCode: 'INVALID@CODE!',
+    });
+
+    expect(badAddress.valid).toBe(false);
+    if (!badAddress.valid) {
+      expect(badAddress.errors.recipientName).toBe('invalid_recipient_name');
+      expect(badAddress.errors.phone).toBe('invalid_phone');
+      expect(badAddress.errors.city).toBe('invalid_city');
+      expect(badAddress.errors.district).toBe('invalid_district');
+      expect(badAddress.errors.street).toBe('invalid_street');
+      expect(badAddress.errors.postalCode).toBe('invalid_postal_code');
+      expect(badAddress.errors.nationalAddressShortCode).toBe(
+        'invalid_national_short_code'
+      );
+    }
+
+    const singlePostal = validateSingleCheckoutAddressField(
+      'postalCode',
+      '12214'
+    );
+    expect(singlePostal).toEqual({ valid: true, value: '12214' });
+
+    expect(
+      hasOptionalShippingAddressFields(DEFAULT_CHECKOUT_DRAFT.shippingAddress)
+    ).toBe(false);
+    expect(
+      hasOptionalShippingAddressFields({
+        ...DEFAULT_CHECKOUT_DRAFT.shippingAddress,
+        postalCode: '12214',
+      })
+    ).toBe(true);
+
+    // Stage navigation guard checks
+    expect(
+      canNavigateToCheckoutStage(
+        'delivery',
+        DEFAULT_CHECKOUT_DRAFT.contact,
+        DEFAULT_CHECKOUT_DRAFT.shippingAddress
+      )
+    ).toBe(false);
+    expect(
+      canNavigateToCheckoutStage(
+        'review',
+        DEFAULT_CHECKOUT_DRAFT.contact,
+        DEFAULT_CHECKOUT_DRAFT.shippingAddress
+      )
+    ).toBe(false);
+
+    const validContact = {
+      fullName: 'نورة السديري',
+      email: 'noura@rwaq.sa',
+      phone: '+966501112233',
+    };
+    expect(
+      canNavigateToCheckoutStage(
+        'delivery',
+        validContact,
+        DEFAULT_CHECKOUT_DRAFT.shippingAddress
+      )
+    ).toBe(true);
+    expect(
+      canNavigateToCheckoutStage(
+        'review',
+        validContact,
+        DEFAULT_CHECKOUT_DRAFT.shippingAddress
+      )
+    ).toBe(false);
   });
 });

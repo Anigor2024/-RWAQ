@@ -50,21 +50,53 @@ export const checkoutStageSchema: z.ZodType<CheckoutStage> =
 export const checkoutDeliveryMethodSchema: z.ZodType<CheckoutDeliveryMethod> =
   z.enum(CHECKOUT_DELIVERY_METHODS);
 
+export const checkoutPersonNameSchema = z
+  .string()
+  .max(MAX_CHECKOUT_FULL_NAME_LENGTH)
+  .transform((val) =>
+    sanitizeCheckoutText(val, MAX_CHECKOUT_FULL_NAME_LENGTH, false)
+  )
+  .refine((val) => val.length >= 2, {
+    message: 'Name must be at least 2 characters',
+  });
+
+export const checkoutCitySchema = z
+  .string()
+  .max(MAX_CHECKOUT_CITY_LENGTH)
+  .transform((val) =>
+    sanitizeCheckoutText(val, MAX_CHECKOUT_CITY_LENGTH, false)
+  )
+  .refine((val) => val.length >= 2, {
+    message: 'City is required',
+  });
+
+export const checkoutDistrictSchema = z
+  .string()
+  .max(MAX_CHECKOUT_DISTRICT_LENGTH)
+  .transform((val) =>
+    sanitizeCheckoutText(val, MAX_CHECKOUT_DISTRICT_LENGTH, false)
+  )
+  .refine((val) => val.length >= 2, {
+    message: 'District is required',
+  });
+
+export const checkoutStreetSchema = z
+  .string()
+  .max(MAX_CHECKOUT_STREET_LENGTH)
+  .transform((val) =>
+    sanitizeCheckoutText(val, MAX_CHECKOUT_STREET_LENGTH, false)
+  )
+  .refine((val) => val.length >= 2, {
+    message: 'Street is required',
+  });
+
 /**
  * Schema for a completed guest checkout contact.
  * Reuses centralized `emailSchema` and `saudiPhoneSchema` (+9665XXXXXXXX).
  */
 export const checkoutContactSchema: z.ZodType<CheckoutContact> = z
   .object({
-    fullName: z
-      .string()
-      .max(MAX_CHECKOUT_FULL_NAME_LENGTH)
-      .transform((val) =>
-        sanitizeCheckoutText(val, MAX_CHECKOUT_FULL_NAME_LENGTH, false)
-      )
-      .refine((val) => val.length >= 2, {
-        message: 'Full name must be at least 2 characters',
-      }),
+    fullName: checkoutPersonNameSchema,
     email: emailSchema,
     phone: saudiPhoneSchema,
   })
@@ -121,50 +153,240 @@ export const optionalDeliveryNotesSchema = z
 export const checkoutShippingAddressSchema: z.ZodType<CheckoutShippingAddress> =
   z
     .object({
-      recipientName: z
-        .string()
-        .max(MAX_CHECKOUT_FULL_NAME_LENGTH)
-        .transform((val) =>
-          sanitizeCheckoutText(val, MAX_CHECKOUT_FULL_NAME_LENGTH, false)
-        )
-        .refine((val) => val.length >= 2, {
-          message: 'Recipient name must be at least 2 characters',
-        }),
+      recipientName: checkoutPersonNameSchema,
       phone: saudiPhoneSchema,
       countryCode: z.literal('SA'),
-      city: z
-        .string()
-        .max(MAX_CHECKOUT_CITY_LENGTH)
-        .transform((val) =>
-          sanitizeCheckoutText(val, MAX_CHECKOUT_CITY_LENGTH, false)
-        )
-        .refine((val) => val.length >= 2, {
-          message: 'City is required',
-        }),
-      district: z
-        .string()
-        .max(MAX_CHECKOUT_DISTRICT_LENGTH)
-        .transform((val) =>
-          sanitizeCheckoutText(val, MAX_CHECKOUT_DISTRICT_LENGTH, false)
-        )
-        .refine((val) => val.length >= 2, {
-          message: 'District is required',
-        }),
-      street: z
-        .string()
-        .max(MAX_CHECKOUT_STREET_LENGTH)
-        .transform((val) =>
-          sanitizeCheckoutText(val, MAX_CHECKOUT_STREET_LENGTH, false)
-        )
-        .refine((val) => val.length >= 2, {
-          message: 'Street is required',
-        }),
+      city: checkoutCitySchema,
+      district: checkoutDistrictSchema,
+      street: checkoutStreetSchema,
       buildingNumber: optionalBuildingNumberSchema,
       postalCode: optionalSaudiPostalCodeSchema,
       nationalAddressShortCode: optionalNationalAddressShortCodeSchema,
       deliveryNotes: optionalDeliveryNotesSchema,
     })
     .strict();
+
+export type CheckoutContactField = keyof CheckoutContact;
+
+export type CheckoutContactErrorKey =
+  | 'invalid_full_name'
+  | 'invalid_email'
+  | 'invalid_phone';
+
+export type CheckoutContactFieldErrors = Partial<
+  Record<CheckoutContactField, CheckoutContactErrorKey>
+>;
+
+export type CheckoutAddressField = Exclude<
+  keyof CheckoutShippingAddress,
+  'countryCode'
+>;
+
+export type CheckoutAddressErrorKey =
+  | 'invalid_recipient_name'
+  | 'invalid_phone'
+  | 'invalid_city'
+  | 'invalid_district'
+  | 'invalid_street'
+  | 'invalid_building_number'
+  | 'invalid_postal_code'
+  | 'invalid_national_short_code'
+  | 'invalid_delivery_notes';
+
+export type CheckoutAddressFieldErrors = Partial<
+  Record<CheckoutAddressField, CheckoutAddressErrorKey>
+>;
+
+const CONTACT_FIELD_ERROR_MAP: Record<
+  CheckoutContactField,
+  CheckoutContactErrorKey
+> = {
+  fullName: 'invalid_full_name',
+  email: 'invalid_email',
+  phone: 'invalid_phone',
+};
+
+const ADDRESS_FIELD_ERROR_MAP: Record<
+  CheckoutAddressField,
+  CheckoutAddressErrorKey
+> = {
+  recipientName: 'invalid_recipient_name',
+  phone: 'invalid_phone',
+  city: 'invalid_city',
+  district: 'invalid_district',
+  street: 'invalid_street',
+  buildingNumber: 'invalid_building_number',
+  postalCode: 'invalid_postal_code',
+  nationalAddressShortCode: 'invalid_national_short_code',
+  deliveryNotes: 'invalid_delivery_notes',
+};
+
+export function validateSingleCheckoutContactField(
+  field: CheckoutContactField,
+  rawValue: string
+):
+  | { valid: true; value: string }
+  | { valid: false; error: CheckoutContactErrorKey } {
+  const schema =
+    field === 'fullName'
+      ? checkoutPersonNameSchema
+      : field === 'email'
+        ? emailSchema
+        : saudiPhoneSchema;
+
+  const parsed = schema.safeParse(rawValue);
+  if (!parsed.success) {
+    return { valid: false, error: CONTACT_FIELD_ERROR_MAP[field] };
+  }
+  return { valid: true, value: parsed.data };
+}
+
+export function validateCheckoutContactFields(
+  input: CheckoutContact
+):
+  | {
+      valid: true;
+      data: CheckoutContact;
+      errors: CheckoutContactFieldErrors;
+    }
+  | {
+      valid: false;
+      errors: CheckoutContactFieldErrors;
+    } {
+  const parsed = checkoutContactSchema.safeParse(input);
+  if (parsed.success) {
+    return { valid: true, data: parsed.data, errors: {} };
+  }
+
+  const errors: CheckoutContactFieldErrors = {};
+  for (const issue of parsed.error.issues) {
+    const key = issue.path[0];
+    if (
+      key === 'fullName' ||
+      key === 'email' ||
+      key === 'phone'
+    ) {
+      errors[key] = CONTACT_FIELD_ERROR_MAP[key];
+    }
+  }
+  return { valid: false, errors };
+}
+
+export function validateSingleCheckoutAddressField(
+  field: CheckoutAddressField,
+  rawValue: string
+):
+  | { valid: true; value: string | undefined }
+  | { valid: false; error: CheckoutAddressErrorKey } {
+  switch (field) {
+    case 'recipientName': {
+      const parsed = checkoutPersonNameSchema.safeParse(rawValue);
+      return parsed.success
+        ? { valid: true, value: parsed.data }
+        : { valid: false, error: ADDRESS_FIELD_ERROR_MAP.recipientName };
+    }
+    case 'phone': {
+      const parsed = saudiPhoneSchema.safeParse(rawValue);
+      return parsed.success
+        ? { valid: true, value: parsed.data }
+        : { valid: false, error: ADDRESS_FIELD_ERROR_MAP.phone };
+    }
+    case 'city': {
+      const parsed = checkoutCitySchema.safeParse(rawValue);
+      return parsed.success
+        ? { valid: true, value: parsed.data }
+        : { valid: false, error: ADDRESS_FIELD_ERROR_MAP.city };
+    }
+    case 'district': {
+      const parsed = checkoutDistrictSchema.safeParse(rawValue);
+      return parsed.success
+        ? { valid: true, value: parsed.data }
+        : { valid: false, error: ADDRESS_FIELD_ERROR_MAP.district };
+    }
+    case 'street': {
+      const parsed = checkoutStreetSchema.safeParse(rawValue);
+      return parsed.success
+        ? { valid: true, value: parsed.data }
+        : { valid: false, error: ADDRESS_FIELD_ERROR_MAP.street };
+    }
+    case 'buildingNumber': {
+      const parsed = optionalBuildingNumberSchema.safeParse(rawValue);
+      return parsed.success
+        ? { valid: true, value: parsed.data }
+        : { valid: false, error: ADDRESS_FIELD_ERROR_MAP.buildingNumber };
+    }
+    case 'postalCode': {
+      const parsed = optionalSaudiPostalCodeSchema.safeParse(rawValue);
+      return parsed.success
+        ? { valid: true, value: parsed.data }
+        : { valid: false, error: ADDRESS_FIELD_ERROR_MAP.postalCode };
+    }
+    case 'nationalAddressShortCode': {
+      const parsed = optionalNationalAddressShortCodeSchema.safeParse(rawValue);
+      return parsed.success
+        ? { valid: true, value: parsed.data }
+        : {
+            valid: false,
+            error: ADDRESS_FIELD_ERROR_MAP.nationalAddressShortCode,
+          };
+    }
+    case 'deliveryNotes': {
+      const parsed = optionalDeliveryNotesSchema.safeParse(rawValue);
+      return parsed.success
+        ? { valid: true, value: parsed.data }
+        : { valid: false, error: ADDRESS_FIELD_ERROR_MAP.deliveryNotes };
+    }
+  }
+}
+
+export function validateCheckoutShippingAddressFields(
+  input: CheckoutShippingAddress
+):
+  | {
+      valid: true;
+      data: CheckoutShippingAddress;
+      errors: CheckoutAddressFieldErrors;
+    }
+  | {
+      valid: false;
+      errors: CheckoutAddressFieldErrors;
+    } {
+  const parsed = checkoutShippingAddressSchema.safeParse(input);
+  if (parsed.success) {
+    return { valid: true, data: parsed.data, errors: {} };
+  }
+
+  const errors: CheckoutAddressFieldErrors = {};
+  for (const issue of parsed.error.issues) {
+    const key = issue.path[0];
+    if (
+      key === 'recipientName' ||
+      key === 'phone' ||
+      key === 'city' ||
+      key === 'district' ||
+      key === 'street' ||
+      key === 'buildingNumber' ||
+      key === 'postalCode' ||
+      key === 'nationalAddressShortCode' ||
+      key === 'deliveryNotes'
+    ) {
+      errors[key] = ADDRESS_FIELD_ERROR_MAP[key];
+    }
+  }
+  return { valid: false, errors };
+}
+
+export function hasOptionalShippingAddressFields(
+  address: Partial<CheckoutShippingAddress> | null | undefined
+): boolean {
+  if (!address) return false;
+  return Boolean(
+    address.buildingNumber?.trim() ||
+      address.postalCode?.trim() ||
+      address.nationalAddressShortCode?.trim() ||
+      address.deliveryNotes?.trim()
+  );
+}
 
 export function validateCheckoutContact(
   input: unknown
@@ -244,4 +466,20 @@ export function clampCheckoutStage(
   return STAGE_ORDER[requestedStage] <= STAGE_ORDER[maxStage]
     ? requestedStage
     : maxStage;
+}
+
+export function canNavigateToCheckoutStage(
+  targetStage: CheckoutStage,
+  contact: CheckoutContact | null | undefined,
+  shippingAddress: CheckoutShippingAddress | null | undefined,
+  deliveryMethod: CheckoutDeliveryMethod = 'standard'
+): boolean {
+  return (
+    clampCheckoutStage(
+      targetStage,
+      contact,
+      shippingAddress,
+      deliveryMethod
+    ) === targetStage
+  );
 }

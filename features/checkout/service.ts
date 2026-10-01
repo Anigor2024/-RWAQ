@@ -23,7 +23,16 @@ export type {
   CheckoutValidationIssueCode,
   CheckoutValidationIssueSeverity,
 } from './types';
+export type {
+  CheckoutAddressErrorKey,
+  CheckoutAddressField,
+  CheckoutAddressFieldErrors,
+  CheckoutContactErrorKey,
+  CheckoutContactField,
+  CheckoutContactFieldErrors,
+} from './validation';
 export {
+  canNavigateToCheckoutStage,
   CHECKOUT_DELIVERY_METHODS,
   CHECKOUT_STAGES,
   checkoutContactSchema,
@@ -32,6 +41,7 @@ export {
   checkoutStageSchema,
   clampCheckoutStage,
   getMaximumAllowedCheckoutStage,
+  hasOptionalShippingAddressFields,
   isCheckoutContactComplete,
   isCheckoutDeliveryComplete,
   MAX_CHECKOUT_BUILDING_NUMBER_LENGTH,
@@ -47,5 +57,9 @@ export {
   optionalSaudiPostalCodeSchema,
   sanitizeCheckoutText,
   validateCheckoutContact,
+  validateCheckoutContactFields,
   validateCheckoutShippingAddress,
+  validateCheckoutShippingAddressFields,
+  validateSingleCheckoutAddressField,
+  validateSingleCheckoutContactField,
 } from './validation';
