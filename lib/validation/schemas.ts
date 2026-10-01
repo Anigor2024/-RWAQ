@@ -102,6 +102,30 @@ export function normalizeAssetUrl(rawUrl: string): string {
   return rawUrl;
 }
 
+export const persistedGiftBundleMetadataSchema = z
+  .object({
+    bundleId: entityIdSchema,
+    occasion: z.enum([
+      'birthday',
+      'wedding',
+      'graduation',
+      'hospitality',
+      'thank-you',
+      'corporate',
+      'just-because',
+    ]),
+    setSize: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+    presentation: z.literal('signature-box'),
+    slotIndex: z.number().int().min(0).max(2),
+    recipientName: z.string().trim().max(80).optional(),
+    senderName: z.string().trim().max(80).optional(),
+    messageBody: z.string().trim().max(280).optional(),
+  })
+  .strict()
+  .refine((meta) => meta.slotIndex < meta.setSize, {
+    message: 'slotIndex must be within setSize bounds',
+  });
+
 export const persistedCartItemSchema = z
   .object({
     productId: entityIdSchema,
@@ -120,16 +144,61 @@ export const persistedCartItemSchema = z
       .max(500)
       .transform((val) => normalizeAssetUrl(val)),
     giftWrapRequested: z.boolean().optional(),
+    giftBundle: persistedGiftBundleMetadataSchema.optional(),
   })
   .transform((item) => {
     const safeCap = Math.min(10, item.maxStockQuantity ?? 10);
+    const clampedQty = item.giftBundle
+      ? 1
+      : Math.max(1, Math.min(safeCap, item.quantity));
     return {
       ...item,
-      quantity: Math.max(1, Math.min(safeCap, item.quantity)),
+      quantity: clampedQty,
     };
   });
 
-export const persistedCartListSchema = z.array(persistedCartItemSchema).max(50);
+/**
+ * Ensures any persisted gift bundle items form complete, consistent sets (1, 2, or 3 slots).
+ * Drops corrupted partial bundles while preserving valid bundles and standalone items.
+ */
+function sanitizePersistedBagBundleIntegrity(items: CartItem[]): CartItem[] {
+  const byBundle = new Map<string, CartItem[]>();
+  for (const item of items) {
+    if (!item.giftBundle) continue;
+    const list = byBundle.get(item.giftBundle.bundleId) ?? [];
+    list.push(item);
+    byBundle.set(item.giftBundle.bundleId, list);
+  }
+
+  const validBundleIds = new Set<string>();
+  for (const [bundleId, bundleItems] of byBundle.entries()) {
+    const firstMeta = bundleItems[0]?.giftBundle;
+    if (!firstMeta) continue;
+    const expectedSize = firstMeta.setSize;
+    if (bundleItems.length !== expectedSize) continue;
+
+    const slots = new Set(bundleItems.map((i) => i.giftBundle?.slotIndex));
+    let allSlotsPresent = true;
+    for (let s = 0; s < expectedSize; s++) {
+      if (!slots.has(s)) {
+        allSlotsPresent = false;
+        break;
+      }
+    }
+    if (allSlotsPresent) {
+      validBundleIds.add(bundleId);
+    }
+  }
+
+  return items.filter(
+    (item) => !item.giftBundle || validBundleIds.has(item.giftBundle.bundleId)
+  );
+}
+
+export const persistedCartListSchema = z
+  .array(persistedCartItemSchema)
+  .max(50)
+  .transform((items) => sanitizePersistedBagBundleIntegrity(items));
 
 export const persistedWishlistSchema = z
   .array(entityIdSchema)
@@ -207,14 +276,18 @@ export function parsePersistedBagItems(
           validItems.push(res.data);
         }
       }
+      const sanitizedItems = sanitizePersistedBagBundleIntegrity(validItems);
       if (storageKey && typeof window !== 'undefined') {
         try {
-          window.localStorage.setItem(storageKey, JSON.stringify(validItems));
+          window.localStorage.setItem(
+            storageKey,
+            JSON.stringify(sanitizedItems)
+          );
         } catch {
           // Ignore
         }
       }
-      return validItems;
+      return sanitizedItems;
     }
   } catch {
     // JSON parse failed

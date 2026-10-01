@@ -33,9 +33,14 @@ export function Header() {
   const wishlistCount = wishlistProductIds.length;
   const isShopRoute = pathname?.startsWith('/shop');
   const isScentFinderRoute = pathname?.startsWith('/scent-finder');
+  const isGiftBuilderRoute = pathname?.startsWith('/gift-builder');
   const isProductRoute = pathname?.startsWith('/products');
   const hasSolidHeader =
-    isScrolled || isShopRoute || isScentFinderRoute || isProductRoute;
+    isScrolled ||
+    isShopRoute ||
+    isScentFinderRoute ||
+    isGiftBuilderRoute ||
+    isProductRoute;
 
   return (
     <>
@@ -100,6 +105,17 @@ export function Header() {
               )}
             >
               {t.nav.scentFinder}
+            </Link>
+            <Link
+              href="/gift-builder"
+              className={cn(
+                'relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:bg-[#A77A50] after:transition-transform after:duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]',
+                isGiftBuilderRoute
+                  ? 'text-[#D8C8B2] after:scale-x-100'
+                  : 'after:scale-x-0 hover:after:scale-x-100'
+              )}
+            >
+              {t.nav.giftAtelier}
             </Link>
             <Link
               href="/#creations"

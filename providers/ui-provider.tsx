@@ -52,8 +52,10 @@ interface UIContextValue {
     variant?: ProductVariant | null,
     quantity?: number
   ) => boolean;
+  addGiftBundleToBag: (bundleItems: CartItem[]) => boolean;
   updateBagQuantity: (variantId: EntityId, nextQuantity: number) => void;
   removeFromBag: (variantId: EntityId) => void;
+  removeGiftBundleFromBag: (bundleId: EntityId) => void;
   wishlistProductIds: EntityId[];
   isWishlisted: (productId: EntityId) => boolean;
   toggleWishlist: (productId: EntityId) => boolean;
@@ -164,14 +166,38 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
 
+      const giftAllocatedQty = bagItems.reduce(
+        (sum, item) =>
+          item.giftBundle && item.variantId === targetVariant.id
+            ? sum + item.quantity
+            : sum,
+        0
+      );
+      const maxStandaloneAllowed = Math.max(0, maxAllowed - giftAllocatedQty);
+      if (maxStandaloneAllowed <= 0) {
+        return false;
+      }
+
       const requestedQty = Number.isFinite(quantity)
         ? Math.max(1, Math.round(quantity))
         : 1;
-      const safeAddQty = Math.min(maxAllowed, requestedQty);
+      const safeAddQty = Math.min(maxStandaloneAllowed, requestedQty);
 
       setBagItems((prev) => {
+        const currentGiftAllocated = prev.reduce(
+          (sum, item) =>
+            item.giftBundle && item.variantId === targetVariant.id
+              ? sum + item.quantity
+              : sum,
+          0
+        );
+        const capForStandalone = Math.max(0, maxAllowed - currentGiftAllocated);
+        if (capForStandalone <= 0) {
+          return prev;
+        }
+
         const existingIndex = prev.findIndex(
-          (item) => item.variantId === targetVariant.id
+          (item) => !item.giftBundle && item.variantId === targetVariant.id
         );
         let next: CartItem[];
         if (existingIndex > -1) {
@@ -180,7 +206,10 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
               ? {
                   ...item,
                   maxStockQuantity: maxAllowed,
-                  quantity: Math.min(maxAllowed, item.quantity + safeAddQty),
+                  quantity: Math.min(
+                    capForStandalone,
+                    item.quantity + safeAddQty
+                  ),
                 }
               : item
           );
@@ -195,7 +224,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
               collectionName: product.collectionName,
               sizeMl: targetVariant.sizeMl,
               unitPrice: targetVariant.price,
-              quantity: safeAddQty,
+              quantity: Math.min(capForStandalone, safeAddQty),
               maxStockQuantity: maxAllowed,
               imageUrl: product.image.url,
             },
@@ -211,25 +240,95 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
 
       return true;
     },
-    []
+    [bagItems]
+  );
+
+  const addGiftBundleToBag = useCallback(
+    (bundleItems: CartItem[]): boolean => {
+      if (
+        !Array.isArray(bundleItems) ||
+        bundleItems.length === 0 ||
+        bundleItems.length > 3
+      ) {
+        return false;
+      }
+
+      const firstBundleMeta = bundleItems[0]?.giftBundle;
+      if (
+        !firstBundleMeta ||
+        bundleItems.length !== firstBundleMeta.setSize ||
+        bundleItems.some(
+          (item) =>
+            !item.giftBundle ||
+            item.giftBundle.bundleId !== firstBundleMeta.bundleId ||
+            item.quantity !== 1
+        )
+      ) {
+        return false;
+      }
+
+      // Check cumulative variant stock limits against current bagItems
+      const currentQtyByVariant = new Map<EntityId, number>();
+      for (const existing of bagItems) {
+        currentQtyByVariant.set(
+          existing.variantId,
+          (currentQtyByVariant.get(existing.variantId) ?? 0) + existing.quantity
+        );
+      }
+
+      for (const incoming of bundleItems) {
+        const cap = Math.min(
+          MAX_CART_QUANTITY_PER_LINE,
+          incoming.maxStockQuantity ?? MAX_CART_QUANTITY_PER_LINE
+        );
+        const nextTotal =
+          (currentQtyByVariant.get(incoming.variantId) ?? 0) + incoming.quantity;
+        if (nextTotal > cap) {
+          return false;
+        }
+        currentQtyByVariant.set(incoming.variantId, nextTotal);
+      }
+
+      const nextBag = [...bagItems, ...bundleItems];
+      persistBag(nextBag);
+      return true;
+    },
+    [bagItems, persistBag]
   );
 
   const updateBagQuantity = useCallback(
     (variantId: EntityId, nextQuantity: number) => {
       if (nextQuantity <= 0) {
-        persistBag(bagItems.filter((item) => item.variantId !== variantId));
+        persistBag(
+          bagItems.filter(
+            (item) => Boolean(item.giftBundle) || item.variantId !== variantId
+          )
+        );
         return;
       }
+
+      const giftAllocatedQty = bagItems.reduce(
+        (sum, item) =>
+          item.giftBundle && item.variantId === variantId
+            ? sum + item.quantity
+            : sum,
+        0
+      );
+
       persistBag(
         bagItems.map((item) => {
-          if (item.variantId !== variantId) return item;
-          const cap = Math.min(
+          if (item.giftBundle || item.variantId !== variantId) return item;
+          const totalCap = Math.min(
             MAX_CART_QUANTITY_PER_LINE,
             item.maxStockQuantity ?? MAX_CART_QUANTITY_PER_LINE
           );
+          const standaloneCap = Math.max(1, totalCap - giftAllocatedQty);
           return {
             ...item,
-            quantity: Math.max(1, Math.min(cap, Math.round(nextQuantity))),
+            quantity: Math.max(
+              1,
+              Math.min(standaloneCap, Math.round(nextQuantity))
+            ),
           };
         })
       );
@@ -239,7 +338,20 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
 
   const removeFromBag = useCallback(
     (variantId: EntityId) => {
-      persistBag(bagItems.filter((item) => item.variantId !== variantId));
+      persistBag(
+        bagItems.filter(
+          (item) => Boolean(item.giftBundle) || item.variantId !== variantId
+        )
+      );
+    },
+    [bagItems, persistBag]
+  );
+
+  const removeGiftBundleFromBag = useCallback(
+    (bundleId: EntityId) => {
+      persistBag(
+        bagItems.filter((item) => item.giftBundle?.bundleId !== bundleId)
+      );
     },
     [bagItems, persistBag]
   );
@@ -294,8 +406,10 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
       bagCount,
       bagPricing,
       addToBag,
+      addGiftBundleToBag,
       updateBagQuantity,
       removeFromBag,
+      removeGiftBundleFromBag,
       wishlistProductIds,
       isWishlisted,
       toggleWishlist,
@@ -309,8 +423,10 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
       bagCount,
       bagPricing,
       addToBag,
+      addGiftBundleToBag,
       updateBagQuantity,
       removeFromBag,
+      removeGiftBundleFromBag,
       wishlistProductIds,
       isWishlisted,
       toggleWishlist,

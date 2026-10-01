@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { Gift } from 'lucide-react';
 import { MobilePurchaseBar } from '@/components/product/mobile-purchase-bar';
 import { ProductPurchaseActions } from '@/components/product/product-purchase-actions';
 import { ProductQuantityControl } from '@/components/product/product-quantity-control';
@@ -216,6 +217,18 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
             isSelectedVariantInBag={isSelectedVariantInBag}
             onAddToBag={handleAddToBag}
           />
+
+          {canPurchase && (
+            <div className="mt-3">
+              <Link
+                href={`/gift-builder?product=${encodeURIComponent(product.slug)}`}
+                className="flex h-11 w-full items-center justify-center gap-2 border border-[#DED5C6] bg-[#F5F0E8]/60 px-4 text-xs text-[#4A3027] transition-colors hover:border-[#8C6239] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+              >
+                <Gift className="h-3.5 w-3.5 stroke-[1.6] text-[#8C6239]" />
+                <span>{t.pdp.giftCreationAction}</span>
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Subtle House Reassurance Ledger */}

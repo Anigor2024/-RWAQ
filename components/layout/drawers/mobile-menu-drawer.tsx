@@ -37,6 +37,13 @@ export function MobileMenuDrawer({ collections }: MobileMenuDrawerProps) {
           {t.nav.scentFinder}
         </Link>
         <Link
+          href="/gift-builder"
+          onClick={closeDrawer}
+          className="border-b border-[#F5F0E8]/10 pb-3.5 text-xl font-medium text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+        >
+          {t.nav.giftAtelier}
+        </Link>
+        <Link
           href="/#creations"
           onClick={closeDrawer}
           className="border-b border-[#F5F0E8]/10 pb-3.5 text-xl font-light text-[#F5F0E8] transition-colors hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"

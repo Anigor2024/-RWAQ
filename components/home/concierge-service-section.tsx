@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Search, ShoppingBag } from 'lucide-react';
+import Link from 'next/link';
+import { Gift, Search, ShoppingBag } from 'lucide-react';
 import { Reveal } from '@/components/ui/reveal';
 import { Typography } from '@/components/ui/typography';
 import { useLocale } from '@/providers/locale-provider';
@@ -87,9 +88,17 @@ export function ConciergeServiceSection() {
               ))}
             </div>
 
-            {/* Interactive Drawer Triggers */}
+            {/* Interactive Drawer Triggers & Gift Atelier Entry */}
             <Reveal delay={0.34}>
               <div className="mt-10 flex flex-wrap items-center gap-4">
+                <Link
+                  href="/gift-builder"
+                  className="inline-flex h-13 items-center justify-center gap-3 bg-[#A77A50] px-7 text-xs sm:text-sm font-medium text-[#0B0B0A] transition-colors hover:bg-[#B88B61] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
+                >
+                  <Gift className="h-4 w-4 stroke-[1.8]" />
+                  <span>{t.concierge.giftAtelierAction}</span>
+                </Link>
+
                 <button
                   type="button"
                   onClick={() => openDrawer('search')}

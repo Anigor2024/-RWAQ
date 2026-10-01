@@ -38,6 +38,30 @@ export interface UserProfile {
   updatedAt: ISODateString;
 }
 
+export type GiftOccasion =
+  | 'birthday'
+  | 'wedding'
+  | 'graduation'
+  | 'hospitality'
+  | 'thank-you'
+  | 'corporate'
+  | 'just-because';
+
+export type GiftSetSize = 1 | 2 | 3;
+
+export type GiftPresentation = 'signature-box';
+
+export interface GiftBundleMetadata {
+  bundleId: EntityId;
+  occasion: GiftOccasion;
+  setSize: GiftSetSize;
+  presentation: GiftPresentation;
+  slotIndex: number;
+  recipientName?: string;
+  senderName?: string;
+  messageBody?: string;
+}
+
 export interface CartItem {
   productId: EntityId;
   productSlug: Slug;
@@ -50,6 +74,7 @@ export interface CartItem {
   maxStockQuantity?: number;
   imageUrl: string;
   giftWrapRequested?: boolean;
+  giftBundle?: GiftBundleMetadata;
 }
 
 export interface OrderItem {

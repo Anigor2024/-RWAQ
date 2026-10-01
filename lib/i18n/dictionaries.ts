@@ -49,6 +49,7 @@ export interface Dictionary {
   nav: {
     shop: string;
     scentFinder: string;
+    giftAtelier: string;
     collections: string;
     creations: string;
     craft: string;
@@ -265,6 +266,7 @@ export interface Dictionary {
     relatedHeading: string;
     relatedSubtitle: string;
     returnToCatalog: string;
+    giftCreationAction: string;
   };
   craft: {
     sectionEyebrow: string;
@@ -282,6 +284,7 @@ export interface Dictionary {
     sectionSubtitle: string;
     primaryAction: string;
     secondaryAction: string;
+    giftAtelierAction: string;
     pillars: Array<{
       code: string;
       title: string;
@@ -316,6 +319,16 @@ export interface Dictionary {
       increaseQty: string;
       decreaseQty: string;
       continueBrowsing: string;
+      giftBundlesSectionTitle: string;
+      standaloneSectionTitle: string;
+      giftAtelierBadge: string;
+      giftOccasionPrefix: string;
+      giftPresentationLine: string;
+      giftCardToPrefix: string;
+      giftCardFromPrefix: string;
+      giftBundleTotalLabel: string;
+      removeGiftBundle: string;
+      composeGiftAction: string;
     };
     wishlist: {
       title: string;
@@ -421,6 +434,94 @@ export interface Dictionary {
     emptyCatalogReturnToShop: string;
     emptyCatalogStartAgain: string;
   };
+  giftBuilder: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    leadQuote: string;
+    description: string;
+    beginCta: string;
+    resumeCta: string;
+    startOverCta: string;
+    exploreShopCta: string;
+    scentFinderCta: string;
+    complimentaryPresentationMeta: string;
+    transparentPricingMeta: string;
+    pillars: Array<{
+      code: string;
+      title: string;
+      detail: string;
+    }>;
+    progressAriaLabel: string;
+    stepLabel: string;
+    ofLabel: string;
+    backAction: string;
+    continueAction: string;
+    proceedToReviewAction: string;
+    occasionStepHint: string;
+    occasionGuidanceLabel: string;
+    sizeStepHint: string;
+    presentationIncludedBadge: string;
+    presentationNoFeeNote: string;
+    fragranceStepHint: string;
+    slotLabel: string;
+    slotEmptyState: string;
+    slotSelectedState: string;
+    slotActiveEditing: string;
+    selectSlotToCurate: string;
+    filterAllCreations: string;
+    filterRecommendedForOccasion: string;
+    recommendedForOccasionTag: string;
+    inAnotherSlotTag: string;
+    selectForSlotAction: string;
+    selectedInActiveSlotAction: string;
+    changeVariantLabel: string;
+    removeSlotSelectionAction: string;
+    inspectDossierAction: string;
+    stockExhaustedNote: string;
+    messageStepHint: string;
+    includeCardToggleLabel: string;
+    includeCardDescription: string;
+    blankCardToggleLabel: string;
+    blankCardDescription: string;
+    recipientLabel: string;
+    recipientPlaceholder: string;
+    senderLabel: string;
+    senderPlaceholder: string;
+    messageBodyLabel: string;
+    messageBodyPlaceholder: string;
+    characterLimitNote: string;
+    suggestedMessagesTitle: string;
+    useSuggestedMessageAction: string;
+    cardPreviewTitle: string;
+    cardPreviewEmptyBody: string;
+    cardPreviewBlankNotice: string;
+    reviewEyebrow: string;
+    reviewHeading: string;
+    reviewSubtitle: string;
+    changeStepAction: string;
+    summarySidebarTitle: string;
+    summaryOccasionLabel: string;
+    summarySetSizeLabel: string;
+    summaryPresentationLabel: string;
+    summaryComplimentaryValue: string;
+    summarySlotsProgressLabel: string;
+    summaryDedicationLabel: string;
+    summaryDedicationIncluded: string;
+    summaryDedicationBlank: string;
+    summaryFragrancesSubtotal: string;
+    summaryShippingLabel: string;
+    summaryVatIncludedLabel: string;
+    summaryTotalLabel: string;
+    summaryCommercialPolicyNote: string;
+    addGiftToBagCta: string;
+    addedGiftToBagToast: string;
+    composeAnotherGiftAction: string;
+    validationIncompleteSlots: string;
+    validationStockExceeded: string;
+    emptyCatalogTitle: string;
+    emptyCatalogSubtitle: string;
+  };
 }
 
 export const DICTIONARIES: Record<Locale, Dictionary> = {
@@ -451,6 +552,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     nav: {
       shop: 'العطور',
       scentFinder: 'اكتشف عطرك',
+      giftAtelier: 'مشغل الهدايا',
       collections: 'المجموعات',
       creations: 'الابتكارات العطرية',
       craft: 'الخامات والحِرفة',
@@ -745,6 +847,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       relatedSubtitle:
         'تراكيب مختارة تشترك في العالم العطري أو تتناغم مع العائلة العطرية لهذا الإصدار.',
       returnToCatalog: 'العودة إلى المتجر الكامل',
+      giftCreationAction: 'تقديم هذا الابتكار كهدية في مشغل رِواق',
     },
     craft: {
       sectionEyebrow: 'الحِرفة والخامات · لغة التصميم العطري',
@@ -835,6 +938,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         'في رِواق، يمتد الاعتناء بالعطر إلى الطريقة التي يُقدّم ويُختبر بها؛ من اختيار النوتة الملائمة وحتى مراسم الإهداء.',
       primaryAction: 'ابدأ الاستكشاف بالبحث العطري',
       secondaryAction: 'معاينة حقيبة الاقتناء',
+      giftAtelierAction: 'ادخل مشغل هدايا رِواق',
       pillars: [
         {
           code: '01',
@@ -888,6 +992,16 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         increaseQty: 'زيادة الكمية',
         decreaseQty: 'إنقاص الكمية',
         continueBrowsing: 'متابعة التصفح',
+        giftBundlesSectionTitle: 'صناديق مشغل هدايا رِواق',
+        standaloneSectionTitle: 'الابتكارات المنفردة',
+        giftAtelierBadge: 'مشغل هدايا رِواق',
+        giftOccasionPrefix: 'المناسبة:',
+        giftPresentationLine: 'صندوق رِواق الحجري والبرونزي — مشمول مجاناً',
+        giftCardToPrefix: 'إلى:',
+        giftCardFromPrefix: 'من:',
+        giftBundleTotalLabel: 'إجمالي صندوق الهدية',
+        removeGiftBundle: 'إزالة صندوق الهدية',
+        composeGiftAction: 'تنسيق هدية جديدة في مشغل رِواق',
       },
       wishlist: {
         title: 'قائمة الأمنيات',
@@ -1016,6 +1130,114 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       emptyCatalogReturnToShop: 'العودة إلى المتجر',
       emptyCatalogStartAgain: 'البدء من جديد',
     },
+    giftBuilder: {
+      eyebrow: 'صالون الإهداء الخاص · مراسم دار رِواق',
+      title: 'مشغل هدايا رِواق',
+      subtitle:
+        'صمّم هدية عطرية شخصية تجمع بين عطر واحد أو عطرين أو ثلاثة عطور ضمن صندوق الحجر الجيري والبرونز.',
+      leadQuote: 'الهدية الأصيلة أثرٌ يُختار بعناية ويُقدّم بوقار.',
+      description:
+        'في مشغل هدايا رِواق، تتحول الهدية العطرية إلى طقسٍ معماري متكامل؛ اختر المناسبة، وحدّد حجم الصندوق، وانتقِ العطور وأحجام زجاجاتها مع بطاقة إهداء من الكتّان المختوم بالبرونز — دون أي رسوم إضافية على التغليف الفاخر.',
+      beginCta: 'ابدأ تنسيق الهدية',
+      resumeCta: 'متابعة الهدية المحفوظة',
+      startOverCta: 'تنسيق هدية جديدة',
+      exploreShopCta: 'تصفح المتجر مباشرة',
+      scentFinderCta: 'جرب بوصلة العطور أولاً',
+      complimentaryPresentationMeta: 'صندوق رِواق الحجري وبطاقة الإهداء مشمولان مجاناً',
+      transparentPricingMeta: 'قيمة الهدية = مجموع أسعار العطور المختارة فقط (شاملاً ضريبة ١٥٪)',
+      pillars: [
+        {
+          code: 'I',
+          title: 'تأليف شخصي مرن (١ أو ٢ أو ٣ عطور)',
+          detail: 'انتقِ العطور وأحجام الزجاجات المتوفرة لكل موضع في الصندوق.',
+        },
+        {
+          code: 'II',
+          title: 'صندوق الحجر الجيري والبرونز مجاناً',
+          detail: 'تقديم معماري فاخر مشمول ضمن مراسم الإهداء دون أي كلفة إضافية.',
+        },
+        {
+          code: 'III',
+          title: 'بطاقة إهداء من الكتّان الفاخر',
+          detail: 'أضف إهداءك الشخصي أو اطلب البطاقة فارغة لكتابتها يدوياً.',
+        },
+      ],
+      progressAriaLabel: 'مراحل تنسيق الهدية في مشغل رِواق',
+      stepLabel: 'الخطوة',
+      ofLabel: 'من',
+      backAction: 'السابق',
+      continueAction: 'متابعة',
+      proceedToReviewAction: 'مراجعة الهدية',
+      occasionStepHint: 'اختر المناسبة لتخصيص مقترحات العطور وعبارات بطاقة الإهداء',
+      occasionGuidanceLabel: 'التوجيه العطري للمناسبة',
+      sizeStepHint: 'اختر عدد الزجاجات العطرية التي سيحتضنها صندوق رِواق',
+      presentationIncludedBadge: 'مشمول مجاناً مع كل هدية',
+      presentationNoFeeNote:
+        'يُقدّم صندوق رِواق الحجري والبرونزي وبطاقة الكتّان مجاناً؛ تدفع فقط السعر الفعلي للزجاجات المختارة.',
+      fragranceStepHint:
+        'اختر الموضع أولاً ثم انتقِ العطر وحجم الزجاجة (مل) لكل موضع في الصندوق',
+      slotLabel: 'الموضع',
+      slotEmptyState: 'بانتظار اختيار العطر',
+      slotSelectedState: 'تم الاختيار',
+      slotActiveEditing: 'الموضع النشط حالياً',
+      selectSlotToCurate: 'انقر لتخصيص هذا الموضع',
+      filterAllCreations: 'جميع العطور المتاحة',
+      filterRecommendedForOccasion: 'مقترحات المناسبة',
+      recommendedForOccasionTag: 'مقترح للمناسبة',
+      inAnotherSlotTag: 'مختار في الموضع',
+      selectForSlotAction: 'اختيار للموضع',
+      selectedInActiveSlotAction: 'مختار في هذا الموضع',
+      changeVariantLabel: 'حجم الزجاجة:',
+      removeSlotSelectionAction: 'إفراغ الموضع',
+      inspectDossierAction: 'معاينة النوتات',
+      stockExhaustedNote: 'الكمية المتاحة لهذا الحجم مخصصة بالكامل في الحقيبة أو المواضع الأخرى',
+      messageStepHint: 'تُرفق بطاقة الإهداء مجاناً داخل ظرف مختوم بشعار الدار',
+      includeCardToggleLabel: 'إرفاق بطاقة إهداء برسالة مخصصة',
+      includeCardDescription: 'تُطبع كلماتك بعناية على بطاقة الكتّان الفاخرة وتوضع داخل الصندوق.',
+      blankCardToggleLabel: 'إرفاق بطاقة رِواق فارغة (للكتابة اليدوية)',
+      blankCardDescription: 'نرفق البطاقة والظرف المختوم دون نص مطبوع لتخطّ إهداءك بيدك.',
+      recipientLabel: 'إلى (اسم المُهدى إليه — اختياري)',
+      recipientPlaceholder: 'مثال: إلى صاحب السمو / إلى أخي العزيز / إلى سارة',
+      senderLabel: 'من (اسم المُهدي — اختياري)',
+      senderPlaceholder: 'مثال: مع خالص المحبة، فيصل',
+      messageBodyLabel: 'نص الإهداء (اختياري)',
+      messageBodyPlaceholder: 'اكتب كلمتك الخاصة أو اختر من عبارات الدار المقترحة أدناه...',
+      characterLimitNote: '{count} / {max} حرفاً',
+      suggestedMessagesTitle: 'عبارات إهداء مقترحة لهذه المناسبة',
+      useSuggestedMessageAction: 'استخدام هذه العبارة',
+      cardPreviewTitle: 'معاينة بطاقة الإهداء',
+      cardPreviewEmptyBody: 'ستظهر كلماتك المختارة هنا على بطاقة الكتّان...',
+      cardPreviewBlankNotice: 'سيتم إرفاق بطاقة رِواق الفاخرة فارغة لتتمكن من كتابتها يدوياً.',
+      reviewEyebrow: 'الاعتماد النهائي · مشغل هدايا رِواق',
+      reviewHeading: 'مراجعة صندوق الهدية المنسّق',
+      reviewSubtitle:
+        'تأكّد من جميع تفاصيل هديتك. عند الإضافة إلى الحقيبة، سيُحفظ هذا الصندوق كوحدة إهداء مترابطة.',
+      changeStepAction: 'تعديل',
+      summarySidebarTitle: 'ملخص صندوق الهدية',
+      summaryOccasionLabel: 'المناسبة',
+      summarySetSizeLabel: 'تكوين الصندوق',
+      summaryPresentationLabel: 'تغليف الدار المعماري',
+      summaryComplimentaryValue: 'مشمول مجاناً',
+      summarySlotsProgressLabel: 'العطور المختارة',
+      summaryDedicationLabel: 'بطاقة الإهداء',
+      summaryDedicationIncluded: 'مرفقة برسالة خاصة',
+      summaryDedicationBlank: 'مرفقة فارغة للكتابة اليدوية',
+      summaryFragrancesSubtotal: 'مجموع العطور المختارة',
+      summaryShippingLabel: 'الشحن المبرد داخل المملكة',
+      summaryVatIncludedLabel: 'ضريبة القيمة المضافة المتضمنة (١٥٪)',
+      summaryTotalLabel: 'إجمالي الهدية (شاملاً الضريبة)',
+      summaryCommercialPolicyNote:
+        'التسعير الشفاف: إجمالي الهدية يساوي مجموع الأسعار الفعلية للزجاجات المختارة تماماً دون أي رسوم تغليف إضافية.',
+      addGiftToBagCta: 'إضافة الهدية إلى الحقيبة',
+      addedGiftToBagToast: 'تمت إضافة صندوق الهدية إلى حقيبة رِواق',
+      composeAnotherGiftAction: 'تنسيق هدية أخرى',
+      validationIncompleteSlots: 'يرجى استكمال اختيار العطر لكل موضع في الصندوق أولاً.',
+      validationStockExceeded:
+        'أحد الأحجام المختارة تجاوز الحد الأقصى المتاح في المخزون مع محتويات الحقيبة الحالية.',
+      emptyCatalogTitle: 'مشغل الهدايا غير متاح مؤقتاً',
+      emptyCatalogSubtitle:
+        'لا تتوفر حالياً ابتكارات عطرية قابلة للاقتناء في الكتالوج لتنسيق صندوق هدية.',
+    },
   },
   en: {
     brand: {
@@ -1044,6 +1266,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     nav: {
       shop: 'Shop',
       scentFinder: 'Find Your Scent',
+      giftAtelier: 'Gift Atelier',
       collections: 'Collections',
       creations: 'Creations',
       craft: 'Craft & Materials',
@@ -1338,6 +1561,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       relatedSubtitle:
         'Compositions sharing this creation’s olfactory world or resonant family character.',
       returnToCatalog: 'Return to Full Catalog',
+      giftCreationAction: 'Compose as a Gift in the RWAQ Atelier',
     },
     craft: {
       sectionEyebrow: 'Craft & Materials · Olfactory Design Language',
@@ -1428,6 +1652,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         'At RWAQ, the ritual of acquiring a fragrance is conceived with the same architectural care as the scent itself — from guided olfactory discovery to ceremonial presentation.',
       primaryAction: 'Open Olfactory Discovery',
       secondaryAction: 'Inspect Your Bag',
+      giftAtelierAction: 'Enter the RWAQ Gift Atelier',
       pillars: [
         {
           code: '01',
@@ -1482,6 +1707,16 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         increaseQty: 'Increase quantity',
         decreaseQty: 'Decrease quantity',
         continueBrowsing: 'Continue Browsing',
+        giftBundlesSectionTitle: 'RWAQ Gift Atelier Coffrets',
+        standaloneSectionTitle: 'Individual Creations',
+        giftAtelierBadge: 'RWAQ Gift Atelier',
+        giftOccasionPrefix: 'Occasion:',
+        giftPresentationLine: 'Signature Limestone & Bronze Coffret — Complimentary',
+        giftCardToPrefix: 'To:',
+        giftCardFromPrefix: 'From:',
+        giftBundleTotalLabel: 'Coffret Total',
+        removeGiftBundle: 'Remove gift coffret',
+        composeGiftAction: 'Compose Another Gift in the Atelier',
       },
       wishlist: {
         title: 'Saved Creations',
@@ -1611,6 +1846,114 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         'No fragrance creations are currently available in the catalog to complete your consultation. You may return to the shop or start again.',
       emptyCatalogReturnToShop: 'Return to Shop',
       emptyCatalogStartAgain: 'Start Again',
+    },
+    giftBuilder: {
+      eyebrow: 'Private Gifting Salon · RWAQ House Rituals',
+      title: 'RWAQ Gift Atelier',
+      subtitle:
+        'Compose a personalized fragrance gift uniting one, two, or three creations inside our architectural limestone and bronze coffret.',
+      leadQuote: 'A noble gift is an enduring presence, chosen with intention.',
+      description:
+        'Step inside the RWAQ Gift Atelier to curate a bespoke olfactory gesture. Select your occasion, choose the scale of your coffret, pair exact flacon formats across Najd, Sahra, and Layl, and inscribe a complimentary linen dedication card.',
+      beginCta: 'Begin Gift Curation',
+      resumeCta: 'Resume Saved Gift',
+      startOverCta: 'Start a New Gift',
+      exploreShopCta: 'Browse Creations Directly',
+      scentFinderCta: 'Consult the Scent Finder',
+      complimentaryPresentationMeta: 'Complimentary Limestone Coffret & Linen Card Included',
+      transparentPricingMeta: 'Gift Total = Exact Sum of Selected Flacons (15% Saudi VAT Included)',
+      pillars: [
+        {
+          code: 'I',
+          title: 'Bespoke Scale (1, 2, or 3 Creations)',
+          detail: 'Select exact fragrance creations and bottle formats for each slot in your coffret.',
+        },
+        {
+          code: 'II',
+          title: 'Complimentary Limestone & Bronze Coffret',
+          detail: 'Architectural house presentation included with our compliments—zero packaging markups.',
+        },
+        {
+          code: 'III',
+          title: 'Bronze-Crested Linen Dedication Card',
+          detail: 'Inscribe a personal message or request a blank card for handwritten presentation.',
+        },
+      ],
+      progressAriaLabel: 'RWAQ Gift Atelier progress',
+      stepLabel: 'Step',
+      ofLabel: 'of',
+      backAction: 'Back',
+      continueAction: 'Continue',
+      proceedToReviewAction: 'Review Your Gift',
+      occasionStepHint: 'Select an occasion to tailor our house fragrance recommendations and dedication notes',
+      occasionGuidanceLabel: 'Olfactory Guidance',
+      sizeStepHint: 'Choose the number of fragrance flacons housed within your coffret',
+      presentationIncludedBadge: 'Complimentary House Presentation',
+      presentationNoFeeNote:
+        'The RWAQ Signature Limestone & Bronze Coffret and linen dedication card are included with our compliments. You pay only the exact price of your selected fragrances.',
+      fragranceStepHint:
+        'Select a slot above, then choose a creation and bottle format (ml) for each position in your coffret',
+      slotLabel: 'Slot',
+      slotEmptyState: 'Awaiting Selection',
+      slotSelectedState: 'Curated',
+      slotActiveEditing: 'Currently Curating',
+      selectSlotToCurate: 'Select to curate this slot',
+      filterAllCreations: 'All Available Creations',
+      filterRecommendedForOccasion: 'Curated for Occasion',
+      recommendedForOccasionTag: 'Occasion Match',
+      inAnotherSlotTag: 'In Slot',
+      selectForSlotAction: 'Assign to Slot',
+      selectedInActiveSlotAction: 'Assigned to Active Slot',
+      changeVariantLabel: 'Flacon Format:',
+      removeSlotSelectionAction: 'Clear Slot',
+      inspectDossierAction: 'Quick Olfactory View',
+      stockExhaustedNote: 'Remaining stock for this format is already allocated in your bag or other slots',
+      messageStepHint: 'Every gift includes a complimentary bronze-sealed linen dedication card',
+      includeCardToggleLabel: 'Include Printed Personal Dedication',
+      includeCardDescription: 'Your message is inscribed on our heavy cream-linen card and sealed inside the coffret.',
+      blankCardToggleLabel: 'Include Blank Card (For Handwritten Note)',
+      blankCardDescription: 'We include the crested linen card and envelope blank so you may write your note by hand.',
+      recipientLabel: 'To (Recipient Name — Optional)',
+      recipientPlaceholder: 'e.g., To Faisal / For Sarah',
+      senderLabel: 'From (Sender Name — Optional)',
+      senderPlaceholder: 'e.g., With warmth, Noura',
+      messageBodyLabel: 'Personal Dedication Message (Optional)',
+      messageBodyPlaceholder: 'Write your personal note or select a house dedication phrase below...',
+      characterLimitNote: '{count} / {max} characters',
+      suggestedMessagesTitle: 'House Dedication Phrases for This Occasion',
+      useSuggestedMessageAction: 'Use This Phrase',
+      cardPreviewTitle: 'Linen Dedication Card Preview',
+      cardPreviewEmptyBody: 'Your personal dedication will appear here on the cream-linen card...',
+      cardPreviewBlankNotice: 'A blank RWAQ bronze-crested linen card will be enclosed for your handwritten note.',
+      reviewEyebrow: 'Final Atelier Inspection · RWAQ Gift Atelier',
+      reviewHeading: 'Review Your Curated Gift Coffret',
+      reviewSubtitle:
+        'Confirm every detail of your gift. When added to your bag, this coffret is preserved as a unified gift presentation.',
+      changeStepAction: 'Edit',
+      summarySidebarTitle: 'Gift Coffret Summary',
+      summaryOccasionLabel: 'Occasion',
+      summarySetSizeLabel: 'Coffret Scale',
+      summaryPresentationLabel: 'House Presentation',
+      summaryComplimentaryValue: 'Complimentary',
+      summarySlotsProgressLabel: 'Selected Creations',
+      summaryDedicationLabel: 'Dedication Card',
+      summaryDedicationIncluded: 'Inscribed Card Included',
+      summaryDedicationBlank: 'Blank Card Included',
+      summaryFragrancesSubtotal: 'Selected Fragrances Subtotal',
+      summaryShippingLabel: 'KSA Concierge Delivery',
+      summaryVatIncludedLabel: 'Included Saudi VAT (15%)',
+      summaryTotalLabel: 'Gift Total (VAT Included)',
+      summaryCommercialPolicyNote:
+        'Transparent House Pricing: Your gift total equals the exact sum of the selected fragrance formats with complimentary presentation.',
+      addGiftToBagCta: 'Add Gift to Bag',
+      addedGiftToBagToast: 'Gift coffret added to your RWAQ bag',
+      composeAnotherGiftAction: 'Compose Another Gift',
+      validationIncompleteSlots: 'Please complete your fragrance selection for every slot in the coffret.',
+      validationStockExceeded:
+        'One of the selected formats exceeds available stock when combined with your current bag.',
+      emptyCatalogTitle: 'The Gift Atelier is temporarily unavailable',
+      emptyCatalogSubtitle:
+        'No purchasable fragrance creations are currently available in the catalog to compose a gift.',
     },
   },
 };
