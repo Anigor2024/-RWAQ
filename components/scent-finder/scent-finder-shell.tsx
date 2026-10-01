@@ -12,9 +12,8 @@ import {
   clearScentFinderSession,
   DEFAULT_SCENT_FINDER_SESSION,
   hasProgressInSession,
-  parsePersistedScentFinderSession,
+  hydrateScentFinderSession,
   saveScentFinderSession,
-  SCENT_FINDER_STORAGE_KEY,
 } from '@/features/scent-finder/persistence';
 import {
   DEFAULT_SCENT_FINDER_ANSWERS,
@@ -34,7 +33,6 @@ import type {
   ScentMaterialKey,
   ScentPresenceArchetype,
 } from '@/features/scent-finder/types';
-import { hydrateAndSubscribeStorage } from '@/lib/storage/persisted-store';
 import type {
   GenderPositioning,
   LongevityLevel,
@@ -60,14 +58,9 @@ export function ScentFinderShell({ products }: ScentFinderShellProps) {
   const [dossierProduct, setDossierProduct] = useState<Product | null>(null);
 
   useEffect(() => {
-    const unsubscribe = hydrateAndSubscribeStorage(
-      SCENT_FINDER_STORAGE_KEY,
-      parsePersistedScentFinderSession,
-      DEFAULT_SCENT_FINDER_SESSION,
-      (persisted) => {
-        setSession(persisted);
-      }
-    );
+    const unsubscribe = hydrateScentFinderSession((persisted) => {
+      setSession(persisted);
+    });
     return unsubscribe;
   }, []);
 
@@ -214,7 +207,10 @@ export function ScentFinderShell({ products }: ScentFinderShellProps) {
 
   const handleNextStep = useCallback(() => {
     const activeQuestion = SCENT_FINDER_QUESTIONS[session.currentStepIndex];
-    if (!activeQuestion || !isQuestionAnswered(activeQuestion.id, session.answers)) {
+    if (
+      !activeQuestion ||
+      !isQuestionAnswered(activeQuestion.id, session.answers)
+    ) {
       return;
     }
 
@@ -235,11 +231,13 @@ export function ScentFinderShell({ products }: ScentFinderShellProps) {
 
     if (isCompletePreferenceProfile(session.answers)) {
       const suite = computeScentRecommendations(products, session.answers);
-      trackScentFinderEvent({
-        type: 'scent_finder_completed',
-        primaryProductSlug: suite.primaryMatch.product.slug,
-        affinityScore: suite.primaryMatch.affinityScore,
-      });
+      if (suite) {
+        trackScentFinderEvent({
+          type: 'scent_finder_completed',
+          primaryProductSlug: suite.primaryMatch.product.slug,
+          affinityScore: suite.primaryMatch.affinityScore,
+        });
+      }
 
       updateAndPersistSession((prev) => ({
         ...prev,
@@ -295,7 +293,7 @@ export function ScentFinderShell({ products }: ScentFinderShellProps) {
   }, [scrollViewportToTop, updateAndPersistSession]);
 
   const recommendationSuite = useMemo(() => {
-    if (!isCompletePreferenceProfile(session.answers) || products.length === 0) {
+    if (!isCompletePreferenceProfile(session.answers)) {
       return null;
     }
     return computeScentRecommendations(products, session.answers);
@@ -369,7 +367,7 @@ export function ScentFinderShell({ products }: ScentFinderShellProps) {
           </motion.div>
         )}
 
-        {session.stage === 'results' && recommendationSuite && (
+        {session.stage === 'results' && (
           <motion.div
             key="scent-finder-results"
             initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}

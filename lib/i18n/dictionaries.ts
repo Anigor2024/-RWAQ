@@ -416,6 +416,10 @@ export interface Dictionary {
     profileLongevityLabel: string;
     exploreSimilarInShopAction: string;
     refineAnswersAction: string;
+    emptyCatalogTitle: string;
+    emptyCatalogSubtitle: string;
+    emptyCatalogReturnToShop: string;
+    emptyCatalogStartAgain: string;
   };
 }
 
@@ -1006,6 +1010,11 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       profileLongevityLabel: 'درجة الثبات والطابع',
       exploreSimilarInShopAction: 'عرض العطور بهذه التفضيلات',
       refineAnswersAction: 'تعديل الإجابات',
+      emptyCatalogTitle: 'تعذّر إكمال المطابقة العطرية حالياً.',
+      emptyCatalogSubtitle:
+        'لا تتوفر حالياً ابتكارات عطرية متاحة للمطابقة في الكتالوج. يمكنك العودة إلى المتجر أو البدء من جديد.',
+      emptyCatalogReturnToShop: 'العودة إلى المتجر',
+      emptyCatalogStartAgain: 'البدء من جديد',
     },
   },
   en: {
@@ -1597,6 +1606,11 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       profileLongevityLabel: 'Longevity & Character',
       exploreSimilarInShopAction: 'Explore Similar Creations',
       refineAnswersAction: 'Adjust Preferences',
+      emptyCatalogTitle: 'Scent matching is temporarily unavailable.',
+      emptyCatalogSubtitle:
+        'No fragrance creations are currently available in the catalog to complete your consultation. You may return to the shop or start again.',
+      emptyCatalogReturnToShop: 'Return to Shop',
+      emptyCatalogStartAgain: 'Start Again',
     },
   },
 };

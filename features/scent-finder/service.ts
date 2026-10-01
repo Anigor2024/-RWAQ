@@ -16,6 +16,10 @@ export function buildShopBridgeHref(
   profile: ScentPreferenceProfile,
   products: readonly Product[]
 ): string {
+  if (products.length === 0) {
+    return '/shop';
+  }
+
   const familyMatches = products.filter(
     (p) => p.olfactoryFamilyKey === profile.family
   );
@@ -48,23 +52,24 @@ export function buildShopBridgeHref(
 /**
  * Computes the complete deterministic recommendation suite (Primary Match, 2 Alternate Matches,
  * and verified Shop discovery link) for a user's ScentPreferenceProfile.
+ * Returns `null` if the input catalog is empty (`products.length === 0`).
  */
 export function computeScentRecommendations(
   products: readonly Product[],
   profile: ScentPreferenceProfile
-): ScentRecommendationSuite {
-  const { primaryMatch, alternateMatches, allRanked } = rankCatalogForProfile(
-    products,
-    profile
-  );
+): ScentRecommendationSuite | null {
+  const ranking = rankCatalogForProfile(products, profile);
+  if (!ranking) {
+    return null;
+  }
 
   const shopBridgeHref = buildShopBridgeHref(profile, products);
 
   return {
     profile,
-    primaryMatch,
-    alternateMatches,
-    allRanked,
+    primaryMatch: ranking.primaryMatch,
+    alternateMatches: ranking.alternateMatches,
+    allRanked: ranking.allRanked,
     shopBridgeHref,
   };
 }

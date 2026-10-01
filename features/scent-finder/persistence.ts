@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import {
   GENDER_POSITIONING_KEYS,
   LONGEVITY_LEVEL_KEYS,
@@ -6,6 +7,7 @@ import {
   PROJECTION_LEVEL_KEYS,
   SEASON_SUITABILITY_KEYS,
 } from '@/features/catalog/catalog-query';
+import { hydrateAndSubscribeStorage } from '@/lib/storage/persisted-store';
 import {
   DEFAULT_SCENT_FINDER_ANSWERS,
   isCompletePreferenceProfile,
@@ -18,25 +20,88 @@ import type {
   ScentFinderAnswerState,
   ScentFinderSession,
   ScentFinderStage,
-  ScentMaterialKey,
 } from './types';
 
 export const SCENT_FINDER_STORAGE_KEY = 'rwaq_scent_finder_v1';
 
-const VALID_STAGES: readonly ScentFinderStage[] = [
+export const VALID_SCENT_FINDER_STAGES = [
   'intro',
   'questions',
   'results',
-] as const;
+] as const satisfies readonly ScentFinderStage[];
 
-function isOneOf<T extends string>(
-  value: unknown,
-  allowed: readonly T[]
-): value is T {
-  return (
-    typeof value === 'string' && (allowed as readonly string[]).includes(value)
+const ISO_8601_DATE_TIME_REGEX =
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/;
+
+export const scentFinderIsoDateSchema = z
+  .string()
+  .trim()
+  .min(10)
+  .max(64)
+  .refine(
+    (value) =>
+      ISO_8601_DATE_TIME_REGEX.test(value) && !Number.isNaN(Date.parse(value)),
+    {
+      message: 'completedAt must be a valid ISO-8601 timestamp string',
+    }
   );
-}
+
+export const scentPresenceSchema = z.enum(SCENT_PRESENCE_KEYS);
+export const scentMaterialSchema = z.enum(SCENT_MATERIAL_KEYS);
+export const olfactoryFamilySchema = z.enum(OLFACTORY_FAMILY_KEYS);
+export const occasionSuitabilitySchema = z.enum(OCCASION_SUITABILITY_KEYS);
+export const seasonSuitabilitySchema = z.enum(SEASON_SUITABILITY_KEYS);
+export const projectionLevelSchema = z.enum(PROJECTION_LEVEL_KEYS);
+export const longevityLevelSchema = z.enum(LONGEVITY_LEVEL_KEYS);
+export const genderPositioningSchema = z.enum(GENDER_POSITIONING_KEYS);
+export const scentFinderStageSchema = z.enum(VALID_SCENT_FINDER_STAGES);
+
+export const scentFinderMaterialsSchema = z
+  .array(scentMaterialSchema)
+  .max(MAX_MATERIAL_SELECTIONS)
+  .transform((materials) => Array.from(new Set(materials)));
+
+export const scentFinderAnswerStateSchema: z.ZodType<ScentFinderAnswerState> = z
+  .object({
+    presence: scentPresenceSchema.optional(),
+    materials: scentFinderMaterialsSchema,
+    family: olfactoryFamilySchema.optional(),
+    occasion: occasionSuitabilitySchema.optional(),
+    season: seasonSuitabilitySchema.optional(),
+    projection: projectionLevelSchema.optional(),
+    longevity: longevityLevelSchema.optional(),
+    character: genderPositioningSchema.default('unisex'),
+  })
+  .strict();
+
+export const scentFinderSessionSchema: z.ZodType<ScentFinderSession> = z
+  .object({
+    version: z.literal(1),
+    stage: scentFinderStageSchema,
+    currentStepIndex: z
+      .number()
+      .int()
+      .min(0)
+      .max(SCENT_FINDER_TOTAL_STEPS - 1),
+    answers: scentFinderAnswerStateSchema,
+    completedAt: scentFinderIsoDateSchema.optional(),
+  })
+  .strict()
+  .transform((session): ScentFinderSession => {
+    const normalizedStage: ScentFinderStage =
+      session.stage === 'results' &&
+      !isCompletePreferenceProfile(session.answers)
+        ? 'questions'
+        : session.stage;
+
+    return {
+      version: 1,
+      stage: normalizedStage,
+      currentStepIndex: session.currentStepIndex,
+      answers: session.answers,
+      ...(session.completedAt ? { completedAt: session.completedAt } : {}),
+    };
+  });
 
 export const DEFAULT_SCENT_FINDER_SESSION: ScentFinderSession = {
   version: 1,
@@ -49,144 +114,70 @@ export const DEFAULT_SCENT_FINDER_SESSION: ScentFinderSession = {
 };
 
 /**
- * Strictly validates and sanitizes a persisted ScentFinderSession from localStorage.
- * Malformed or outdated state is safely discarded or normalized without throwing.
+ * Pure runtime parser and validator for persisted ScentFinderSession JSON.
+ * Uses Zod safeParse() without mutating localStorage or casting untrusted JSON directly.
  */
 export function parsePersistedScentFinderSession(
-  rawValue: string | null,
-  storageKey: string = SCENT_FINDER_STORAGE_KEY
+  rawValue: string | null
 ): ScentFinderSession | null {
   if (!rawValue) return null;
 
   try {
-    const parsed: unknown = JSON.parse(rawValue);
-    if (
-      typeof parsed !== 'object' ||
-      parsed === null ||
-      Array.isArray(parsed)
-    ) {
-      if (typeof window !== 'undefined') {
-        window.localStorage.removeItem(storageKey);
-      }
+    const decoded: unknown = JSON.parse(rawValue);
+    const parsed = scentFinderSessionSchema.safeParse(decoded);
+    if (!parsed.success) {
       return null;
     }
-
-    const record = parsed as Record<string, unknown>;
-    if (record.version !== 1) {
-      if (typeof window !== 'undefined') {
-        window.localStorage.removeItem(storageKey);
-      }
-      return null;
-    }
-
-    const rawAnswers =
-      typeof record.answers === 'object' &&
-      record.answers !== null &&
-      !Array.isArray(record.answers)
-        ? (record.answers as Record<string, unknown>)
-        : {};
-
-    const validatedMaterials: ScentMaterialKey[] = [];
-    if (Array.isArray(rawAnswers.materials)) {
-      for (const item of rawAnswers.materials) {
-        if (
-          isOneOf(item, SCENT_MATERIAL_KEYS) &&
-          !validatedMaterials.includes(item) &&
-          validatedMaterials.length < MAX_MATERIAL_SELECTIONS
-        ) {
-          validatedMaterials.push(item);
-        }
-      }
-    }
-
-    const answers: ScentFinderAnswerState = {
-      materials: validatedMaterials,
-      character: isOneOf(rawAnswers.character, GENDER_POSITIONING_KEYS)
-        ? rawAnswers.character
-        : 'unisex',
-    };
-
-    if (isOneOf(rawAnswers.presence, SCENT_PRESENCE_KEYS)) {
-      answers.presence = rawAnswers.presence;
-    }
-    if (isOneOf(rawAnswers.family, OLFACTORY_FAMILY_KEYS)) {
-      answers.family = rawAnswers.family;
-    }
-    if (isOneOf(rawAnswers.occasion, OCCASION_SUITABILITY_KEYS)) {
-      answers.occasion = rawAnswers.occasion;
-    }
-    if (isOneOf(rawAnswers.season, SEASON_SUITABILITY_KEYS)) {
-      answers.season = rawAnswers.season;
-    }
-    if (isOneOf(rawAnswers.projection, PROJECTION_LEVEL_KEYS)) {
-      answers.projection = rawAnswers.projection;
-    }
-    if (isOneOf(rawAnswers.longevity, LONGEVITY_LEVEL_KEYS)) {
-      answers.longevity = rawAnswers.longevity;
-    }
-
-    const rawStep =
-      typeof record.currentStepIndex === 'number' &&
-      Number.isInteger(record.currentStepIndex)
-        ? record.currentStepIndex
-        : 0;
-    const currentStepIndex = Math.max(
-      0,
-      Math.min(SCENT_FINDER_TOTAL_STEPS - 1, rawStep)
-    );
-
-    let stage: ScentFinderStage = isOneOf(record.stage, VALID_STAGES)
-      ? record.stage
-      : 'intro';
-
-    if (stage === 'results' && !isCompletePreferenceProfile(answers)) {
-      stage = 'questions';
-    }
-
-    const completedAt =
-      typeof record.completedAt === 'string' &&
-      record.completedAt.length <= 64
-        ? record.completedAt
-        : undefined;
-
-    return {
-      version: 1,
-      stage,
-      currentStepIndex,
-      answers,
-      completedAt,
-    };
+    return parsed.data;
   } catch {
-    if (typeof window !== 'undefined') {
-      try {
-        window.localStorage.removeItem(storageKey);
-      } catch {
-        // Ignore storage errors
-      }
-    }
     return null;
   }
 }
 
-export function saveScentFinderSession(session: ScentFinderSession): void {
+export function saveScentFinderSession(
+  session: ScentFinderSession,
+  storageKey: string = SCENT_FINDER_STORAGE_KEY
+): void {
   if (typeof window === 'undefined') return;
   try {
-    window.localStorage.setItem(
-      SCENT_FINDER_STORAGE_KEY,
-      JSON.stringify(session)
-    );
+    window.localStorage.setItem(storageKey, JSON.stringify(session));
   } catch {
     // Ignore storage write errors
   }
 }
 
-export function clearScentFinderSession(): void {
+export function clearScentFinderSession(
+  storageKey: string = SCENT_FINDER_STORAGE_KEY
+): void {
   if (typeof window === 'undefined') return;
   try {
-    window.localStorage.removeItem(SCENT_FINDER_STORAGE_KEY);
+    window.localStorage.removeItem(storageKey);
   } catch {
     // Ignore storage errors
   }
+}
+
+/**
+ * Hydrates and subscribes to Scent Finder session state across tabs.
+ * Cleans up invalid localStorage entries through the persistence layer while keeping
+ * parsePersistedScentFinderSession pure.
+ */
+export function hydrateScentFinderSession(
+  onHydratedValue: (session: ScentFinderSession) => void,
+  storageKey: string = SCENT_FINDER_STORAGE_KEY
+): () => void {
+  return hydrateAndSubscribeStorage(
+    storageKey,
+    (rawValue, key) => {
+      const parsed = parsePersistedScentFinderSession(rawValue);
+      if (rawValue !== null && parsed === null) {
+        clearScentFinderSession(key);
+      }
+      return parsed;
+    },
+    DEFAULT_SCENT_FINDER_SESSION,
+    onHydratedValue
+  );
 }
 
 export function hasProgressInSession(session: ScentFinderSession): boolean {

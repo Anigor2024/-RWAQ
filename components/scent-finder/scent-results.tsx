@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   ArrowLeft,
   ArrowRight,
+  Compass,
   RotateCcw,
   SlidersHorizontal,
 } from 'lucide-react';
@@ -18,7 +19,7 @@ import { useLocale } from '@/providers/locale-provider';
 import type { Product } from '@/types';
 
 interface ScentResultsProps {
-  suite: ScentRecommendationSuite;
+  suite: ScentRecommendationSuite | null;
   onInspectDossier: (product: Product) => void;
   onAdjustPreferences: () => void;
   onStartOver: () => void;
@@ -32,6 +33,61 @@ export function ScentResults({
 }: ScentResultsProps) {
   const { dir, locale, t } = useLocale();
   const DirectionalArrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
+
+  if (!suite) {
+    return (
+      <div className="mx-auto max-w-[960px] px-4 py-16 sm:px-8 sm:py-24 lg:px-12">
+        <div className="border border-[#DED5C6] bg-[#FFFDF9] p-8 sm:p-14 text-center">
+          <div className="mx-auto inline-flex h-12 w-12 items-center justify-center border border-[#DED5C6] bg-[#F5F0E8] text-[#8C6239]">
+            <Compass className="h-5 w-5 stroke-[1.5]" />
+          </div>
+
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <span aria-hidden="true" className="h-px w-7 bg-[#8C6239]" />
+            <Typography variant="eyebrow" className="text-[#8C6239]">
+              {t.scentFinder.resultsEyebrow}
+            </Typography>
+            <span aria-hidden="true" className="h-px w-7 bg-[#8C6239]" />
+          </div>
+
+          <Typography
+            variant="h1"
+            as="h1"
+            serifInEnglish
+            className="mt-4 text-[#0B0B0A]"
+          >
+            {t.scentFinder.emptyCatalogTitle}
+          </Typography>
+
+          <Typography
+            variant="body"
+            className="mx-auto mt-4 max-w-xl text-[#5C534B]"
+          >
+            {t.scentFinder.emptyCatalogSubtitle}
+          </Typography>
+
+          <div className="mt-9 flex flex-col items-center justify-center gap-3.5 sm:flex-row">
+            <Link
+              href="/shop"
+              className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2.5 bg-[#0B0B0A] px-8 text-xs sm:text-sm font-medium text-[#F5F0E8] transition-colors hover:bg-[#241E1B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+            >
+              <span>{t.scentFinder.emptyCatalogReturnToShop}</span>
+              <DirectionalArrow className="h-4 w-4 stroke-[1.6]" />
+            </Link>
+
+            <button
+              type="button"
+              onClick={onStartOver}
+              className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 border border-[#CFC4B4] bg-transparent px-7 text-xs sm:text-sm font-medium text-[#0B0B0A] transition-colors hover:border-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+            >
+              <RotateCcw className="h-3.5 w-3.5 stroke-[1.6]" />
+              <span>{t.scentFinder.emptyCatalogStartAgain}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const summary = formatPreferenceProfileSummary(suite.profile);
 
