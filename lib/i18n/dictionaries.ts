@@ -519,6 +519,12 @@ export interface Dictionary {
     composeAnotherGiftAction: string;
     validationIncompleteSlots: string;
     validationStockExceeded: string;
+    validationDuplicateVariant: string;
+    sizeReductionWarningTitle: string;
+    sizeReductionWarningBody: string;
+    confirmSizeReductionAction: string;
+    manageSlotsBeforeReductionAction: string;
+    cancelSizeReductionAction: string;
     emptyCatalogTitle: string;
     emptyCatalogSubtitle: string;
   };
@@ -1234,6 +1240,14 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       validationIncompleteSlots: 'يرجى استكمال اختيار العطر لكل موضع في الصندوق أولاً.',
       validationStockExceeded:
         'أحد الأحجام المختارة تجاوز الحد الأقصى المتاح في المخزون مع محتويات الحقيبة الحالية.',
+      validationDuplicateVariant:
+        'لا يمكن تكرار نفس العطر وحجم الزجاجة داخل صندوق الهدية الواحد. يرجى اختيار عطر آخر أو حجم مختلف.',
+      sizeReductionWarningTitle: 'تأكيد تقليص حجم صندوق الإهداء',
+      sizeReductionWarningBody:
+        'تقليص حجم الهدية سيؤدي إلى إزالة العطور المختارة في المواضع الإضافية التالية:',
+      confirmSizeReductionAction: 'تأكيد التقليص وإزالة المواضع الإضافية',
+      manageSlotsBeforeReductionAction: 'تعديل المواضع يدوياً أولاً',
+      cancelSizeReductionAction: 'الاحتفاظ بالحجم الحالي',
       emptyCatalogTitle: 'مشغل الهدايا غير متاح مؤقتاً',
       emptyCatalogSubtitle:
         'لا تتوفر حالياً ابتكارات عطرية قابلة للاقتناء في الكتالوج لتنسيق صندوق هدية.',
@@ -1951,6 +1965,14 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       validationIncompleteSlots: 'Please complete your fragrance selection for every slot in the coffret.',
       validationStockExceeded:
         'One of the selected formats exceeds available stock when combined with your current bag.',
+      validationDuplicateVariant:
+        'The same creation and bottle format cannot be duplicated within one gift coffret. Please select another fragrance or format.',
+      sizeReductionWarningTitle: 'Confirm Coffret Scale Reduction',
+      sizeReductionWarningBody:
+        'Reducing the coffret size will remove the creations currently assigned to the following overflow slots:',
+      confirmSizeReductionAction: 'Confirm & Remove Extra Slots',
+      manageSlotsBeforeReductionAction: 'Manage Fragrance Slots First',
+      cancelSizeReductionAction: 'Keep Current Size',
       emptyCatalogTitle: 'The Gift Atelier is temporarily unavailable',
       emptyCatalogSubtitle:
         'No purchasable fragrance creations are currently available in the catalog to compose a gift.',

@@ -130,10 +130,24 @@ export type GiftValidationErrorCode =
   | 'invalid_presentation'
   | 'incomplete_selections'
   | 'duplicate_slot_index'
+  | 'duplicate_product_variant'
   | 'product_not_found'
   | 'variant_not_purchasable'
   | 'insufficient_stock'
   | 'invalid_message';
+
+export type GiftSetSizeChangeResult =
+  | {
+      status: 'applied';
+      nextState: GiftBuilderState;
+      removedSelections: [];
+    }
+  | {
+      status: 'confirmation_required';
+      pendingSize: GiftSetSize;
+      currentState: GiftBuilderState;
+      overflowSelections: GiftSelection[];
+    };
 
 export type GiftBundleValidationResult =
   | {

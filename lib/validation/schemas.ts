@@ -1,4 +1,8 @@
 import { z } from 'zod';
+import {
+  getGiftCartLineId,
+  getStandardCartLineId,
+} from '@/features/catalog/product-commerce';
 import { DEFAULT_CURRENCY } from '@/lib/money';
 import type { CartItem, DemoPersona, EntityId, Locale } from '@/types';
 
@@ -126,8 +130,21 @@ export const persistedGiftBundleMetadataSchema = z
     message: 'slotIndex must be within setSize bounds',
   });
 
+export const cartLineIdSchema = z
+  .string()
+  .trim()
+  .min(3)
+  .max(320)
+  .regex(
+    /^(?:standard:[a-zA-Z0-9_-]+|gift:[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+:[0-2])$/,
+    {
+      message: 'Invalid cart line identifier',
+    }
+  );
+
 export const persistedCartItemSchema = z
   .object({
+    lineId: z.string().trim().min(1).max(320).optional(),
     productId: entityIdSchema,
     productSlug: slugSchema,
     variantId: entityIdSchema,
@@ -146,20 +163,29 @@ export const persistedCartItemSchema = z
     giftWrapRequested: z.boolean().optional(),
     giftBundle: persistedGiftBundleMetadataSchema.optional(),
   })
-  .transform((item) => {
+  .transform((item): CartItem => {
     const safeCap = Math.min(10, item.maxStockQuantity ?? 10);
     const clampedQty = item.giftBundle
       ? 1
       : Math.max(1, Math.min(safeCap, item.quantity));
+    const derivedLineId = item.giftBundle
+      ? getGiftCartLineId(
+          item.giftBundle.bundleId,
+          item.variantId,
+          item.giftBundle.slotIndex
+        )
+      : getStandardCartLineId(item.variantId);
+
     return {
       ...item,
+      lineId: derivedLineId,
       quantity: clampedQty,
     };
   });
 
 /**
- * Ensures any persisted gift bundle items form complete, consistent sets (1, 2, or 3 slots).
- * Drops corrupted partial bundles while preserving valid bundles and standalone items.
+ * Ensures any persisted gift bundle items form complete, consistent sets (1, 2, or 3 slots)
+ * with no duplicate product+variant pairs, and deduplicates standalone lines by canonical lineId.
  */
 function sanitizePersistedBagBundleIntegrity(items: CartItem[]): CartItem[] {
   const byBundle = new Map<string, CartItem[]>();
@@ -177,7 +203,29 @@ function sanitizePersistedBagBundleIntegrity(items: CartItem[]): CartItem[] {
     const expectedSize = firstMeta.setSize;
     if (bundleItems.length !== expectedSize) continue;
 
-    const slots = new Set(bundleItems.map((i) => i.giftBundle?.slotIndex));
+    const slots = new Set<number>();
+    const productVariants = new Set<string>();
+    let consistentMetadata = true;
+
+    for (const item of bundleItems) {
+      const meta = item.giftBundle;
+      if (
+        !meta ||
+        meta.setSize !== expectedSize ||
+        meta.occasion !== firstMeta.occasion ||
+        meta.presentation !== firstMeta.presentation
+      ) {
+        consistentMetadata = false;
+        break;
+      }
+      slots.add(meta.slotIndex);
+      productVariants.add(`${item.productId}:${item.variantId}`);
+    }
+
+    if (!consistentMetadata || productVariants.size !== expectedSize) {
+      continue;
+    }
+
     let allSlotsPresent = true;
     for (let s = 0; s < expectedSize; s++) {
       if (!slots.has(s)) {
@@ -190,9 +238,32 @@ function sanitizePersistedBagBundleIntegrity(items: CartItem[]): CartItem[] {
     }
   }
 
-  return items.filter(
-    (item) => !item.giftBundle || validBundleIds.has(item.giftBundle.bundleId)
-  );
+  const result: CartItem[] = [];
+  const standaloneIndexByLineId = new Map<EntityId, number>();
+
+  for (const item of items) {
+    if (item.giftBundle) {
+      if (validBundleIds.has(item.giftBundle.bundleId)) {
+        result.push(item);
+      }
+      continue;
+    }
+
+    const existingIdx = standaloneIndexByLineId.get(item.lineId);
+    if (existingIdx !== undefined) {
+      const prev = result[existingIdx];
+      const safeCap = Math.min(10, prev.maxStockQuantity ?? 10);
+      result[existingIdx] = {
+        ...prev,
+        quantity: Math.min(safeCap, prev.quantity + item.quantity),
+      };
+    } else {
+      standaloneIndexByLineId.set(item.lineId, result.length);
+      result.push(item);
+    }
+  }
+
+  return result;
 }
 
 export const persistedCartListSchema = z

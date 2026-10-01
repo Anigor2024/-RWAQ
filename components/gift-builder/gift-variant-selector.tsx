@@ -4,6 +4,7 @@ import React from 'react';
 import { isProductVariantPurchasable } from '@/features/catalog/product-commerce';
 import { getRemainingVariantStockForGiftSlot } from '@/features/gift-builder/service';
 import type { GiftSelection } from '@/features/gift-builder/types';
+import { isDuplicateGiftProductVariant } from '@/features/gift-builder/validation';
 import { formatVolumeMl, localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
 import { cn } from '@/lib/utils';
@@ -46,7 +47,14 @@ export function GiftVariantSelector({
           draftSelections,
           excludeSlotIndex: activeSlotIndex,
         });
-        const isAvailableForSlot = isPurchasable && remainingForSlot > 0;
+        const isDuplicateInOtherSlot = isDuplicateGiftProductVariant(
+          draftSelections,
+          product.id,
+          variant.id,
+          activeSlotIndex
+        );
+        const isAvailableForSlot =
+          isPurchasable && remainingForSlot > 0 && !isDuplicateInOtherSlot;
         const isSelected = variant.id === selectedVariantId;
 
         return (
@@ -63,7 +71,9 @@ export function GiftVariantSelector({
             }}
             className={cn(
               'inline-flex items-center gap-2 border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
-              compact ? 'min-h-9 px-3 py-1.5 text-xs' : 'min-h-10 px-3.5 py-2 text-xs',
+              compact
+                ? 'min-h-9 px-3 py-1.5 text-xs'
+                : 'min-h-10 px-3.5 py-2 text-xs',
               !isAvailableForSlot
                 ? 'cursor-not-allowed border-[#EBE3D5] bg-[#F5F0E8]/60 text-[#918A80] line-through opacity-55'
                 : isSelected

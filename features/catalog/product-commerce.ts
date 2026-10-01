@@ -1,6 +1,26 @@
-import type { Money, Product, ProductVariant } from '@/types';
+import type { EntityId, Money, Product, ProductVariant } from '@/types';
 
 export const MAX_CART_QUANTITY_PER_LINE = 10;
+
+/**
+ * Canonical Cart Line Identity Policy — Standard Purchase:
+ * Format: `standard:<variantId>`
+ */
+export function getStandardCartLineId(variantId: EntityId): EntityId {
+  return `standard:${variantId}`;
+}
+
+/**
+ * Canonical Cart Line Identity Policy — Gift Atelier Line:
+ * Format: `gift:<bundleId>:<variantId>:<slotIndex>`
+ */
+export function getGiftCartLineId(
+  bundleId: EntityId,
+  variantId: EntityId,
+  slotIndex: number
+): EntityId {
+  return `gift:${bundleId}:${variantId}:${slotIndex}`;
+}
 
 /**
  * Checks whether a specific product variant is purchasable at the variant level.

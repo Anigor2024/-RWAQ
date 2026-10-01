@@ -10,11 +10,12 @@ import React, {
   useState,
 } from 'react';
 import {
-  getDefaultPurchasableVariant,
-  getSafeMaxProductVariantQuantity,
-  isProductVariantPurchasable,
-  MAX_CART_QUANTITY_PER_LINE,
-} from '@/features/catalog/product-commerce';
+  addGiftBundleToBagList,
+  addStandardItemToBagList,
+  removeBagLineById,
+  removeGiftBundleById,
+  updateBagLineQuantity,
+} from '@/features/gift-builder/service';
 import { calculatePriceBreakdown } from '@/lib/money';
 import { hydrateAndSubscribeStorage } from '@/lib/storage/persisted-store';
 import {
@@ -53,8 +54,8 @@ interface UIContextValue {
     quantity?: number
   ) => boolean;
   addGiftBundleToBag: (bundleItems: CartItem[]) => boolean;
-  updateBagQuantity: (variantId: EntityId, nextQuantity: number) => void;
-  removeFromBag: (variantId: EntityId) => void;
+  updateBagQuantity: (lineId: EntityId, nextQuantity: number) => void;
+  removeFromBag: (lineId: EntityId) => void;
   removeGiftBundleFromBag: (bundleId: EntityId) => void;
   wishlistProductIds: EntityId[];
   isWishlisted: (productId: EntityId) => boolean;
@@ -149,93 +150,35 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
       selectedVariant?: ProductVariant | null,
       quantity: number = 1
     ): boolean => {
-      const targetVariant =
-        selectedVariant !== undefined
-          ? selectedVariant
-          : getDefaultPurchasableVariant(product);
-
-      if (!isProductVariantPurchasable(product, targetVariant)) {
-        return false;
-      }
-
-      const maxAllowed = getSafeMaxProductVariantQuantity(
+      const checkResult = addStandardItemToBagList(
+        bagItems,
         product,
-        targetVariant
+        selectedVariant,
+        quantity
       );
-      if (maxAllowed <= 0) {
+      if (!checkResult.added) {
         return false;
       }
-
-      const giftAllocatedQty = bagItems.reduce(
-        (sum, item) =>
-          item.giftBundle && item.variantId === targetVariant.id
-            ? sum + item.quantity
-            : sum,
-        0
-      );
-      const maxStandaloneAllowed = Math.max(0, maxAllowed - giftAllocatedQty);
-      if (maxStandaloneAllowed <= 0) {
-        return false;
-      }
-
-      const requestedQty = Number.isFinite(quantity)
-        ? Math.max(1, Math.round(quantity))
-        : 1;
-      const safeAddQty = Math.min(maxStandaloneAllowed, requestedQty);
 
       setBagItems((prev) => {
-        const currentGiftAllocated = prev.reduce(
-          (sum, item) =>
-            item.giftBundle && item.variantId === targetVariant.id
-              ? sum + item.quantity
-              : sum,
-          0
+        const applied = addStandardItemToBagList(
+          prev,
+          product,
+          selectedVariant,
+          quantity
         );
-        const capForStandalone = Math.max(0, maxAllowed - currentGiftAllocated);
-        if (capForStandalone <= 0) {
+        if (!applied.added) {
           return prev;
         }
-
-        const existingIndex = prev.findIndex(
-          (item) => !item.giftBundle && item.variantId === targetVariant.id
-        );
-        let next: CartItem[];
-        if (existingIndex > -1) {
-          next = prev.map((item, idx) =>
-            idx === existingIndex
-              ? {
-                  ...item,
-                  maxStockQuantity: maxAllowed,
-                  quantity: Math.min(
-                    capForStandalone,
-                    item.quantity + safeAddQty
-                  ),
-                }
-              : item
-          );
-        } else {
-          next = [
-            ...prev,
-            {
-              productId: product.id,
-              productSlug: product.slug,
-              variantId: targetVariant.id,
-              name: product.name,
-              collectionName: product.collectionName,
-              sizeMl: targetVariant.sizeMl,
-              unitPrice: targetVariant.price,
-              quantity: Math.min(capForStandalone, safeAddQty),
-              maxStockQuantity: maxAllowed,
-              imageUrl: product.image.url,
-            },
-          ];
-        }
         try {
-          window.localStorage.setItem(BAG_STORAGE_KEY, JSON.stringify(next));
+          window.localStorage.setItem(
+            BAG_STORAGE_KEY,
+            JSON.stringify(applied.nextBag)
+          );
         } catch {
           // Ignore
         }
-        return next;
+        return applied.nextBag;
       });
 
       return true;
@@ -245,113 +188,33 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
 
   const addGiftBundleToBag = useCallback(
     (bundleItems: CartItem[]): boolean => {
-      if (
-        !Array.isArray(bundleItems) ||
-        bundleItems.length === 0 ||
-        bundleItems.length > 3
-      ) {
+      const result = addGiftBundleToBagList(bagItems, bundleItems);
+      if (!result.added) {
         return false;
       }
-
-      const firstBundleMeta = bundleItems[0]?.giftBundle;
-      if (
-        !firstBundleMeta ||
-        bundleItems.length !== firstBundleMeta.setSize ||
-        bundleItems.some(
-          (item) =>
-            !item.giftBundle ||
-            item.giftBundle.bundleId !== firstBundleMeta.bundleId ||
-            item.quantity !== 1
-        )
-      ) {
-        return false;
-      }
-
-      // Check cumulative variant stock limits against current bagItems
-      const currentQtyByVariant = new Map<EntityId, number>();
-      for (const existing of bagItems) {
-        currentQtyByVariant.set(
-          existing.variantId,
-          (currentQtyByVariant.get(existing.variantId) ?? 0) + existing.quantity
-        );
-      }
-
-      for (const incoming of bundleItems) {
-        const cap = Math.min(
-          MAX_CART_QUANTITY_PER_LINE,
-          incoming.maxStockQuantity ?? MAX_CART_QUANTITY_PER_LINE
-        );
-        const nextTotal =
-          (currentQtyByVariant.get(incoming.variantId) ?? 0) + incoming.quantity;
-        if (nextTotal > cap) {
-          return false;
-        }
-        currentQtyByVariant.set(incoming.variantId, nextTotal);
-      }
-
-      const nextBag = [...bagItems, ...bundleItems];
-      persistBag(nextBag);
+      persistBag(result.nextBag);
       return true;
     },
     [bagItems, persistBag]
   );
 
   const updateBagQuantity = useCallback(
-    (variantId: EntityId, nextQuantity: number) => {
-      if (nextQuantity <= 0) {
-        persistBag(
-          bagItems.filter(
-            (item) => Boolean(item.giftBundle) || item.variantId !== variantId
-          )
-        );
-        return;
-      }
-
-      const giftAllocatedQty = bagItems.reduce(
-        (sum, item) =>
-          item.giftBundle && item.variantId === variantId
-            ? sum + item.quantity
-            : sum,
-        0
-      );
-
-      persistBag(
-        bagItems.map((item) => {
-          if (item.giftBundle || item.variantId !== variantId) return item;
-          const totalCap = Math.min(
-            MAX_CART_QUANTITY_PER_LINE,
-            item.maxStockQuantity ?? MAX_CART_QUANTITY_PER_LINE
-          );
-          const standaloneCap = Math.max(1, totalCap - giftAllocatedQty);
-          return {
-            ...item,
-            quantity: Math.max(
-              1,
-              Math.min(standaloneCap, Math.round(nextQuantity))
-            ),
-          };
-        })
-      );
+    (lineId: EntityId, nextQuantity: number) => {
+      persistBag(updateBagLineQuantity(bagItems, lineId, nextQuantity));
     },
     [bagItems, persistBag]
   );
 
   const removeFromBag = useCallback(
-    (variantId: EntityId) => {
-      persistBag(
-        bagItems.filter(
-          (item) => Boolean(item.giftBundle) || item.variantId !== variantId
-        )
-      );
+    (lineId: EntityId) => {
+      persistBag(removeBagLineById(bagItems, lineId));
     },
     [bagItems, persistBag]
   );
 
   const removeGiftBundleFromBag = useCallback(
     (bundleId: EntityId) => {
-      persistBag(
-        bagItems.filter((item) => item.giftBundle?.bundleId !== bundleId)
-      );
+      persistBag(removeGiftBundleById(bagItems, bundleId));
     },
     [bagItems, persistBag]
   );

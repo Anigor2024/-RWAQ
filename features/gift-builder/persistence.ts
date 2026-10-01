@@ -79,11 +79,19 @@ export const giftBuilderStateSchema: z.ZodType<GiftBuilderState> = z
   .transform((state): GiftBuilderState => {
     const maxSlots = state.setSize ?? 3;
     const seenSlots = new Set<number>();
+    const seenProductVariants = new Set<string>();
     const normalizedSelections: GiftSelection[] = [];
 
     for (const sel of state.selections) {
-      if (sel.slotIndex >= 0 && sel.slotIndex < maxSlots && !seenSlots.has(sel.slotIndex)) {
+      const pairKey = `${sel.productId}:${sel.variantId}`;
+      if (
+        sel.slotIndex >= 0 &&
+        sel.slotIndex < maxSlots &&
+        !seenSlots.has(sel.slotIndex) &&
+        !seenProductVariants.has(pairKey)
+      ) {
         seenSlots.add(sel.slotIndex);
+        seenProductVariants.add(pairKey);
         normalizedSelections.push(sel);
       }
     }
@@ -149,6 +157,7 @@ export function reconcileGiftBuilderStateWithCatalog(
   const maxSlots = state.setSize ?? 3;
   const reconciledSelections: GiftSelection[] = [];
   const seenSlots = new Set<number>();
+  const seenProductVariants = new Set<string>();
 
   for (const sel of state.selections) {
     if (sel.slotIndex < 0 || sel.slotIndex >= maxSlots || seenSlots.has(sel.slotIndex)) {
@@ -166,7 +175,12 @@ export function reconcileGiftBuilderStateWithCatalog(
     if (!activeVariant) {
       continue;
     }
+    const pairKey = `${product.id}:${activeVariant.id}`;
+    if (seenProductVariants.has(pairKey)) {
+      continue;
+    }
     seenSlots.add(sel.slotIndex);
+    seenProductVariants.add(pairKey);
     reconciledSelections.push({
       slotIndex: sel.slotIndex,
       productId: product.id,

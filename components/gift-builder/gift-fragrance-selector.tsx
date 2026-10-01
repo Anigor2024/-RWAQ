@@ -14,6 +14,7 @@ import type {
   GiftResolvedSelection,
   GiftSelection,
 } from '@/features/gift-builder/types';
+import { isDuplicateGiftProductVariant } from '@/features/gift-builder/validation';
 import { formatVolumeMl, localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
 import { cn } from '@/lib/utils';
@@ -155,9 +156,15 @@ export function GiftFragranceSelector({
             occasion
           );
 
-          // Determine variants with remaining stock for the active slot
+          // Determine variants with remaining stock for the active slot that are not already selected in another slot
           const availableVariantsForSlot = product.variants.filter(
             (variant) =>
+              !isDuplicateGiftProductVariant(
+                selections,
+                product.id,
+                variant.id,
+                activeSlotIndex
+              ) &&
               getRemainingVariantStockForGiftSlot({
                 product,
                 variant,

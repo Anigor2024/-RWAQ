@@ -165,6 +165,7 @@ export function resolveGiftSelections(
 
   const resolved: GiftResolvedSelection[] = [];
   const seenSlots = new Set<number>();
+  const seenProductVariants = new Set<string>();
 
   for (const selection of selections) {
     if (
@@ -192,6 +193,11 @@ export function resolveGiftSelections(
       continue;
     }
 
+    const pairKey = `${product.id}:${variant.id}`;
+    if (seenProductVariants.has(pairKey)) {
+      continue;
+    }
+
     const maxAvailableQuantity = getSafeMaxProductVariantQuantity(
       product,
       variant
@@ -201,6 +207,7 @@ export function resolveGiftSelections(
     }
 
     seenSlots.add(selection.slotIndex);
+    seenProductVariants.add(pairKey);
     resolved.push({
       slotIndex: selection.slotIndex,
       product,

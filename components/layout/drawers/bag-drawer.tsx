@@ -150,7 +150,7 @@ export function BagDrawer() {
                           const productHref = `/products/${slotItem.productSlug}`;
                           return (
                             <div
-                              key={`${bundle.bundleId}-slot-${slotItem.giftBundle?.slotIndex ?? idx}`}
+                              key={slotItem.lineId}
                               className="flex items-center gap-3.5 py-2.5 first:pt-0 last:pb-0"
                             >
                               <Link
@@ -266,7 +266,7 @@ export function BagDrawer() {
 
                   return (
                     <div
-                      key={`standalone-${item.variantId}`}
+                      key={item.lineId}
                       className="flex gap-4 border-b border-[#F5F0E8]/10 pb-5"
                     >
                       <Link
@@ -300,7 +300,7 @@ export function BagDrawer() {
                           </div>
                           <button
                             type="button"
-                            onClick={() => removeFromBag(item.variantId)}
+                            onClick={() => removeFromBag(item.lineId)}
                             aria-label={t.drawers.bag.removeItem}
                             className="p-1 text-[#918A80] transition-colors hover:text-[#F5F0E8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
                           >
@@ -314,7 +314,7 @@ export function BagDrawer() {
                               type="button"
                               onClick={() =>
                                 updateBagQuantity(
-                                  item.variantId,
+                                  item.lineId,
                                   item.quantity - 1
                                 )
                               }
@@ -332,7 +332,7 @@ export function BagDrawer() {
                               onClick={() => {
                                 if (!isAtMax) {
                                   updateBagQuantity(
-                                    item.variantId,
+                                    item.lineId,
                                     item.quantity + 1
                                   );
                                 }

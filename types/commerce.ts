@@ -63,6 +63,7 @@ export interface GiftBundleMetadata {
 }
 
 export interface CartItem {
+  lineId: EntityId;
   productId: EntityId;
   productSlug: Slug;
   variantId: EntityId;

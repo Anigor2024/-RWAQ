@@ -87,8 +87,27 @@ export function createGiftBundleId(): EntityId {
 }
 
 /**
+ * Checks whether a candidate (productId, variantId) pair is already selected in another slot
+ * of the same gift draft.
+ */
+export function isDuplicateGiftProductVariant(
+  selections: readonly GiftSelection[],
+  productId: EntityId,
+  variantId: EntityId,
+  excludeSlotIndex?: number
+): boolean {
+  return selections.some(
+    (sel) =>
+      (excludeSlotIndex === undefined || sel.slotIndex !== excludeSlotIndex) &&
+      sel.productId === productId &&
+      sel.variantId === variantId
+  );
+}
+
+/**
  * Validates a complete Gift Atelier draft against catalog availability, variant purchasability,
- * cumulative variant stock limits (including existing Bag items), and message constraints.
+ * duplicate product+variant prevention, cumulative variant stock limits (including existing Bag items),
+ * and message constraints.
  */
 export function validateGiftBundleDraft(params: {
   occasion: GiftOccasion | null;
@@ -171,14 +190,16 @@ export function validateGiftBundleDraft(params: {
     existingBagQtyByVariant.set(bagItem.variantId, prev + bagItem.quantity);
   }
 
+  const seenProductVariants = new Set<string>();
   const bundleQtyByVariant = new Map<EntityId, number>();
   const resolvedSelections: GiftResolvedSelection[] = [];
 
   for (const selection of orderedSelections) {
-    const product = products.find(
-      (p) =>
-        p.id === selection.productId && p.slug === selection.productSlug
-    ) ?? products.find((p) => p.id === selection.productId);
+    const product =
+      products.find(
+        (p) =>
+          p.id === selection.productId && p.slug === selection.productSlug
+      ) ?? products.find((p) => p.id === selection.productId);
 
     if (!product) {
       return {
@@ -198,6 +219,16 @@ export function validateGiftBundleDraft(params: {
         failedSlotIndex: selection.slotIndex,
       };
     }
+
+    const productVariantKey = `${product.id}:${exactVariant.id}`;
+    if (seenProductVariants.has(productVariantKey)) {
+      return {
+        valid: false,
+        errorCode: 'duplicate_product_variant',
+        failedSlotIndex: selection.slotIndex,
+      };
+    }
+    seenProductVariants.add(productVariantKey);
 
     const maxAllowed = getSafeMaxProductVariantQuantity(product, exactVariant);
     const inBagCount = existingBagQtyByVariant.get(exactVariant.id) ?? 0;

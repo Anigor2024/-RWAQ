@@ -34,7 +34,9 @@ import {
 import { calculateGiftBundlePricing } from '@/features/gift-builder/pricing';
 import { resolveGiftSelections } from '@/features/gift-builder/recommendations';
 import {
+  attemptGiftSetSizeChange,
   buildGiftBundleCartItems,
+  confirmGiftSetSizeReduction,
   trackGiftBuilderEvent,
 } from '@/features/gift-builder/service';
 import type {
@@ -44,7 +46,11 @@ import type {
   GiftSelection,
   GiftSetSize,
 } from '@/features/gift-builder/types';
-import { validateGiftBundleDraft } from '@/features/gift-builder/validation';
+import {
+  createGiftBundleId,
+  isDuplicateGiftProductVariant,
+  validateGiftBundleDraft,
+} from '@/features/gift-builder/validation';
 import { localize } from '@/lib/i18n/config';
 import { useLocale } from '@/providers/locale-provider';
 import { useToast } from '@/providers/toast-provider';
@@ -72,6 +78,8 @@ export function GiftBuilderShell({
     DEFAULT_GIFT_BUILDER_STATE
   );
   const [activeSlotIndex, setActiveSlotIndex] = useState<number>(0);
+  const [pendingSizeReduction, setPendingSizeReduction] =
+    useState<GiftSetSize | null>(null);
   const [dossierProduct, setDossierProduct] = useState<Product | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
 
@@ -110,7 +118,14 @@ export function GiftBuilderShell({
                 productSlug: preseedProduct.slug,
                 variantId: preseedVariant.id,
               },
-              ...reconciled.selections.filter((s) => s.slotIndex > 0),
+              ...reconciled.selections.filter(
+                (s) =>
+                  s.slotIndex > 0 &&
+                  !(
+                    s.productId === preseedProduct.id &&
+                    s.variantId === preseedVariant.id
+                  )
+              ),
             ].slice(0, reconciled.setSize ?? 1),
             updatedAt: new Date().toISOString(),
           };
@@ -146,6 +161,16 @@ export function GiftBuilderShell({
     [products, state.selections, state.setSize]
   );
 
+  const pendingOverflowSelections = useMemo(() => {
+    if (pendingSizeReduction === null) return [];
+    const orderedResolved = resolveGiftSelections(
+      products,
+      state.selections,
+      3
+    );
+    return orderedResolved.slice(pendingSizeReduction);
+  }, [pendingSizeReduction, products, state.selections]);
+
   const pricing = useMemo(
     () => calculateGiftBundlePricing(resolvedSelections),
     [resolvedSelections]
@@ -161,7 +186,7 @@ export function GiftBuilderShell({
       case 0:
         return state.occasion !== null;
       case 1:
-        return state.setSize !== null;
+        return state.setSize !== null && pendingSizeReduction === null;
       case 2:
         return (
           state.setSize !== null && resolvedSelections.length === state.setSize
@@ -171,7 +196,13 @@ export function GiftBuilderShell({
       default:
         return false;
     }
-  }, [state.currentStepIndex, state.occasion, state.setSize, resolvedSelections.length]);
+  }, [
+    state.currentStepIndex,
+    state.occasion,
+    state.setSize,
+    pendingSizeReduction,
+    resolvedSelections.length,
+  ]);
 
   const scrollToWorkspaceTop = useCallback(() => {
     if (typeof window !== 'undefined') {
@@ -192,12 +223,14 @@ export function GiftBuilderShell({
     };
     setState(fresh);
     setActiveSlotIndex(0);
+    setPendingSizeReduction(null);
     saveGiftBuilderState(fresh);
     trackGiftBuilderEvent({ type: 'gift_builder_started' });
     scrollToWorkspaceTop();
   }, [scrollToWorkspaceTop]);
 
   const handleResumeSaved = useCallback(() => {
+    setPendingSizeReduction(null);
     updateAndPersist((prev) => ({
       ...prev,
       stage: 'building',
@@ -213,12 +246,14 @@ export function GiftBuilderShell({
     clearGiftBuilderState();
     setState(DEFAULT_GIFT_BUILDER_STATE);
     setActiveSlotIndex(0);
+    setPendingSizeReduction(null);
     setValidationError(null);
     scrollToWorkspaceTop();
   }, [scrollToWorkspaceTop]);
 
   const handleSelectOccasion = useCallback(
     (occasion: GiftOccasion) => {
+      setPendingSizeReduction(null);
       updateAndPersist((prev) => ({
         ...prev,
         occasion,
@@ -232,29 +267,68 @@ export function GiftBuilderShell({
 
   const handleSelectSize = useCallback(
     (setSize: GiftSetSize) => {
+      const outcome = attemptGiftSetSizeChange(state, setSize);
+      if (outcome.status === 'confirmation_required') {
+        setPendingSizeReduction(setSize);
+        return;
+      }
+
+      setPendingSizeReduction(null);
       updateAndPersist((prev) => {
-        const truncatedSelections = prev.selections.filter(
-          (s) => s.slotIndex < setSize
-        );
-        return {
-          ...prev,
-          setSize,
-          selections: truncatedSelections,
-          currentStepIndex: 2,
-        };
+        const applied = attemptGiftSetSizeChange(prev, setSize);
+        return applied.status === 'applied' ? applied.nextState : prev;
       });
       setActiveSlotIndex((prevSlot) => Math.min(prevSlot, setSize - 1));
       trackGiftBuilderEvent({ type: 'gift_size_selected', setSize });
       scrollToWorkspaceTop();
     },
+    [state, updateAndPersist, scrollToWorkspaceTop]
+  );
+
+  const handleConfirmSizeReduction = useCallback(
+    (nextSize: GiftSetSize) => {
+      setPendingSizeReduction(null);
+      updateAndPersist((prev) => confirmGiftSetSizeReduction(prev, nextSize));
+      setActiveSlotIndex((prevSlot) => Math.min(prevSlot, nextSize - 1));
+      trackGiftBuilderEvent({ type: 'gift_size_selected', setSize: nextSize });
+      scrollToWorkspaceTop();
+    },
     [updateAndPersist, scrollToWorkspaceTop]
   );
+
+  const handleCancelSizeReduction = useCallback(() => {
+    setPendingSizeReduction(null);
+  }, []);
 
   const handleAssignToSlot = useCallback(
     (slotIndex: number, product: Product, variant: ProductVariant) => {
       const targetSetSize = state.setSize ?? 1;
 
+      if (
+        isDuplicateGiftProductVariant(
+          state.selections,
+          product.id,
+          variant.id,
+          slotIndex
+        )
+      ) {
+        setValidationError(t.giftBuilder.validationDuplicateVariant);
+        showToast(t.giftBuilder.validationDuplicateVariant, 'error');
+        return;
+      }
+
       updateAndPersist((prev) => {
+        if (
+          isDuplicateGiftProductVariant(
+            prev.selections,
+            product.id,
+            variant.id,
+            slotIndex
+          )
+        ) {
+          return prev;
+        }
+
         const filtered = prev.selections.filter(
           (s) => s.slotIndex !== slotIndex && s.slotIndex < targetSetSize
         );
@@ -293,7 +367,13 @@ export function GiftBuilderShell({
         }
       }
     },
-    [state.setSize, state.selections, updateAndPersist]
+    [
+      state.setSize,
+      state.selections,
+      t.giftBuilder.validationDuplicateVariant,
+      showToast,
+      updateAndPersist,
+    ]
   );
 
   const handleClearSlot = useCallback(
@@ -319,6 +399,7 @@ export function GiftBuilderShell({
 
   const handleSelectStep = useCallback(
     (stepIndex: number, focusSlotIndex?: number) => {
+      setPendingSizeReduction(null);
       if (focusSlotIndex !== undefined) {
         setActiveSlotIndex(focusSlotIndex);
       }
@@ -340,6 +421,7 @@ export function GiftBuilderShell({
   }, [canContinueCurrentStep, state.currentStepIndex, handleSelectStep]);
 
   const handleBack = useCallback(() => {
+    setPendingSizeReduction(null);
     if (state.currentStepIndex === 0) {
       updateAndPersist((prev) => ({
         ...prev,
@@ -352,7 +434,9 @@ export function GiftBuilderShell({
   }, [state.currentStepIndex, updateAndPersist, handleSelectStep, scrollToWorkspaceTop]);
 
   const handleAddGiftToBag = useCallback(() => {
+    const bundleId = createGiftBundleId();
     const validation = validateGiftBundleDraft({
+      bundleId,
       occasion: state.occasion,
       setSize: state.setSize,
       presentation: state.presentation,
@@ -366,6 +450,9 @@ export function GiftBuilderShell({
       if (validation.errorCode === 'insufficient_stock') {
         setValidationError(t.giftBuilder.validationStockExceeded);
         showToast(t.giftBuilder.validationStockExceeded, 'error');
+      } else if (validation.errorCode === 'duplicate_product_variant') {
+        setValidationError(t.giftBuilder.validationDuplicateVariant);
+        showToast(t.giftBuilder.validationDuplicateVariant, 'error');
       } else {
         setValidationError(t.giftBuilder.validationIncompleteSlots);
         showToast(t.giftBuilder.validationIncompleteSlots, 'error');
@@ -409,6 +496,7 @@ export function GiftBuilderShell({
     clearGiftBuilderState();
     setState(DEFAULT_GIFT_BUILDER_STATE);
     setActiveSlotIndex(0);
+    setPendingSizeReduction(null);
     openDrawer('bag');
   }, [
     state,
@@ -502,7 +590,12 @@ export function GiftBuilderShell({
                     {state.currentStepIndex === 1 && (
                       <GiftSizeStep
                         selectedSize={state.setSize}
+                        pendingSizeReduction={pendingSizeReduction}
+                        overflowSelections={pendingOverflowSelections}
                         onSelectSize={handleSelectSize}
+                        onConfirmSizeReduction={handleConfirmSizeReduction}
+                        onCancelSizeReduction={handleCancelSizeReduction}
+                        onManageSlotsFirst={() => handleSelectStep(2)}
                       />
                     )}
 

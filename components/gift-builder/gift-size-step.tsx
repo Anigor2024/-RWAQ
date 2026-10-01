@@ -1,26 +1,39 @@
 'use client';
 
 import React from 'react';
-import { Check, Gift } from 'lucide-react';
+import { AlertTriangle, Check, Gift } from 'lucide-react';
 import { Typography } from '@/components/ui/typography';
 import {
   GIFT_BUILDER_STEPS,
   GIFT_SET_SIZE_DESCRIPTORS,
   SIGNATURE_BOX_PRESENTATION,
 } from '@/features/gift-builder/occasions';
-import type { GiftSetSize } from '@/features/gift-builder/types';
-import { localize } from '@/lib/i18n/config';
+import type {
+  GiftResolvedSelection,
+  GiftSetSize,
+} from '@/features/gift-builder/types';
+import { formatVolumeMl, localize } from '@/lib/i18n/config';
 import { cn } from '@/lib/utils';
 import { useLocale } from '@/providers/locale-provider';
 
 interface GiftSizeStepProps {
   selectedSize: GiftSetSize | null;
+  pendingSizeReduction: GiftSetSize | null;
+  overflowSelections: readonly GiftResolvedSelection[];
   onSelectSize: (size: GiftSetSize) => void;
+  onConfirmSizeReduction: (size: GiftSetSize) => void;
+  onCancelSizeReduction: () => void;
+  onManageSlotsFirst: () => void;
 }
 
 export function GiftSizeStep({
   selectedSize,
+  pendingSizeReduction,
+  overflowSelections,
   onSelectSize,
+  onConfirmSizeReduction,
+  onCancelSizeReduction,
+  onManageSlotsFirst,
 }: GiftSizeStepProps) {
   const { locale, t } = useLocale();
   const stepMeta = GIFT_BUILDER_STEPS[1];
@@ -51,6 +64,75 @@ export function GiftSizeStep({
           {localize(stepMeta.subtitle, locale)}
         </Typography>
       </div>
+
+      {/* Explicit Confirmation Panel when Size Reduction Would Remove Selected Fragrances */}
+      {pendingSizeReduction !== null && overflowSelections.length > 0 && (
+        <div
+          role="alert"
+          className="border border-[#8C6239] bg-[#FFFDF9] p-6 sm:p-7"
+        >
+          <div className="flex items-start gap-3.5">
+            <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center border border-[#8C6239]/40 bg-[#F5F0E8] text-[#8C6239]">
+              <AlertTriangle className="h-4 w-4 stroke-[1.7]" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-base font-medium text-[#0B0B0A]">
+                {t.giftBuilder.sizeReductionWarningTitle}
+              </h2>
+              <p className="mt-1.5 text-xs leading-relaxed text-[#5C534B]">
+                {t.giftBuilder.sizeReductionWarningBody}
+              </p>
+
+              <ul className="mt-3 space-y-2 border-y border-[#EBE3D5] py-3">
+                {overflowSelections.map((sel) => (
+                  <li
+                    key={sel.slotIndex}
+                    className="flex items-center justify-between text-xs text-[#0B0B0A]"
+                  >
+                    <span>
+                      <span className="font-[family-name:var(--font-display-en)] font-semibold text-[#8C6239]">
+                        {t.giftBuilder.slotLabel} 0{sel.slotIndex + 1}:
+                      </span>{' '}
+                      <span className="font-medium">
+                        {localize(sel.product.name, locale)}
+                      </span>{' '}
+                      <span className="text-[#6E665E]">
+                        ({formatVolumeMl(sel.variant.sizeMl, locale)})
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => onConfirmSizeReduction(pendingSizeReduction)}
+                  className="inline-flex min-h-10 items-center justify-center bg-[#0B0B0A] px-5 py-2 text-xs font-medium text-[#F5F0E8] transition-colors hover:bg-[#241E1B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                >
+                  {t.giftBuilder.confirmSizeReductionAction}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={onManageSlotsFirst}
+                  className="inline-flex min-h-10 items-center justify-center border border-[#0B0B0A] bg-transparent px-4 py-2 text-xs font-medium text-[#0B0B0A] transition-colors hover:bg-[#0B0B0A] hover:text-[#F5F0E8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                >
+                  {t.giftBuilder.manageSlotsBeforeReductionAction}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={onCancelSizeReduction}
+                  className="inline-flex min-h-10 items-center justify-center px-3 py-2 text-xs text-[#6E665E] underline underline-offset-4 transition-colors hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                >
+                  {t.giftBuilder.cancelSizeReductionAction}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 1, 2, or 3 Fragrance Coffret Scale Selector */}
       <div
@@ -190,7 +272,10 @@ export function GiftSizeStep({
 
         <div className="mt-5 grid grid-cols-1 gap-3 border-t border-[#EBE3D5] pt-4 sm:grid-cols-3">
           {SIGNATURE_BOX_PRESENTATION.details.map((detail, idx) => (
-            <div key={idx} className="flex items-baseline gap-2.5 text-xs text-[#4A3027]">
+            <div
+              key={idx}
+              className="flex items-baseline gap-2.5 text-xs text-[#4A3027]"
+            >
               <span className="font-[family-name:var(--font-display-en)] text-[11px] font-semibold text-[#8C6239]">
                 0{idx + 1}
               </span>

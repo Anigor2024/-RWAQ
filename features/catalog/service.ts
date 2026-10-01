@@ -24,10 +24,12 @@ export {
 
 export {
   getDefaultPurchasableVariant,
+  getGiftCartLineId,
   getProductDisplayOriginalPrice,
   getProductDisplayPrice,
   getSafeMaxProductVariantQuantity,
   getSafeMaxVariantQuantity,
+  getStandardCartLineId,
   isProductPurchasable,
   isProductVariantPurchasable,
   isVariantPurchasable,

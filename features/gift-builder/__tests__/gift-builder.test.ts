@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { SEED_PRODUCTS } from '@/data/products';
 import {
   getDefaultPurchasableVariant,
+  getGiftCartLineId,
+  getStandardCartLineId,
   isProductPurchasable,
 } from '@/features/catalog/product-commerce';
 import {
@@ -24,15 +26,25 @@ import {
   resolveGiftSelections,
 } from '@/features/gift-builder/recommendations';
 import {
+  addGiftBundleToBagList,
+  addStandardItemToBagList,
+  attemptGiftSetSizeChange,
   buildGiftBundleCartItems,
+  confirmGiftSetSizeReduction,
   getRemainingVariantStockForGiftSlot,
   groupBagItems,
+  removeBagLineById,
+  removeGiftBundleById,
+  updateBagLineQuantity,
 } from '@/features/gift-builder/service';
 import type {
   GiftBuilderState,
   GiftSelection,
 } from '@/features/gift-builder/types';
-import { validateGiftBundleDraft } from '@/features/gift-builder/validation';
+import {
+  isDuplicateGiftProductVariant,
+  validateGiftBundleDraft,
+} from '@/features/gift-builder/validation';
 import { calculatePriceBreakdown } from '@/lib/money';
 import { parsePersistedBagItems } from '@/lib/validation/schemas';
 import type { CartItem, Product } from '@/types';
@@ -219,6 +231,82 @@ describe('RWAQ Gift Atelier — Domain, Pricing, Validation & Grouped Cart', () 
     }
   });
 
+  it('rejects duplicate productId + variantId selections within the same gift bundle while allowing different variants of the same product', () => {
+    const multiVariantProduct = purchasableCatalog.find(
+      (p) => p.variants.filter((v) => v.inStock && v.stockQuantity > 0).length >= 2
+    )!;
+    expect(multiVariantProduct).toBeDefined();
+
+    const purchasableVariants = multiVariantProduct.variants.filter(
+      (v) => v.inStock && v.stockQuantity > 0
+    );
+    const [variantA, variantB] = purchasableVariants;
+
+    const duplicateSelections: GiftSelection[] = [
+      {
+        slotIndex: 0,
+        productId: multiVariantProduct.id,
+        productSlug: multiVariantProduct.slug,
+        variantId: variantA.id,
+      },
+      {
+        slotIndex: 1,
+        productId: multiVariantProduct.id,
+        productSlug: multiVariantProduct.slug,
+        variantId: variantA.id,
+      },
+    ];
+
+    expect(
+      isDuplicateGiftProductVariant(
+        duplicateSelections,
+        multiVariantProduct.id,
+        variantA.id,
+        1
+      )
+    ).toBe(true);
+
+    const duplicateResult = validateGiftBundleDraft({
+      occasion: 'birthday',
+      setSize: 2,
+      presentation: 'signature-box',
+      selections: duplicateSelections,
+      message: DEFAULT_GIFT_BUILDER_STATE.message,
+      products: SEED_PRODUCTS,
+    });
+
+    expect(duplicateResult.valid).toBe(false);
+    if (!duplicateResult.valid) {
+      expect(duplicateResult.errorCode).toBe('duplicate_product_variant');
+      expect(duplicateResult.failedSlotIndex).toBe(1);
+    }
+
+    // Selecting two DIFFERENT variants (e.g., 50ml and 100ml) of the same product is valid
+    const distinctVariantsResult = validateGiftBundleDraft({
+      occasion: 'birthday',
+      setSize: 2,
+      presentation: 'signature-box',
+      selections: [
+        {
+          slotIndex: 0,
+          productId: multiVariantProduct.id,
+          productSlug: multiVariantProduct.slug,
+          variantId: variantA.id,
+        },
+        {
+          slotIndex: 1,
+          productId: multiVariantProduct.id,
+          productSlug: multiVariantProduct.slug,
+          variantId: variantB.id,
+        },
+      ],
+      message: DEFAULT_GIFT_BUILDER_STATE.message,
+      products: SEED_PRODUCTS,
+    });
+
+    expect(distinctVariantsResult.valid).toBe(true);
+  });
+
   it('enforces cumulative variant stock limits across existing Bag items and Gift Atelier slots', () => {
     const baseProduct = purchasableCatalog[0];
     const baseVariant = getDefaultPurchasableVariant(baseProduct)!;
@@ -239,6 +327,7 @@ describe('RWAQ Gift Atelier — Domain, Pricing, Validation & Grouped Cart', () 
 
     const existingBagItems: CartItem[] = [
       {
+        lineId: getStandardCartLineId('var_limited_stock_1'),
         productId: limitedProduct.id,
         productSlug: limitedProduct.slug,
         variantId: 'var_limited_stock_1',
@@ -350,11 +439,16 @@ describe('RWAQ Gift Atelier — Domain, Pricing, Validation & Grouped Cart', () 
     expect(reconciledEmpty.currentStepIndex).toBe(2);
   });
 
-  it('groups Gift Atelier bundles in the shopping bag while keeping standalone items and filtering corrupted partial bundles', () => {
+  it('assigns canonical lineId to standard and gift lines, migrates legacy bag items without lineId, and keeps standard and gift lines isolated', () => {
     const [p1, p2, p3] = purchasableCatalog;
     const v1 = getDefaultPurchasableVariant(p1)!;
     const v2 = getDefaultPurchasableVariant(p2)!;
     const v3 = getDefaultPurchasableVariant(p3)!;
+
+    expect(getStandardCartLineId(v1.id)).toBe(`standard:${v1.id}`);
+    expect(getGiftCartLineId('gift_bundle_01', v1.id, 0)).toBe(
+      `gift:gift_bundle_01:${v1.id}:0`
+    );
 
     const validatedBundle = validateGiftBundleDraft({
       bundleId: 'gift_test_duo_01',
@@ -392,7 +486,19 @@ describe('RWAQ Gift Atelier — Domain, Pricing, Validation & Grouped Cart', () 
       validatedBundle.resolvedSelections
     );
 
-    const standaloneItem: CartItem = {
+    // Every line shares the same bundleId and gets stable gift:<bundleId>:<variantId>:<slotIndex>
+    expect(bundleCartItems).toHaveLength(2);
+    expect(bundleCartItems[0].giftBundle?.bundleId).toBe('gift_test_duo_01');
+    expect(bundleCartItems[1].giftBundle?.bundleId).toBe('gift_test_duo_01');
+    expect(bundleCartItems[0].lineId).toBe(
+      `gift:gift_test_duo_01:${v1.id}:0`
+    );
+    expect(bundleCartItems[1].lineId).toBe(
+      `gift:gift_test_duo_01:${v2.id}:1`
+    );
+
+    // Backward-compatible migration: legacy standalone & gift items without lineId in localStorage
+    const legacyStandaloneWithoutLineId = {
       productId: p3.id,
       productSlug: p3.slug,
       variantId: v3.id,
@@ -405,9 +511,100 @@ describe('RWAQ Gift Atelier — Domain, Pricing, Validation & Grouped Cart', () 
       imageUrl: p3.image.url,
     };
 
-    const combinedBag = [...bundleCartItems, standaloneItem];
-    const hydratedBag = parsePersistedBagItems(JSON.stringify(combinedBag));
+    const legacyGiftWithoutLineId = bundleCartItems.map((item) => {
+      const { lineId: _ignored, ...rest } = item;
+      void _ignored;
+      return rest;
+    });
+
+    const hydratedBag = parsePersistedBagItems(
+      JSON.stringify([...legacyGiftWithoutLineId, legacyStandaloneWithoutLineId])
+    );
     expect(hydratedBag).toHaveLength(3);
+    expect(hydratedBag[0].lineId).toBe(`gift:gift_test_duo_01:${v1.id}:0`);
+    expect(hydratedBag[1].lineId).toBe(`gift:gift_test_duo_01:${v2.id}:1`);
+    expect(hydratedBag[2].lineId).toBe(`standard:${v3.id}`);
+
+    // Standard addToBag creates standard:<variantId> and never merges with Gift Atelier lines of the same variant
+    const afterGiftCommit = addGiftBundleToBagList([], bundleCartItems);
+    expect(afterGiftCommit.added).toBe(true);
+
+    const addSameVariantAsStandard = addStandardItemToBagList(
+      afterGiftCommit.nextBag,
+      p1,
+      v1,
+      1
+    );
+    expect(addSameVariantAsStandard.added).toBe(true);
+    expect(addSameVariantAsStandard.nextBag).toHaveLength(3);
+
+    const addStandardAgain = addStandardItemToBagList(
+      addSameVariantAsStandard.nextBag,
+      p1,
+      v1,
+      2
+    );
+    expect(addStandardAgain.added).toBe(true);
+    expect(addStandardAgain.nextBag).toHaveLength(3);
+
+    const standardLine = addStandardAgain.nextBag.find(
+      (i) => i.lineId === getStandardCartLineId(v1.id)
+    )!;
+    const giftLine0 = addStandardAgain.nextBag.find(
+      (i) => i.lineId === getGiftCartLineId('gift_test_duo_01', v1.id, 0)
+    )!;
+    expect(standardLine.quantity).toBe(3);
+    expect(giftLine0.quantity).toBe(1);
+
+    // updateBagLineQuantity updates standalone line by lineId and ignores gift lineIds
+    const updatedStandardQty = updateBagLineQuantity(
+      addStandardAgain.nextBag,
+      standardLine.lineId,
+      4
+    );
+    expect(
+      updatedStandardQty.find((i) => i.lineId === standardLine.lineId)?.quantity
+    ).toBe(4);
+
+    const ignoredGiftQtyUpdate = updateBagLineQuantity(
+      updatedStandardQty,
+      giftLine0.lineId,
+      5
+    );
+    expect(
+      ignoredGiftQtyUpdate.find((i) => i.lineId === giftLine0.lineId)?.quantity
+    ).toBe(1);
+
+    // removeBagLineById removes only the targeted standalone lineId, preserving the gift bundle
+    const afterStandardRemoved = removeBagLineById(
+      ignoredGiftQtyUpdate,
+      standardLine.lineId
+    );
+    expect(afterStandardRemoved).toHaveLength(2);
+    expect(
+      afterStandardRemoved.every(
+        (i) => i.giftBundle?.bundleId === 'gift_test_duo_01'
+      )
+    ).toBe(true);
+
+    // removeGiftBundleById removes all slots of that bundleId
+    const afterBundleRemoved = removeGiftBundleById(
+      afterStandardRemoved,
+      'gift_test_duo_01'
+    );
+    expect(afterBundleRemoved).toHaveLength(0);
+
+    // Corrupted partial bundle (1 item claiming setSize: 2) is filtered out upon hydration
+    const corruptedPartialBundle = [
+      bundleCartItems[0],
+      legacyStandaloneWithoutLineId,
+    ];
+    const sanitizedAfterCorruption = parsePersistedBagItems(
+      JSON.stringify(corruptedPartialBundle)
+    );
+    expect(sanitizedAfterCorruption).toHaveLength(1);
+    expect(sanitizedAfterCorruption[0].lineId).toBe(`standard:${v3.id}`);
+    expect(sanitizedAfterCorruption[0].giftBundle).toBeUndefined();
 
     const grouped = groupBagItems(hydratedBag);
     expect(grouped.giftBundles).toHaveLength(1);
@@ -417,14 +614,62 @@ describe('RWAQ Gift Atelier — Domain, Pricing, Validation & Grouped Cart', () 
     expect(grouped.giftBundles[0].totalPrice.amount).toBe(
       v1.price.amount + v2.price.amount
     );
+  });
 
-    // Corrupted partial bundle (1 item claiming setSize: 2) is filtered out upon hydration
-    const corruptedPartialBundle: CartItem[] = [bundleCartItems[0], standaloneItem];
-    const sanitizedAfterCorruption = parsePersistedBagItems(
-      JSON.stringify(corruptedPartialBundle)
-    );
-    expect(sanitizedAfterCorruption).toHaveLength(1);
-    expect(sanitizedAfterCorruption[0].productId).toBe(p3.id);
-    expect(sanitizedAfterCorruption[0].giftBundle).toBeUndefined();
+  it('does not silently delete selections on size reduction when occupied slots exceed the new size', () => {
+    const [p1, p2, p3] = purchasableCatalog;
+    const v1 = getDefaultPurchasableVariant(p1)!;
+    const v2 = getDefaultPurchasableVariant(p2)!;
+    const v3 = getDefaultPurchasableVariant(p3)!;
+
+    const trioState: GiftBuilderState = {
+      ...DEFAULT_GIFT_BUILDER_STATE,
+      stage: 'building',
+      currentStepIndex: 1,
+      occasion: 'wedding',
+      setSize: 3,
+      selections: [
+        { slotIndex: 0, productId: p1.id, productSlug: p1.slug, variantId: v1.id },
+        { slotIndex: 1, productId: p2.id, productSlug: p2.slug, variantId: v2.id },
+        { slotIndex: 2, productId: p3.id, productSlug: p3.slug, variantId: v3.id },
+      ],
+    };
+
+    // Attempting to reduce from 3 -> 2 when 3 fragrances are selected must NOT silently delete Slot 2
+    const attemptToDuo = attemptGiftSetSizeChange(trioState, 2);
+    expect(attemptToDuo.status).toBe('confirmation_required');
+    if (attemptToDuo.status === 'confirmation_required') {
+      expect(attemptToDuo.pendingSize).toBe(2);
+      expect(attemptToDuo.currentState.selections).toHaveLength(3);
+      expect(attemptToDuo.overflowSelections).toHaveLength(1);
+      expect(attemptToDuo.overflowSelections[0].productId).toBe(p3.id);
+    }
+
+    // Explicit confirmation applies the reduction cleanly
+    const confirmedDuo = confirmGiftSetSizeReduction(trioState, 2);
+    expect(confirmedDuo.setSize).toBe(2);
+    expect(confirmedDuo.selections).toHaveLength(2);
+    expect(confirmedDuo.selections.map((s) => s.productId)).toEqual([
+      p1.id,
+      p2.id,
+    ]);
+
+    // When total selections <= nextSize (even if a selection was in slotIndex 2), it compacts without deleting
+    const sparseState: GiftBuilderState = {
+      ...trioState,
+      selections: [
+        { slotIndex: 2, productId: p3.id, productSlug: p3.slug, variantId: v3.id },
+      ],
+    };
+    const attemptSparseToSingle = attemptGiftSetSizeChange(sparseState, 1);
+    expect(attemptSparseToSingle.status).toBe('applied');
+    if (attemptSparseToSingle.status === 'applied') {
+      expect(attemptSparseToSingle.nextState.setSize).toBe(1);
+      expect(attemptSparseToSingle.nextState.selections).toHaveLength(1);
+      expect(attemptSparseToSingle.nextState.selections[0].slotIndex).toBe(0);
+      expect(attemptSparseToSingle.nextState.selections[0].productId).toBe(
+        p3.id
+      );
+    }
   });
 });
