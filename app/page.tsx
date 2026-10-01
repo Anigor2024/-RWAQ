@@ -5,6 +5,7 @@ import { FeaturedCreations } from '@/components/home/featured-creations';
 import { HeroSection } from '@/components/home/hero-section';
 import { HouseSignatureStrip } from '@/components/home/house-signature-strip';
 import { ManifestoSection } from '@/components/home/manifesto-section';
+import { ScentFinderCtaSection } from '@/components/home/scent-finder-cta-section';
 import { SignatureCollections } from '@/components/home/signature-collections';
 import { Footer } from '@/components/layout/footer';
 import { Header } from '@/components/layout/header';
@@ -25,6 +26,7 @@ export default async function HomePage() {
         <FeaturedCreations collections={collections} products={products} />
         <SignatureCollections collections={collections} products={products} />
         <CraftMaterialsSection />
+        <ScentFinderCtaSection />
         <ConciergeServiceSection />
       </main>
 

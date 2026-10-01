@@ -32,6 +32,10 @@ export function Header() {
 
   const wishlistCount = wishlistProductIds.length;
   const isShopRoute = pathname?.startsWith('/shop');
+  const isScentFinderRoute = pathname?.startsWith('/scent-finder');
+  const isProductRoute = pathname?.startsWith('/products');
+  const hasSolidHeader =
+    isScrolled || isShopRoute || isScentFinderRoute || isProductRoute;
 
   return (
     <>
@@ -45,7 +49,7 @@ export function Header() {
       <header
         className={cn(
           'fixed top-0 inset-x-0 z-40 transition-[background-color,border-color,backdrop-filter] duration-300',
-          isScrolled || isShopRoute
+          hasSolidHeader
             ? 'border-b border-[#F5F0E8]/14 bg-[#0B0B0A]/94 text-[#FFFDF9] backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.35)]'
             : 'border-b border-[#F5F0E8]/10 bg-gradient-to-b from-[#0B0B0A]/80 via-[#0B0B0A]/40 to-transparent text-[#FFFDF9]'
         )}
@@ -73,7 +77,7 @@ export function Header() {
           {/* Zone 2: Primary Editorial Navigation (Desktop) */}
           <nav
             aria-label={t.a11y.primaryNavigation}
-            className="hidden lg:flex items-center gap-8 text-[0.9375rem] font-normal text-[#FFFDF9]/92"
+            className="hidden lg:flex items-center gap-7 text-[0.9375rem] font-normal text-[#FFFDF9]/92"
           >
             <Link
               href="/shop"
@@ -85,6 +89,17 @@ export function Header() {
               )}
             >
               {t.nav.shop}
+            </Link>
+            <Link
+              href="/scent-finder"
+              className={cn(
+                'relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:bg-[#A77A50] after:transition-transform after:duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]',
+                isScentFinderRoute
+                  ? 'text-[#D8C8B2] after:scale-x-100'
+                  : 'after:scale-x-0 hover:after:scale-x-100'
+              )}
+            >
+              {t.nav.scentFinder}
             </Link>
             <Link
               href="/#creations"

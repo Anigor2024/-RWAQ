@@ -48,6 +48,7 @@ export interface Dictionary {
   };
   nav: {
     shop: string;
+    scentFinder: string;
     collections: string;
     creations: string;
     craft: string;
@@ -357,6 +358,65 @@ export interface Dictionary {
     terms: string;
     vatRegistryNote: string;
   };
+  homeScentFinder: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    primaryCta: string;
+    secondaryCta: string;
+    durationNote: string;
+    pillars: Array<{
+      code: string;
+      label: string;
+    }>;
+  };
+  scentFinder: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    leadQuote: string;
+    description: string;
+    beginCta: string;
+    resumeCta: string;
+    exploreShopCta: string;
+    startOverCta: string;
+    durationMeta: string;
+    methodologyMeta: string;
+    progressAriaLabel: string;
+    stepLabel: string;
+    ofLabel: string;
+    singleSelectHint: string;
+    multiSelectHint: string;
+    multiSelectCount: string;
+    backAction: string;
+    continueAction: string;
+    revealMatchAction: string;
+    characterSubQuestionLabel: string;
+    characterSubQuestionHint: string;
+    resultsEyebrow: string;
+    resultsHeadline: string;
+    resultsSubheadline: string;
+    affinityScoreLabel: string;
+    affinityMethodologyNote: string;
+    whyMatchedHeading: string;
+    keyNotesLabel: string;
+    viewCreationAction: string;
+    inspectQuickDossierAction: string;
+    alternatesEyebrow: string;
+    alternatesHeading: string;
+    alternatesSubtitle: string;
+    contrastBadgePrefix: string;
+    profileSummaryEyebrow: string;
+    profileSummaryHeading: string;
+    profilePresenceLabel: string;
+    profileMaterialsLabel: string;
+    profileWorldLabel: string;
+    profileOccasionLabel: string;
+    profileProjectionLabel: string;
+    profileLongevityLabel: string;
+    exploreSimilarInShopAction: string;
+    refineAnswersAction: string;
+  };
 }
 
 export const DICTIONARIES: Record<Locale, Dictionary> = {
@@ -386,6 +446,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     },
     nav: {
       shop: 'العطور',
+      scentFinder: 'اكتشف عطرك',
       collections: 'المجموعات',
       creations: 'الابتكارات العطرية',
       craft: 'الخامات والحِرفة',
@@ -880,6 +941,72 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       terms: 'الشروط والأحكام',
       vatRegistryNote: 'جميع الأسعار بالريال السعودي وتشمل ضريبة القيمة المضافة 15%.',
     },
+    homeScentFinder: {
+      eyebrow: 'بوصلة رِواق · استشارة عطرية خاصة',
+      title: 'لست متأكداً من أين تبدأ؟',
+      subtitle:
+        'دع بوصلة رِواق تقودك إلى العطر الأقرب لحضورك عبر سبع خطوات هادئة تقرأ ذائقتك في الخامات النبيلة والأجواء والفوحان.',
+      primaryCta: 'اكتشف عطرك',
+      secondaryCta: 'تصفح المتجر الكامل',
+      durationNote: '٧ أسئلة مدروسة · توصية فورية مفسّرة من كتالوج الدار',
+      pillars: [
+        { code: 'I', label: 'قراءة الحضور والمناسبة' },
+        { code: 'II', label: 'توافق النوتات والخامات النبيلة' },
+        { code: 'III', label: 'ترشيح مفسّر لعطرك الأقرب' },
+      ],
+    },
+    scentFinder: {
+      eyebrow: 'استشارة الدار الخاصة · الذكاء العطري الحتمي',
+      title: 'بوصلة رِواق',
+      subtitle: 'رحلة قصيرة لاكتشاف العطر الأقرب إلى حضورك.',
+      leadQuote: 'العطر الأقرب إليك يبدأ بسؤال.',
+      description:
+        'صُمّمت بوصلة رِواق لتكون جلستك العطرية الخاصة؛ عبر سبع محطات متأنية، نحلّل تفضيلاتك في الخامات النبيلة والعوالم العطرية ودرجة الفوحان لنرشّح لك التركيبة الأكثر انسجاماً مع شخصيتك.',
+      beginCta: 'ابدأ الرحلة',
+      resumeCta: 'متابعة الاستشارة المحفوظة',
+      exploreShopCta: 'استكشف العطور مباشرة',
+      startOverCta: 'ابدأ من جديد',
+      durationMeta: '٧ خطوات هادئة · أقل من دقيقتين',
+      methodologyMeta: 'مبنية على هرم النوتات الفعلي لـ ١٨ ابتكاراً من رِواق',
+      progressAriaLabel: 'تقدّم خطوات بوصلة رِواق',
+      stepLabel: 'المحطة',
+      ofLabel: 'من',
+      singleSelectHint: 'اختر إجابة واحدة تعبّر عن تفضيلك الأقرب',
+      multiSelectHint: 'اختر من خامة واحدة إلى ٣ خامات بحدٍ أقصى',
+      multiSelectCount: 'تم اختيار {count} من ٣',
+      backAction: 'السابق',
+      continueAction: 'متابعة',
+      revealMatchAction: 'اكشف عن عطرك الأقرب',
+      characterSubQuestionLabel: 'تفضيل الطابع العطري (اختياري)',
+      characterSubQuestionHint:
+        'جميع عطور رِواق مصاغة لتناسب الجنسين، ويمكنك توجيه البوصلة نحو الميل الأقرب لذائقتك:',
+      resultsEyebrow: 'خلاصة الاستشارة العطرية · بوصلة رِواق',
+      resultsHeadline: 'عطرك الأقرب',
+      resultsSubheadline:
+        'بناءً على قراءتنا لتفضيلاتك في الحضور والخامات والأجواء، إليك التركيبة الأكثر توافقاً مع بصمتك الخاصة.',
+      affinityScoreLabel: 'درجة التوافق العطري',
+      affinityMethodologyNote:
+        'تقييم توافقي مبني على تطابق الخامات والعائلة العطرية والأداء',
+      whyMatchedHeading: 'لماذا اخترنا لك هذا العطر؟',
+      keyNotesLabel: 'أبرز النوتات المتناغمة',
+      viewCreationAction: 'اكتشف العطر',
+      inspectQuickDossierAction: 'معاينة الملف العطري',
+      alternatesEyebrow: 'ترشيحات مكملة · زوايا عطرية أخرى',
+      alternatesHeading: 'ابتكاران بديلان من أروقة الدار',
+      alternatesSubtitle:
+        'تركيبتان تشتركان في جوهر ذائقتك مع تباينٍ مدروس في الفوحان أو الإيقاع العطري.',
+      contrastBadgePrefix: 'زاوية التمايز:',
+      profileSummaryEyebrow: 'قراءة البصمة العطرية',
+      profileSummaryHeading: 'ملامح تفضيلاتك في هذه الجلسة',
+      profilePresenceLabel: 'الحضور المنشود',
+      profileMaterialsLabel: 'الخامات المختارة',
+      profileWorldLabel: 'العالم العطري',
+      profileOccasionLabel: 'المناسبة والأوقات',
+      profileProjectionLabel: 'مدى الفوحان',
+      profileLongevityLabel: 'درجة الثبات والطابع',
+      exploreSimilarInShopAction: 'عرض العطور بهذه التفضيلات',
+      refineAnswersAction: 'تعديل الإجابات',
+    },
   },
   en: {
     brand: {
@@ -907,6 +1034,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     },
     nav: {
       shop: 'Shop',
+      scentFinder: 'Find Your Scent',
       collections: 'Collections',
       creations: 'Creations',
       craft: 'Craft & Materials',
@@ -1402,6 +1530,73 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       privacy: 'Privacy Policy',
       terms: 'Terms of Service',
       vatRegistryNote: 'All prices are in Saudi Riyals (SAR) and include 15% VAT.',
+    },
+    homeScentFinder: {
+      eyebrow: 'RWAQ Scent Finder · Private Olfactory Consultation',
+      title: 'Not sure where to begin?',
+      subtitle:
+        'Let the RWAQ Scent Finder guide you to the creation most aligned with your presence through seven considered questions across raw materials, atmosphere, and sillage.',
+      primaryCta: 'Find Your Scent',
+      secondaryCta: 'Browse Full Catalog',
+      durationNote: '7 Considered Steps · Immediate Explainable Curation',
+      pillars: [
+        { code: 'I', label: 'Presence & Occasion Reading' },
+        { code: 'II', label: 'Noble Material & Accord Matching' },
+        { code: 'III', label: 'Explainable House Recommendation' },
+      ],
+    },
+    scentFinder: {
+      eyebrow: 'Private House Consultation · Deterministic Scent Intelligence',
+      title: 'RWAQ Scent Finder',
+      subtitle:
+        'A guided journey to the fragrance that feels most aligned with your presence.',
+      leadQuote: 'Your closest scent begins with a single question.',
+      description:
+        'Conceived as a quiet consultation inside the House of RWAQ, this seven-step journey reads your affinity for noble raw materials, olfactory worlds, and spatial projection to identify the compositions most attuned to your signature.',
+      beginCta: 'Begin the Journey',
+      resumeCta: 'Resume Saved Consultation',
+      exploreShopCta: 'Explore Creations Directly',
+      startOverCta: 'Start Again',
+      durationMeta: '7 Considered Steps · Under Two Minutes',
+      methodologyMeta: 'Grounded in the note architecture of all 18 RWAQ creations',
+      progressAriaLabel: 'RWAQ Scent Finder progress',
+      stepLabel: 'Step',
+      ofLabel: 'of',
+      singleSelectHint: 'Select the single option that best reflects your preference',
+      multiSelectHint: 'Select between 1 and 3 raw materials maximum',
+      multiSelectCount: '{count} of 3 selected',
+      backAction: 'Back',
+      continueAction: 'Continue',
+      revealMatchAction: 'Reveal Your Match',
+      characterSubQuestionLabel: 'Olfactory Character Positioning (Optional)',
+      characterSubQuestionHint:
+        'Every RWAQ extrait is composed to be worn across genders; you may optionally tune the character leaning:',
+      resultsEyebrow: 'Olfactory Consultation Dossier · RWAQ Scent Finder',
+      resultsHeadline: 'Your Closest Match',
+      resultsSubheadline:
+        'Based on your affinity for presence, noble materials, and atmospheric sillage, this creation is most aligned with your signature.',
+      affinityScoreLabel: 'Scent Affinity',
+      affinityMethodologyNote:
+        'Deterministic olfactory alignment across materials, family, and performance',
+      whyMatchedHeading: 'Why This Creation Aligns With You',
+      keyNotesLabel: 'Resonant Notes',
+      viewCreationAction: 'View the Creation',
+      inspectQuickDossierAction: 'Quick Olfactory View',
+      alternatesEyebrow: 'Complementary Recommendations · Alternate Angles',
+      alternatesHeading: 'Two Alternate Creations to Consider',
+      alternatesSubtitle:
+        'Compositions that share the core of your profile while offering a distinct shift in sillage or tonal mood.',
+      contrastBadgePrefix: 'Distinction:',
+      profileSummaryEyebrow: 'Your Olfactory Profile',
+      profileSummaryHeading: 'Consultation Preference Ledger',
+      profilePresenceLabel: 'Desired Presence',
+      profileMaterialsLabel: 'Selected Materials',
+      profileWorldLabel: 'Olfactory World',
+      profileOccasionLabel: 'Occasion & Ritual',
+      profileProjectionLabel: 'Spatial Projection',
+      profileLongevityLabel: 'Longevity & Character',
+      exploreSimilarInShopAction: 'Explore Similar Creations',
+      refineAnswersAction: 'Adjust Preferences',
     },
   },
 };

@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
+import { Compass } from 'lucide-react';
 import { Typography } from '@/components/ui/typography';
 import type { CatalogFacetCounts } from '@/features/catalog/catalog-query';
 import { localize } from '@/lib/i18n/config';
@@ -82,8 +84,8 @@ export function ShopHeroBanner({
             </Typography>
           </div>
 
-          {/* Subtle Collection Context Summary */}
-          {activeCollection && (
+          {/* Subtle Collection Context Summary OR Scent Finder Consultation Entry */}
+          {activeCollection ? (
             <div className="border-s-2 border-[#A77A50] ps-4 text-xs text-[#665F57] lg:max-w-xs">
               <span className="block text-[#918A80]">
                 {t.collections.accordLabel}
@@ -94,6 +96,22 @@ export function ShopHeroBanner({
               <span className="mt-1.5 block text-[#4A3027]">
                 {localize(activeCollection.tagline, locale)}
               </span>
+            </div>
+          ) : (
+            <div className="border-s-2 border-[#A77A50] ps-4 text-xs text-[#4A3027] lg:max-w-xs">
+              <span className="block text-[11px] text-[#8C6239]">
+                {t.scentFinder.title}
+              </span>
+              <p className="mt-1 text-xs leading-relaxed text-[#5C534B]">
+                {t.scentFinder.subtitle}
+              </p>
+              <Link
+                href="/scent-finder"
+                className="mt-2.5 inline-flex items-center gap-2 font-medium text-[#0B0B0A] underline underline-offset-4 transition-colors hover:text-[#8C6239] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+              >
+                <Compass className="h-3.5 w-3.5 text-[#8C6239]" />
+                <span>{t.nav.scentFinder}</span>
+              </Link>
             </div>
           )}
         </div>
