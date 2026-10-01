@@ -7,6 +7,7 @@ import {
 import {
   MATERIAL_ALIAS_REGISTRY,
   type MaterialAliasDefinition,
+  matchesAnyToken,
 } from './material-aliases';
 import {
   SCENT_SCORE_WEIGHTS,
@@ -27,7 +28,9 @@ import type {
 export {
   MATERIAL_ALIAS_REGISTRY,
   type MaterialAliasDefinition,
+  matchesAnyToken,
   SCENT_SCORE_WEIGHTS,
+  scoreMaterialsFactor,
 };
 
 export interface ScentCatalogRankingResult {

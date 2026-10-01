@@ -8,8 +8,8 @@ import { Typography } from '@/components/ui/typography';
 import { useLocale } from '@/providers/locale-provider';
 
 export function ScentFinderCtaSection() {
-  const { direction, t } = useLocale();
-  const DirectionalArrow = direction === 'rtl' ? ArrowLeft : ArrowRight;
+  const { dir, t } = useLocale();
+  const DirectionalArrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
 
   return (
     <section

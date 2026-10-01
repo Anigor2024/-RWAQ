@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { SEED_PRODUCTS } from '@/data/products';
+import { normalizeSearchText } from '@/features/catalog/catalog-query';
 import { isProductPurchasable } from '@/features/catalog/product-commerce';
+import {
+  MATERIAL_ALIAS_REGISTRY,
+  matchesAnyToken,
+} from '@/features/scent-finder/material-aliases';
 import {
   DEFAULT_SCENT_FINDER_SESSION,
   hasProgressInSession,
@@ -19,6 +24,7 @@ import {
   compareScentMatchResults,
   rankCatalogForProfile,
   SCENT_SCORE_WEIGHTS,
+  scoreMaterialsFactor,
   scoreProductAgainstProfile,
 } from '@/features/scent-finder/scoring';
 import {
@@ -43,12 +49,12 @@ const CEREMONIAL_OUD_PROFILE: ScentPreferenceProfile = {
 };
 
 const INTIMATE_FLORAL_MUSK_PROFILE: ScentPreferenceProfile = {
-  presence: 'quiet-intimate',
-  materials: ['taif-rose', 'musk', 'iris'],
+  presence: 'radiant-expressive',
+  materials: ['taif-rose', 'musk'],
   family: 'floral-musk',
-  occasion: 'intimate',
-  season: 'spring-summer',
-  projection: 'intimate',
+  occasion: 'evening',
+  season: 'evening',
+  projection: 'moderate',
   longevity: 'long-lasting',
   character: 'feminine-leaning',
 };
@@ -277,7 +283,6 @@ describe('RWAQ Scent Finder — Scoring Contract & Deterministic Engine', () => 
       slug: 'out-of-stock-top',
       sku: 'RWAQ-OOS-001',
       inStock: false,
-      stockQuantity: 0,
       variants: SEED_PRODUCTS[0].variants.map((v: ProductVariant) => ({
         ...v,
         inStock: false,
@@ -295,6 +300,227 @@ describe('RWAQ Scent Finder — Scoring Contract & Deterministic Engine', () => 
     );
     expect(ranking).not.toBeNull();
     expect(ranking!.primaryMatch.product.id).toBe(purchasableSecond.id);
+  });
+});
+
+describe('RWAQ Scent Finder — Direct Material Alias Registry Contract', () => {
+  it('supports bilingual Arabic and English note matching for oud, Taif rose, saffron, frankincense, and musk', () => {
+    // 1. Oud: Arabic عود & English oud
+    const oudDef = MATERIAL_ALIAS_REGISTRY.oud;
+    expect(oudDef.noteTokens).toContain(normalizeSearchText('عود'));
+    expect(oudDef.noteTokens).toContain(normalizeSearchText('oud'));
+    expect(
+      matchesAnyToken({ ar: 'دهن عود معتق', en: 'Unrelated' }, oudDef.noteTokens)
+    ).toBe(true);
+    expect(
+      matchesAnyToken({ ar: 'نوتة أخرى', en: 'Aged Oud Wood' }, oudDef.noteTokens)
+    ).toBe(true);
+
+    // 2. Taif Rose: Arabic ورد & English rose / Taif rose
+    const taifRoseDef = MATERIAL_ALIAS_REGISTRY['taif-rose'];
+    expect(taifRoseDef.noteTokens).toContain(normalizeSearchText('ورد'));
+    expect(taifRoseDef.noteTokens).toContain(normalizeSearchText('rose'));
+    expect(taifRoseDef.noteTokens).toContain(normalizeSearchText('taif rose'));
+    expect(
+      matchesAnyToken(
+        { ar: 'خلاصة ورد الطائف', en: 'Unrelated' },
+        taifRoseDef.noteTokens
+      )
+    ).toBe(true);
+    expect(
+      matchesAnyToken(
+        { ar: 'نوتة أخرى', en: 'First-Harvest Taif Rose' },
+        taifRoseDef.noteTokens
+      )
+    ).toBe(true);
+
+    // 3. Saffron: Arabic زعفران & English saffron
+    const saffronDef = MATERIAL_ALIAS_REGISTRY.saffron;
+    expect(saffronDef.noteTokens).toContain(normalizeSearchText('زعفران'));
+    expect(saffronDef.noteTokens).toContain(normalizeSearchText('saffron'));
+    expect(
+      matchesAnyToken(
+        { ar: 'خيوط زعفران أحمر', en: 'Unrelated' },
+        saffronDef.noteTokens
+      )
+    ).toBe(true);
+    expect(
+      matchesAnyToken(
+        { ar: 'نوتة أخرى', en: 'Crimson Saffron' },
+        saffronDef.noteTokens
+      )
+    ).toBe(true);
+
+    // 4. Frankincense: Arabic لبان & English frankincense / incense
+    const frankincenseDef = MATERIAL_ALIAS_REGISTRY.frankincense;
+    expect(frankincenseDef.noteTokens).toContain(normalizeSearchText('لبان'));
+    expect(frankincenseDef.noteTokens).toContain(
+      normalizeSearchText('frankincense')
+    );
+    expect(frankincenseDef.noteTokens).toContain(normalizeSearchText('incense'));
+    expect(
+      matchesAnyToken(
+        { ar: 'لبان حوجري نقي', en: 'Unrelated' },
+        frankincenseDef.noteTokens
+      )
+    ).toBe(true);
+    expect(
+      matchesAnyToken(
+        { ar: 'نوتة أخرى', en: 'Hojari Frankincense & Incense' },
+        frankincenseDef.noteTokens
+      )
+    ).toBe(true);
+
+    // 5. Musk: Arabic مسك & English musk
+    const muskDef = MATERIAL_ALIAS_REGISTRY.musk;
+    expect(muskDef.noteTokens).toContain(normalizeSearchText('مسك'));
+    expect(muskDef.noteTokens).toContain(normalizeSearchText('musk'));
+    expect(
+      matchesAnyToken(
+        { ar: 'مسك أبيض مخملي', en: 'Unrelated' },
+        muskDef.noteTokens
+      )
+    ).toBe(true);
+    expect(
+      matchesAnyToken(
+        { ar: 'نوتة أخرى', en: 'Velvet Skin Musk' },
+        muskDef.noteTokens
+      )
+    ).toBe(true);
+
+    // Negative check: unrelated citrus note must not match oud
+    expect(
+      matchesAnyToken(
+        { ar: 'برغموت صقلي', en: 'Sicilian Bergamot' },
+        oudDef.noteTokens
+      )
+    ).toBe(false);
+  });
+
+  it('produces exact, strong, supporting, or none material affinity grounded in real SEED_PRODUCTS data', () => {
+    const oudExactResults = SEED_PRODUCTS.map((product) => ({
+      product,
+      factor: scoreMaterialsFactor(product, ['oud']),
+    })).filter((entry) => entry.factor.strength === 'exact');
+
+    expect(oudExactResults.length).toBeGreaterThan(0);
+    for (const { product, factor } of oudExactResults) {
+      expect(factor.earnedPoints).toBe(30);
+      expect(factor.matchedMaterialKeys).toContain('oud');
+      const allNotes = [
+        ...product.notes.top,
+        ...product.notes.heart,
+        ...product.notes.base,
+      ];
+      const hasNoteOrHighlightOrAccord =
+        allNotes.some((n) =>
+          matchesAnyToken(n, MATERIAL_ALIAS_REGISTRY.oud.noteTokens)
+        ) ||
+        product.ingredientHighlights.some((h) =>
+          matchesAnyToken(h.name, MATERIAL_ALIAS_REGISTRY.oud.noteTokens)
+        ) ||
+        product.accords.some(
+          (a) =>
+            a.intensity >= 75 &&
+            (MATERIAL_ALIAS_REGISTRY.oud.accordKeys.some((ak) =>
+              normalizeSearchText(a.key).includes(normalizeSearchText(ak))
+            ) ||
+              matchesAnyToken(a.label, MATERIAL_ALIAS_REGISTRY.oud.noteTokens))
+        );
+      expect(hasNoteOrHighlightOrAccord).toBe(true);
+    }
+
+    const multiMaterialFactors = SEED_PRODUCTS.map((product) =>
+      scoreMaterialsFactor(product, ['taif-rose', 'frankincense', 'coffee-spice'])
+    );
+    const observedStrengths = new Set(multiMaterialFactors.map((f) => f.strength));
+    expect(observedStrengths.has('exact')).toBe(true);
+    expect(
+      observedStrengths.has('supporting') || observedStrengths.has('strong')
+    ).toBe(true);
+
+    const nonRoseFactors = SEED_PRODUCTS.map((product) => ({
+      product,
+      factor: scoreMaterialsFactor(product, ['taif-rose']),
+    })).filter((entry) => entry.factor.strength === 'none');
+    expect(nonRoseFactors.length).toBeGreaterThan(0);
+    for (const { product, factor } of nonRoseFactors) {
+      expect(factor.earnedPoints).toBe(0);
+      expect(product.olfactoryFamilyKey).not.toBe('floral-musk');
+    }
+  });
+});
+
+describe('RWAQ Scent Finder — Profile A / B / C Differentiation Contract', () => {
+  it('resolves distinct Primary Matches and distinct top-3 product slug orderings for Profiles A, B, and C', () => {
+    // PROFILE A: oud-led, deep-mysterious presence, commanding projection, evening
+    const profileA: ScentPreferenceProfile = {
+      presence: 'deep-mysterious',
+      materials: ['oud', 'frankincense'],
+      family: 'smoky-oud',
+      occasion: 'evening',
+      season: 'evening',
+      projection: 'commanding',
+      longevity: 'eternal',
+      character: 'unisex',
+    };
+
+    // PROFILE B: Taif rose + musk, quiet-intimate presence, spring-summer, intimate projection
+    const profileB: ScentPreferenceProfile = {
+      presence: 'quiet-intimate',
+      materials: ['taif-rose', 'musk'],
+      family: 'floral-musk',
+      occasion: 'intimate',
+      season: 'spring-summer',
+      projection: 'intimate',
+      longevity: 'long-lasting',
+      character: 'unisex',
+    };
+
+    // PROFILE C: saffron-led, refined-ceremonial presence, majlis wearing context, long-lasting endurance
+    const profileC: ScentPreferenceProfile = {
+      presence: 'refined-ceremonial',
+      materials: ['saffron', 'coffee-spice'],
+      family: 'spiced-oriental',
+      occasion: 'majlis',
+      season: 'autumn-winter',
+      projection: 'commanding',
+      longevity: 'long-lasting',
+      character: 'unisex',
+    };
+
+    const suiteA = computeScentRecommendations(SEED_PRODUCTS, profileA);
+    const suiteB = computeScentRecommendations(SEED_PRODUCTS, profileB);
+    const suiteC = computeScentRecommendations(SEED_PRODUCTS, profileC);
+
+    expect(suiteA).not.toBeNull();
+    expect(suiteB).not.toBeNull();
+    expect(suiteC).not.toBeNull();
+
+    const primarySlugs = [
+      suiteA!.primaryMatch.product.slug,
+      suiteB!.primaryMatch.product.slug,
+      suiteC!.primaryMatch.product.slug,
+    ];
+
+    expect(new Set(primarySlugs).size).toBe(3);
+
+    const top3OrderA = [
+      suiteA!.primaryMatch.product.slug,
+      ...suiteA!.alternateMatches.map((m) => m.product.slug),
+    ].join('>');
+    const top3OrderB = [
+      suiteB!.primaryMatch.product.slug,
+      ...suiteB!.alternateMatches.map((m) => m.product.slug),
+    ].join('>');
+    const top3OrderC = [
+      suiteC!.primaryMatch.product.slug,
+      ...suiteC!.alternateMatches.map((m) => m.product.slug),
+    ].join('>');
+
+    expect(top3OrderA).not.toBe(top3OrderB);
+    expect(top3OrderB).not.toBe(top3OrderC);
+    expect(top3OrderA).not.toBe(top3OrderC);
   });
 });
 
