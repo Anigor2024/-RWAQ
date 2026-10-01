@@ -42,7 +42,7 @@ export function CheckoutGiftSummary({
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[#3D3630] sm:text-sm">
             {sizeDescriptor && (
               <span className="font-semibold text-[#0B0B0A]">
-                {localize(sizeDescriptor.label, locale)}
+                {localize(sizeDescriptor.title, locale)}
               </span>
             )}
             {occasionDescriptor && (
