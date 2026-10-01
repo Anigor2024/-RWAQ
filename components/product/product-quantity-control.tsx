@@ -26,12 +26,10 @@ export function ProductQuantityControl({
   return (
     <div className="flex flex-wrap items-center justify-between gap-4">
       <div className="flex items-baseline gap-2">
-        <span className="text-xs font-medium text-[#0B0B0A]">
-          {t.pdp.quantityLabel}
-        </span>
+        <span className="text-xs text-[#665F57]">{t.pdp.quantityLabel}</span>
         {maxQuantity > 0 && (
-          <span className="text-[11px] tabular-nums text-[#665F57]">
-            ({t.pdp.maxQuantityNote}: {maxQuantity})
+          <span className="text-[11px] tabular-nums text-[#918A80]">
+            · {t.pdp.maxQuantityNote}: {maxQuantity}
           </span>
         )}
       </div>
@@ -39,7 +37,7 @@ export function ProductQuantityControl({
       <div
         role="group"
         aria-label={t.pdp.quantityLabel}
-        className="inline-flex items-center border border-[#DFD3C3] bg-[#FFFDF9]"
+        className="inline-flex items-center border border-[#DFD3C3]/80 bg-transparent"
       >
         <button
           type="button"
@@ -54,7 +52,7 @@ export function ProductQuantityControl({
             'inline-flex h-11 w-11 items-center justify-center text-[#0B0B0A] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
             canDecrease
               ? 'hover:bg-[#F5F0E8]'
-              : 'cursor-not-allowed text-[#918A80] opacity-45'
+              : 'cursor-not-allowed text-[#918A80] opacity-40'
           )}
         >
           <Minus className="h-3.5 w-3.5" />
@@ -62,7 +60,7 @@ export function ProductQuantityControl({
 
         <span
           aria-live="polite"
-          className="min-w-[3rem] px-3 text-center text-sm font-medium tabular-nums text-[#0B0B0A]"
+          className="min-w-[2.75rem] border-x border-[#EBE3D5] px-3 text-center text-xs font-medium tabular-nums text-[#0B0B0A]"
         >
           {disabled || maxQuantity <= 0 ? 0 : quantity}
         </span>
@@ -80,7 +78,7 @@ export function ProductQuantityControl({
             'inline-flex h-11 w-11 items-center justify-center text-[#0B0B0A] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
             canIncrease
               ? 'hover:bg-[#F5F0E8]'
-              : 'cursor-not-allowed text-[#918A80] opacity-45'
+              : 'cursor-not-allowed text-[#918A80] opacity-40'
           )}
         >
           <Plus className="h-3.5 w-3.5" />

@@ -36,14 +36,19 @@ export function OlfactoryPyramid({ product }: OlfactoryPyramidProps) {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <div>
         <Reveal>
-          <div className="inline-flex items-center gap-3">
-            <span aria-hidden="true" className="h-px w-8 bg-[#A77A50]" />
-            <Typography variant="eyebrow" className="text-[#4A3027]">
-              {t.pdp.pyramidEyebrow}
-            </Typography>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="inline-flex items-center gap-3">
+              <span aria-hidden="true" className="h-px w-8 bg-[#A77A50]" />
+              <Typography variant="eyebrow" className="text-[#4A3027]">
+                {t.pdp.pyramidEyebrow}
+              </Typography>
+            </div>
+            <span className="text-xs font-medium text-[#4A3027]">
+              {localize(product.notes.olfactoryFamily, locale)}
+            </span>
           </div>
         </Reveal>
 
@@ -68,29 +73,29 @@ export function OlfactoryPyramid({ product }: OlfactoryPyramidProps) {
       <div className="border-t border-[#DFD3C3]">
         {tiers.map((tier, idx) => (
           <Reveal key={tier.roman} delay={0.06 * (idx + 1)}>
-            <div className="grid grid-cols-1 gap-4 border-b border-[#DFD3C3] py-6 sm:grid-cols-12 sm:items-baseline sm:gap-6 sm:py-8">
+            <div className="grid grid-cols-1 gap-4 border-b border-[#DFD3C3] py-7 sm:grid-cols-12 sm:items-baseline sm:gap-6 sm:py-9">
               <div className="sm:col-span-4">
                 <div className="flex items-baseline gap-3">
-                  <span className="font-[family-name:var(--font-display-en)] text-sm tracking-[0.2em] text-[#A77A50]">
-                    {tier.roman}.
+                  <span className="font-[family-name:var(--font-display-en)] text-xs font-medium tracking-[0.24em] text-[#A77A50]">
+                    {tier.roman}
                   </span>
-                  <h3 className="text-lg font-medium text-[#0B0B0A]">
+                  <h3 className="text-base sm:text-lg font-medium text-[#0B0B0A]">
                     {tier.title}
                   </h3>
                 </div>
-                <p className="mt-1 text-xs leading-relaxed text-[#665F57]">
+                <p className="mt-1.5 text-xs leading-relaxed text-[#665F57]">
                   {tier.description}
                 </p>
               </div>
 
               <div className="sm:col-span-8">
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2 text-base sm:text-lg font-medium text-[#0B0B0A]">
+                <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2.5 text-lg sm:text-xl font-normal text-[#0B0B0A]">
                   {tier.notes.map((note, noteIdx) => (
                     <React.Fragment key={noteIdx}>
                       {noteIdx > 0 && (
                         <span
                           aria-hidden="true"
-                          className="text-sm font-normal text-[#A77A50]"
+                          className="text-xs text-[#A77A50]"
                         >
                           ·
                         </span>

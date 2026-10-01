@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { localize } from '@/lib/i18n/config';
+import { cn, getIntensityWidthClass } from '@/lib/utils';
 import { useLocale } from '@/providers/locale-provider';
 import type { Product } from '@/types';
 
@@ -65,8 +66,10 @@ export function DossierOlfactoryProfile({
                 </div>
                 <div className="h-1.5 w-full bg-[#F5F0E8]/10">
                   <div
-                    className="h-full bg-[#A77A50]"
-                    style={{ width: `${accord.intensity}%` }}
+                    className={cn(
+                      'h-full bg-[#A77A50]',
+                      getIntensityWidthClass(accord.intensity)
+                    )}
                   />
                 </div>
               </div>

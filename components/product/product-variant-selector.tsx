@@ -26,15 +26,15 @@ export function ProductVariantSelector({
   );
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3.5">
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-        <span className="font-medium text-[#0B0B0A]">
+        <span className="font-medium tracking-wide text-[#0B0B0A]">
           {t.pdp.selectSizeLabel}
         </span>
 
         <span
           className={cn(
-            'text-xs',
+            'inline-flex items-center gap-2 text-xs',
             !activePurchasable
               ? 'text-[#918A80]'
               : selectedVariant.stockQuantity <= 18
@@ -42,11 +42,24 @@ export function ProductVariantSelector({
                 : 'text-[#665F57]'
           )}
         >
-          {!activePurchasable
-            ? t.pdp.outOfStockStatus
-            : selectedVariant.stockQuantity <= 18
-              ? t.pdp.limitedStockStatus
-              : t.pdp.inStockStatus}
+          <span
+            aria-hidden="true"
+            className={cn(
+              'h-1.5 w-1.5',
+              !activePurchasable
+                ? 'bg-[#918A80]'
+                : selectedVariant.stockQuantity <= 18
+                  ? 'bg-[#A77A50]'
+                  : 'bg-[#4A3027]'
+            )}
+          />
+          <span>
+            {!activePurchasable
+              ? t.pdp.outOfStockStatus
+              : selectedVariant.stockQuantity <= 18
+                ? t.pdp.limitedStockStatus
+                : t.pdp.inStockStatus}
+          </span>
         </span>
       </div>
 
@@ -72,12 +85,12 @@ export function ProductVariantSelector({
                 }
               }}
               className={cn(
-                'flex flex-col justify-between border p-4 text-start transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
+                'relative flex flex-col justify-between border px-4 py-3.5 text-start transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
                 !purchasable
-                  ? 'cursor-not-allowed border-[#DFD3C3]/60 bg-[#F5F0E8]/50 text-[#918A80] opacity-60'
+                  ? 'cursor-not-allowed border-[#EBE3D5] bg-[#F5F0E8]/45 text-[#918A80] opacity-60'
                   : isSelected
-                    ? 'border-[#0B0B0A] bg-[#0B0B0A] text-[#F5F0E8]'
-                    : 'border-[#DFD3C3] bg-[#FFFDF9] text-[#0B0B0A] hover:border-[#0B0B0A]'
+                    ? 'border-[#0B0B0A] bg-[#0B0B0A] text-[#FFFDF9] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-[#A77A50]'
+                    : 'border-[#DFD3C3]/85 bg-transparent text-[#0B0B0A] hover:border-[#4A3027] hover:bg-[#F5F0E8]/40'
               )}
             >
               <div className="flex w-full items-baseline justify-between gap-2">
@@ -102,7 +115,7 @@ export function ProductVariantSelector({
               <div className="mt-2 flex w-full items-center justify-between gap-2 text-[11px]">
                 <span
                   className={cn(
-                    isSelected ? 'text-[#F5F0E8]/80' : 'text-[#665F57]'
+                    isSelected ? 'text-[#F5F0E8]/75' : 'text-[#665F57]'
                   )}
                 >
                   {!purchasable
@@ -111,8 +124,8 @@ export function ProductVariantSelector({
                 </span>
                 <span
                   className={cn(
-                    'font-mono tabular-nums',
-                    isSelected ? 'text-[#D8C8B2]/80' : 'text-[#918A80]'
+                    'font-mono text-[10px] tabular-nums',
+                    isSelected ? 'text-[#D8C8B2]/70' : 'text-[#918A80]'
                   )}
                 >
                   {variant.sku}

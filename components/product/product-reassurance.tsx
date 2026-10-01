@@ -7,11 +7,11 @@ export function ProductReassurance() {
   const { t } = useLocale();
 
   return (
-    <div className="mt-8 space-y-3.5 border-t border-[#DFD3C3] pt-6">
+    <div className="mt-9 space-y-4 border-t border-[#EBE3D5] pt-6">
       {t.pdp.reassurance.map((item) => (
-        <div key={item.code} className="flex items-start gap-3 text-xs">
-          <span className="font-[family-name:var(--font-display-en)] text-xs font-medium tracking-widest text-[#A77A50] shrink-0 pt-0.5">
-            {item.code}.
+        <div key={item.code} className="flex items-start gap-3.5 text-xs">
+          <span className="shrink-0 pt-0.5 font-[family-name:var(--font-display-en)] text-[11px] font-medium tracking-[0.2em] text-[#A77A50]">
+            {item.code}
           </span>
           <div>
             <strong className="font-medium text-[#0B0B0A]">{item.title}</strong>

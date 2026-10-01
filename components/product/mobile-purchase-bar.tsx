@@ -37,9 +37,9 @@ export function MobilePurchaseBar({
     <div
       role="region"
       aria-label={t.pdp.mobileStickyBarAria}
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-[#F5F0E8]/15 bg-[#0B0B0A]/95 px-4 pt-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-[#F5F0E8] backdrop-blur-xs lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-[#A77A50]/25 bg-[#0B0B0A]/96 px-4 pt-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-[#F5F0E8] backdrop-blur-md lg:hidden"
     >
-      <div className="mx-auto flex max-w-xl items-center justify-between gap-3">
+      <div className="mx-auto flex max-w-xl items-center justify-between gap-3.5">
         <div className="min-w-0">
           <div className="flex items-baseline gap-2">
             <span className="truncate text-sm font-medium text-[#FFFDF9]">
@@ -51,12 +51,17 @@ export function MobilePurchaseBar({
               </span>
             )}
           </div>
-          <span className="block text-xs font-medium tabular-nums text-[#A77A50]">
-            {formatMoney(
-              displayPrice.amount * (canPurchase ? quantity : 1),
-              locale
-            )}
-          </span>
+          <div className="mt-0.5 flex items-baseline gap-2">
+            <span className="text-xs font-medium tabular-nums text-[#A77A50]">
+              {formatMoney(
+                displayPrice.amount * (canPurchase ? quantity : 1),
+                locale
+              )}
+            </span>
+            <span className="truncate text-[10px] text-[#918A80]">
+              {t.creations.vatIncludedNote}
+            </span>
+          </div>
         </div>
 
         <button

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { MobilePurchaseBar } from '@/components/product/mobile-purchase-bar';
 import { ProductPurchaseActions } from '@/components/product/product-purchase-actions';
 import { ProductQuantityControl } from '@/components/product/product-quantity-control';
@@ -117,45 +118,47 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
 
   return (
     <>
-      <div className="lg:sticky lg:top-28 border border-[#DFD3C3] bg-[#FFFDF9] p-6 sm:p-8 lg:p-10">
-        {/* Unboxed Metadata Header (Zero-Pill Discipline) */}
+      <div className="lg:sticky lg:top-28 border border-[#DFD3C3]/85 bg-[#FFFDF9] p-6 sm:p-9 lg:p-11">
+        {/* Unboxed House Metadata Header (Zero-Pill Discipline) */}
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#665F57]">
-          <span>
-            <strong className="font-medium text-[#4A3027]">
+          <div className="flex flex-wrap items-center gap-2">
+            <span aria-hidden="true" className="h-px w-5 bg-[#A77A50]" />
+            <Link
+              href={`/shop?collection=${encodeURIComponent(product.collectionSlug)}`}
+              className="font-medium text-[#4A3027] transition-colors hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+            >
               {localize(product.collectionName, locale)}
-            </strong>
-            <span aria-hidden="true" className="mx-2">
+            </Link>
+            <span aria-hidden="true" className="text-[#918A80]">
               ·
             </span>
             <span>{localize(product.notes.olfactoryFamily, locale)}</span>
-          </span>
+          </div>
           <span className="font-mono text-[11px] tabular-nums text-[#918A80]">
             {selectedVariant?.sku ?? product.sku}
           </span>
         </div>
 
         {/* Product Name & Secondary Bilingual Identity */}
-        <div className="mt-4 flex flex-wrap items-baseline justify-between gap-4">
-          <div className="flex flex-wrap items-baseline gap-3">
-            <Typography
-              variant="display-l"
-              as="h1"
-              serifInEnglish
-              className="text-[#0B0B0A]"
-            >
-              {localize(product.name, locale)}
-            </Typography>
-            <span className="font-[family-name:var(--font-display-en)] text-base sm:text-lg tracking-[0.2em] text-[#918A80]">
-              {locale === 'ar' ? product.name.en : product.name.ar}
-            </span>
-          </div>
+        <div className="mt-5 flex flex-wrap items-baseline justify-between gap-3">
+          <Typography
+            variant="display-l"
+            as="h1"
+            serifInEnglish
+            className="text-[#0B0B0A]"
+          >
+            {localize(product.name, locale)}
+          </Typography>
+          <span className="font-[family-name:var(--font-display-en)] text-sm sm:text-base tracking-[0.22em] text-[#918A80]">
+            {locale === 'ar' ? product.name.en : product.name.ar}
+          </span>
         </div>
 
-        {/* Subtitle & Concentration */}
-        <p className="mt-2 text-sm font-medium text-[#4A3027]">
+        {/* Subtitle & Concentration Cadence */}
+        <p className="mt-2.5 text-sm font-medium text-[#4A3027]">
           {localize(product.subtitle, locale)}
         </p>
-        <p className="mt-1 text-xs text-[#665F57]">
+        <p className="mt-1 text-xs text-[#918A80]">
           {localize(
             selectedVariant?.concentration ?? product.concentration,
             locale
@@ -163,29 +166,29 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
         </p>
 
         {/* Price & Saudi 15% VAT Note */}
-        <div className="mt-6 flex flex-wrap items-baseline justify-between gap-4 border-y border-[#DFD3C3] py-4">
+        <div className="mt-6 flex flex-wrap items-baseline justify-between gap-4 border-y border-[#EBE3D5] py-4">
           <div className="flex items-baseline gap-2.5 tabular-nums">
             {displayOriginalPrice && (
               <span className="text-sm text-[#918A80] line-through">
                 {formatMoney(displayOriginalPrice, locale)}
               </span>
             )}
-            <span className="text-2xl sm:text-3xl font-medium text-[#0B0B0A]">
+            <span className="text-2xl sm:text-[1.75rem] font-normal tracking-tight text-[#0B0B0A]">
               {formatMoney(displayPrice, locale)}
             </span>
           </div>
-          <span className="text-xs text-[#665F57]">
+          <span className="text-[11px] text-[#918A80]">
             {t.creations.vatIncludedNote}
           </span>
         </div>
 
         {/* Short Editorial Description */}
-        <p className="mt-5 text-sm sm:text-base leading-relaxed text-[#665F57]">
+        <p className="mt-6 text-sm sm:text-[15px] leading-[1.85] text-[#4E4740]">
           {localize(product.shortDescription, locale)}
         </p>
 
         {/* Variant Selection */}
-        <div className="mt-6">
+        <div className="mt-7">
           <ProductVariantSelector
             product={product}
             selectedVariant={selectedVariant}
@@ -193,8 +196,8 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
           />
         </div>
 
-        {/* Stock-Safe Quantity Control */}
-        <div className="mt-6 border-t border-[#EBE3D5] pt-5">
+        {/* Quiet Stock-Safe Quantity Control */}
+        <div className="mt-6 pt-1">
           <ProductQuantityControl
             quantity={quantity}
             maxQuantity={maxQuantity}
@@ -204,7 +207,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
         </div>
 
         {/* Primary Purchase & Wishlist Actions */}
-        <div ref={primaryCtaRef} className="mt-6">
+        <div ref={primaryCtaRef} className="mt-7">
           <ProductPurchaseActions
             product={product}
             displayPrice={displayPrice}

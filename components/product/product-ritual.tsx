@@ -17,7 +17,7 @@ export function ProductRitual({ product }: ProductRitualProps) {
   return (
     <section
       aria-labelledby="product-ritual-heading"
-      className="border-t border-[#F5F0E8]/12 bg-[#0B0B0A] py-20 sm:py-28 lg:py-32 text-[#F5F0E8]"
+      className="border-t border-[#F5F0E8]/12 bg-[#0B0B0A] py-24 sm:py-32 lg:py-36 text-[#F5F0E8]"
     >
       <div className="mx-auto max-w-[1440px] px-4 sm:px-8 lg:px-12">
         <div className="max-w-2xl">
@@ -43,36 +43,36 @@ export function ProductRitual({ product }: ProductRitualProps) {
           </Reveal>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+        <div className="mt-14 grid grid-cols-1 gap-10 border-t border-[#F5F0E8]/15 pt-10 lg:grid-cols-2 lg:gap-16">
           <Reveal delay={0.1}>
-            <div className="border border-[#F5F0E8]/15 bg-[#141311] p-7 sm:p-10">
-              <div className="flex items-baseline gap-3">
-                <span className="font-[family-name:var(--font-display-en)] text-sm tracking-[0.2em] text-[#A77A50]">
-                  I.
+            <div>
+              <div className="flex items-baseline gap-3.5">
+                <span className="font-[family-name:var(--font-display-en)] text-xs font-medium tracking-[0.24em] text-[#A77A50]">
+                  I
                 </span>
-                <h3 className="text-lg font-medium text-[#FFFDF9]">
+                <h3 className="text-xl sm:text-2xl font-normal text-[#FFFDF9]">
                   {t.pdp.applicationHeading}
                 </h3>
               </div>
 
-              <p className="mt-4 text-sm sm:text-base leading-relaxed text-[#D8C8B2]">
+              <p className="mt-4 text-base sm:text-lg leading-[1.85] text-[#EAE2D6]">
                 {localize(product.applicationRitual, locale)}
               </p>
             </div>
           </Reveal>
 
           <Reveal delay={0.16}>
-            <div className="border border-[#F5F0E8]/15 bg-[#141311] p-7 sm:p-10">
-              <div className="flex items-baseline gap-3">
-                <span className="font-[family-name:var(--font-display-en)] text-sm tracking-[0.2em] text-[#A77A50]">
-                  II.
+            <div className="border-t border-[#F5F0E8]/12 pt-8 lg:border-t-0 lg:border-s lg:border-[#F5F0E8]/15 lg:pt-0 lg:ps-16">
+              <div className="flex items-baseline gap-3.5">
+                <span className="font-[family-name:var(--font-display-en)] text-xs font-medium tracking-[0.24em] text-[#A77A50]">
+                  II
                 </span>
-                <h3 className="text-lg font-medium text-[#FFFDF9]">
+                <h3 className="text-xl sm:text-2xl font-normal text-[#FFFDF9]">
                   {t.pdp.whenToWearHeading}
                 </h3>
               </div>
 
-              <p className="mt-4 text-sm sm:text-base leading-relaxed text-[#D8C8B2]">
+              <p className="mt-4 text-base sm:text-lg leading-[1.85] text-[#EAE2D6]">
                 {localize(product.whenToWear, locale)}
               </p>
             </div>

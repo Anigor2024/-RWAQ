@@ -32,14 +32,14 @@ export function PerformanceProfile({ product }: PerformanceProfileProps) {
   return (
     <section
       aria-labelledby="performance-profile-heading"
-      className="border-t border-[#DFD3C3] bg-[#FFFDF9] py-20 sm:py-28 text-[#0B0B0A]"
+      className="border-t border-[#F5F0E8]/12 bg-[#141210] py-24 sm:py-32 text-[#F5F0E8]"
     >
       <div className="mx-auto max-w-[1440px] px-4 sm:px-8 lg:px-12">
         <div className="max-w-2xl">
           <Reveal>
             <div className="inline-flex items-center gap-3">
               <span aria-hidden="true" className="h-px w-8 bg-[#A77A50]" />
-              <Typography variant="eyebrow" className="text-[#4A3027]">
+              <Typography variant="eyebrow" className="text-[#D8C8B2]">
                 {t.pdp.performanceEyebrow}
               </Typography>
             </div>
@@ -51,50 +51,50 @@ export function PerformanceProfile({ product }: PerformanceProfileProps) {
               variant="display-l"
               as="h2"
               serifInEnglish
-              className="mt-4 text-[#0B0B0A]"
+              className="mt-4 text-[#FFFDF9]"
             >
               {t.pdp.performanceHeading}
             </Typography>
           </Reveal>
 
           <Reveal delay={0.1}>
-            <p className="mt-3 text-sm sm:text-base leading-relaxed text-[#665F57]">
+            <p className="mt-3 text-sm sm:text-base leading-relaxed text-[#D8C8B2]/85">
               {t.pdp.performanceSubtitle}
             </p>
           </Reveal>
         </div>
 
-        {/* 2-Column Scale Visualization for Longevity & Projection */}
-        <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
+        {/* Unboxed 2-Column Editorial Scale Reference for Longevity & Sillage */}
+        <div className="mt-14 grid grid-cols-1 gap-12 border-t border-[#F5F0E8]/12 pt-10 lg:grid-cols-2 lg:gap-16">
           {/* Longevity Scale */}
           <Reveal delay={0.12}>
-            <div className="border border-[#DFD3C3] bg-[#F5F0E8]/65 p-6 sm:p-8">
+            <div>
               <div className="flex items-baseline justify-between gap-4">
-                <span className="text-xs font-medium tracking-wider text-[#665F57]">
+                <span className="text-xs tracking-wider text-[#D8C8B2]">
                   {t.pdp.longevityTitle}
                 </span>
-                <strong className="text-lg font-medium text-[#0B0B0A]">
+                <strong className="text-lg sm:text-xl font-normal text-[#FFFDF9]">
                   {t.creations.longevityValues[product.longevity]}
                 </strong>
               </div>
 
-              <div className="mt-5 grid grid-cols-3 gap-2">
+              <div className="mt-6 grid grid-cols-3 gap-3">
                 {LONGEVITY_STEPS.map((step, idx) => {
                   const isFilled = idx <= activeLongevityIndex;
                   const isExact = idx === activeLongevityIndex;
                   return (
-                    <div key={step} className="space-y-2">
+                    <div key={step} className="space-y-3">
                       <div
                         className={cn(
-                          'h-1.5 w-full transition-colors',
-                          isFilled ? 'bg-[#0B0B0A]' : 'bg-[#DFD3C3]'
+                          'h-[2px] w-full transition-colors duration-300',
+                          isFilled ? 'bg-[#A77A50]' : 'bg-[#F5F0E8]/15'
                         )}
                       />
                       <span
                         className={cn(
                           'block text-xs',
                           isExact
-                            ? 'font-medium text-[#0B0B0A]'
+                            ? 'font-medium text-[#FFFDF9]'
                             : 'text-[#918A80]'
                         )}
                       >
@@ -109,33 +109,33 @@ export function PerformanceProfile({ product }: PerformanceProfileProps) {
 
           {/* Projection / Sillage Scale */}
           <Reveal delay={0.16}>
-            <div className="border border-[#DFD3C3] bg-[#F5F0E8]/65 p-6 sm:p-8">
+            <div className="lg:border-s lg:border-[#F5F0E8]/12 lg:ps-16">
               <div className="flex items-baseline justify-between gap-4">
-                <span className="text-xs font-medium tracking-wider text-[#665F57]">
+                <span className="text-xs tracking-wider text-[#D8C8B2]">
                   {t.pdp.projectionTitle}
                 </span>
-                <strong className="text-lg font-medium text-[#0B0B0A]">
+                <strong className="text-lg sm:text-xl font-normal text-[#FFFDF9]">
                   {t.creations.projectionValues[product.projection]}
                 </strong>
               </div>
 
-              <div className="mt-5 grid grid-cols-3 gap-2">
+              <div className="mt-6 grid grid-cols-3 gap-3">
                 {PROJECTION_STEPS.map((step, idx) => {
                   const isFilled = idx <= activeProjectionIndex;
                   const isExact = idx === activeProjectionIndex;
                   return (
-                    <div key={step} className="space-y-2">
+                    <div key={step} className="space-y-3">
                       <div
                         className={cn(
-                          'h-1.5 w-full transition-colors',
-                          isFilled ? 'bg-[#A77A50]' : 'bg-[#DFD3C3]'
+                          'h-[2px] w-full transition-colors duration-300',
+                          isFilled ? 'bg-[#A77A50]' : 'bg-[#F5F0E8]/15'
                         )}
                       />
                       <span
                         className={cn(
                           'block text-xs',
                           isExact
-                            ? 'font-medium text-[#0B0B0A]'
+                            ? 'font-medium text-[#FFFDF9]'
                             : 'text-[#918A80]'
                         )}
                       >
@@ -149,36 +149,36 @@ export function PerformanceProfile({ product }: PerformanceProfileProps) {
           </Reveal>
         </div>
 
-        {/* 3-Column Character, Season & Occasion Ledger */}
-        <div className="mt-8 grid grid-cols-1 gap-6 border-t border-[#DFD3C3] pt-8 sm:grid-cols-3">
+        {/* Unboxed 3-Column Character, Season & Occasion Editorial Ledger */}
+        <div className="mt-12 grid grid-cols-1 gap-8 border-t border-[#F5F0E8]/12 pt-10 sm:grid-cols-3">
           <Reveal delay={0.18}>
             <div>
-              <span className="block text-xs text-[#665F57]">
-                {t.pdp.characterTitle}
+              <span className="block font-mono text-[11px] tracking-widest text-[#A77A50]">
+                01 · {t.pdp.characterTitle}
               </span>
-              <strong className="mt-1.5 block text-base font-medium text-[#0B0B0A]">
+              <strong className="mt-2 block text-lg sm:text-xl font-normal text-[#FFFDF9]">
                 {t.shop.genders[product.genderPositioning]}
               </strong>
             </div>
           </Reveal>
 
           <Reveal delay={0.22}>
-            <div>
-              <span className="block text-xs text-[#665F57]">
-                {t.pdp.seasonTitle}
+            <div className="sm:border-s sm:border-[#F5F0E8]/12 sm:ps-8">
+              <span className="block font-mono text-[11px] tracking-widest text-[#A77A50]">
+                02 · {t.pdp.seasonTitle}
               </span>
-              <strong className="mt-1.5 block text-base font-medium text-[#0B0B0A]">
+              <strong className="mt-2 block text-lg sm:text-xl font-normal text-[#FFFDF9]">
                 {t.shop.seasons[product.season]}
               </strong>
             </div>
           </Reveal>
 
           <Reveal delay={0.26}>
-            <div>
-              <span className="block text-xs text-[#665F57]">
-                {t.pdp.occasionTitle}
+            <div className="sm:border-s sm:border-[#F5F0E8]/12 sm:ps-8">
+              <span className="block font-mono text-[11px] tracking-widest text-[#A77A50]">
+                03 · {t.pdp.occasionTitle}
               </span>
-              <strong className="mt-1.5 block text-base font-medium text-[#0B0B0A]">
+              <strong className="mt-2 block text-lg sm:text-xl font-normal text-[#FFFDF9]">
                 {t.shop.occasions[product.occasion]}
               </strong>
             </div>

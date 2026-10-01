@@ -25,12 +25,12 @@ export function ProductDetailView({
       {/* Fixed Header Spacer */}
       <div className="h-20 lg:h-[5.25rem] bg-[#0B0B0A]" aria-hidden="true" />
 
-      {/* 1. Accessible Breadcrumbs */}
+      {/* 1. Accessible Breadcrumbs (Warm Ivory) */}
       <ProductBreadcrumbs product={product} />
 
-      {/* 2. First Product Viewport: Generous 2-Column Editorial Gallery + Sticky Purchase Module */}
-      <section className="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 sm:py-12 lg:px-12 lg:py-16">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start lg:gap-14">
+      {/* 2. First Product Viewport (Warm Ivory + Soft Ivory Purchase Module) */}
+      <section className="mx-auto max-w-[1440px] px-4 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-20">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start lg:gap-16">
           <div className="lg:col-span-7">
             <ProductGallery product={product} />
           </div>
@@ -41,13 +41,13 @@ export function ProductDetailView({
         </div>
       </section>
 
-      {/* 3. The Story & Spatial Inspiration */}
+      {/* 3. The Story & Spatial Inspiration (Soft Ivory) */}
       <ProductStory product={product} />
 
-      {/* 4. Olfactory Pyramid & Accord Profile */}
-      <section className="border-t border-[#DFD3C3] bg-[#F5F0E8] py-20 sm:py-28 lg:py-32">
+      {/* 4. Olfactory Pyramid & Accord Profile (Warm Ivory) */}
+      <section className="border-t border-[#DFD3C3]/85 bg-[#F5F0E8] py-24 sm:py-32 lg:py-36">
         <div className="mx-auto max-w-[1440px] px-4 sm:px-8 lg:px-12">
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-start lg:gap-16">
+          <div className="grid grid-cols-1 gap-14 lg:grid-cols-12 lg:items-start lg:gap-16">
             <div className="lg:col-span-7">
               <OlfactoryPyramid product={product} />
             </div>
@@ -59,16 +59,16 @@ export function ProductDetailView({
         </div>
       </section>
 
-      {/* 5. Performance & Character Profile */}
+      {/* 5. Performance & Character Reference (Deep Material Obsidian) */}
       <PerformanceProfile product={product} />
 
-      {/* 6. Noble Ingredient Highlights */}
+      {/* 6. Noble Ingredient Highlights (Soft Ivory) */}
       <IngredientHighlights product={product} />
 
-      {/* 7. The Ritual & Wearing Guidance */}
+      {/* 7. The Ritual & Wearing Guidance (Obsidian) */}
       <ProductRitual product={product} />
 
-      {/* 8. Related Creations */}
+      {/* 8. Related Creations (Warm Ivory Closing Chapter) */}
       <RelatedProducts products={relatedProducts} />
     </div>
   );
