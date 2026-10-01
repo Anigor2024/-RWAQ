@@ -12,6 +12,7 @@ import React, {
 import {
   addGiftBundleToBagList,
   addStandardItemToBagList,
+  clearBagList,
   removeBagLineById,
   removeGiftBundleById,
   updateBagLineQuantity,
@@ -57,6 +58,7 @@ interface UIContextValue {
   updateBagQuantity: (lineId: EntityId, nextQuantity: number) => void;
   removeFromBag: (lineId: EntityId) => void;
   removeGiftBundleFromBag: (bundleId: EntityId) => void;
+  clearBag: () => void;
   wishlistProductIds: EntityId[];
   isWishlisted: (productId: EntityId) => boolean;
   toggleWishlist: (productId: EntityId) => boolean;
@@ -219,6 +221,10 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
     [bagItems, persistBag]
   );
 
+  const clearBag = useCallback(() => {
+    persistBag(clearBagList());
+  }, [persistBag]);
+
   const isWishlisted = useCallback(
     (productId: EntityId) => wishlistProductIds.includes(productId),
     [wishlistProductIds]
@@ -273,6 +279,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
       updateBagQuantity,
       removeFromBag,
       removeGiftBundleFromBag,
+      clearBag,
       wishlistProductIds,
       isWishlisted,
       toggleWishlist,
@@ -290,6 +297,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
       updateBagQuantity,
       removeFromBag,
       removeGiftBundleFromBag,
+      clearBag,
       wishlistProductIds,
       isWishlisted,
       toggleWishlist,

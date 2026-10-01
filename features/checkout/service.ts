@@ -1,5 +1,33 @@
 export { reconcileBagForCheckout } from './cart-reconciliation';
 export {
+  createDemoOrderNumber,
+  createDemoReceiptId,
+  DEMO_ORDER_NUMBER_REGEX,
+  DEMO_PAYMENT_METHOD_DESCRIPTORS,
+  DEMO_PAYMENT_METHODS,
+  demoOrderStatusSchema,
+  demoPaymentMethodSchema,
+  demoPaymentStatusSchema,
+  generateDemoOrderEntropy,
+  generateDemoOrderNumber,
+  getDemoPaymentMethodDescriptor,
+  prepareDemoOrderCompletion,
+} from './demo-order';
+export {
+  checkoutGiftBundleSnapshotSchema,
+  checkoutLineSnapshotSchema,
+  checkoutQuoteSchema,
+  clearDemoOrderReceipt,
+  completeDemoCheckout,
+  DEMO_ORDER_RECEIPT_STORAGE_KEY,
+  demoOrderPaymentSnapshotSchema,
+  demoOrderReceiptSchema,
+  loadDemoOrderReceipt,
+  parseDemoOrderReceipt,
+  saveDemoOrderReceipt,
+  type SessionStorageLike,
+} from './demo-order-persistence';
+export {
   CHECKOUT_STORAGE_KEY,
   checkoutDraftSchema,
   clearCheckoutDraft,
@@ -22,6 +50,15 @@ export type {
   CheckoutValidationIssue,
   CheckoutValidationIssueCode,
   CheckoutValidationIssueSeverity,
+  DemoOrderCompletionFailureCode,
+  DemoOrderCompletionResult,
+  DemoOrderPaymentSnapshot,
+  DemoOrderPreparationResult,
+  DemoOrderReceipt,
+  DemoOrderStatus,
+  DemoPaymentMethod,
+  DemoPaymentMethodDescriptor,
+  DemoPaymentStatus,
 } from './types';
 export type {
   CheckoutAddressErrorKey,

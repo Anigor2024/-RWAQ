@@ -122,3 +122,71 @@ export interface CheckoutReadinessResult {
   nonBlockingIssues: CheckoutValidationIssue[];
   quote: CheckoutQuote | null;
 }
+
+export type DemoPaymentMethod = 'mada' | 'apple_pay' | 'credit_card';
+
+export type DemoPaymentStatus = 'simulated_success';
+
+export type DemoOrderStatus = 'demo_confirmed';
+
+export interface DemoPaymentMethodDescriptor {
+  id: DemoPaymentMethod;
+  label: LocalizedString;
+  subtitle: LocalizedString;
+  simulationNote: LocalizedString;
+}
+
+export interface DemoOrderPaymentSnapshot {
+  method: DemoPaymentMethod;
+  status: DemoPaymentStatus;
+}
+
+export interface DemoOrderReceipt {
+  version: 1;
+  id: EntityId;
+  orderNumber: string;
+  status: DemoOrderStatus;
+  payment: DemoOrderPaymentSnapshot;
+  contact: CheckoutContact;
+  shippingAddress: CheckoutShippingAddress;
+  deliveryMethod: CheckoutDeliveryMethod;
+  lines: CheckoutLineSnapshot[];
+  giftBundles: CheckoutGiftBundleSnapshot[];
+  quote: CheckoutQuote;
+  createdAt: ISODateString;
+  isDemo: true;
+}
+
+export type DemoOrderCompletionFailureCode =
+  | 'invalid_checkout_draft'
+  | 'checkout_not_ready'
+  | 'invalid_payment_method'
+  | 'receipt_persistence_failed';
+
+export type DemoOrderPreparationResult =
+  | {
+      success: true;
+      receipt: DemoOrderReceipt;
+      readiness: CheckoutReadinessResult;
+    }
+  | {
+      success: false;
+      reason: Exclude<
+        DemoOrderCompletionFailureCode,
+        'receipt_persistence_failed'
+      >;
+      readiness?: CheckoutReadinessResult;
+    };
+
+export type DemoOrderCompletionResult =
+  | {
+      success: true;
+      receipt: DemoOrderReceipt;
+      readiness: CheckoutReadinessResult;
+    }
+  | {
+      success: false;
+      reason: DemoOrderCompletionFailureCode;
+      readiness?: CheckoutReadinessResult;
+    };
+

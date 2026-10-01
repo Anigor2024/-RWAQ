@@ -493,6 +493,13 @@ export function getRemainingVariantStockForGiftSlot(params: {
 }
 
 /**
+ * Pure helper that returns an empty Bag array for atomic post-checkout cleanup.
+ */
+export function clearBagList(): CartItem[] {
+  return [];
+}
+
+/**
  * Lightweight client event dispatcher for Gift Atelier interactions.
  */
 export function trackGiftBuilderEvent(event: GiftBuilderAnalyticsEvent): void {
