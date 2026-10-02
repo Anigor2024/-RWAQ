@@ -406,13 +406,23 @@ export function BagDrawer() {
               </span>
             </div>
 
-            <button
-              type="button"
-              onClick={closeDrawer}
-              className="mt-4 flex h-12 w-full items-center justify-center bg-[#A77A50] px-6 text-xs font-medium tracking-wider text-[#0B0B0A] transition-colors hover:bg-[#B88B61] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
-            >
-              {t.drawers.bag.continueBrowsing}
-            </button>
+            <div className="mt-4 space-y-2.5">
+              <Link
+                href="/checkout"
+                onClick={closeDrawer}
+                className="flex h-12 w-full items-center justify-center bg-[#A77A50] px-6 text-xs font-medium tracking-wider text-[#0B0B0A] transition-colors hover:bg-[#B88B61] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+              >
+                {t.drawers.bag.proceedToCheckout}
+              </Link>
+
+              <button
+                type="button"
+                onClick={closeDrawer}
+                className="flex h-11 w-full items-center justify-center border border-[#F5F0E8]/20 bg-transparent px-6 text-xs font-medium text-[#D8C8B2] transition-colors hover:border-[#A77A50] hover:text-[#F5F0E8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+              >
+                {t.drawers.bag.continueBrowsing}
+              </button>
+            </div>
           </div>
         </>
       )}

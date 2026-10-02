@@ -318,6 +318,7 @@ export interface Dictionary {
       removeItem: string;
       increaseQty: string;
       decreaseQty: string;
+      proceedToCheckout: string;
       continueBrowsing: string;
       giftBundlesSectionTitle: string;
       standaloneSectionTitle: string;
@@ -649,8 +650,49 @@ export interface Dictionary {
       giftDedicationTo: string;
       giftDedicationFrom: string;
       giftDedicationBlank: string;
+      paymentSectionEyebrow: string;
+      paymentSectionTitle: string;
+      paymentSectionSubtitle: string;
+      paymentDemoBadge: string;
+      paymentDemoNotice: string;
+      confirmDemoOrderCta: string;
+      confirmingDemoOrderCta: string;
+      completionErrors: {
+        invalid_payment_method: string;
+        invalid_checkout_draft: string;
+        checkout_not_ready: string;
+        receipt_persistence_failed: string;
+      };
       reviewFooterNotice: string;
       backToDeliveryAction: string;
+    };
+    confirmation: {
+      eyebrow: string;
+      heading: string;
+      subtitle: string;
+      demoBannerTitle: string;
+      demoBannerBody: string;
+      orderNumberLabel: string;
+      createdAtLabel: string;
+      orderStatusLabel: string;
+      orderStatusValue: string;
+      paymentMethodLabel: string;
+      paymentStatusLabel: string;
+      paymentStatusValue: string;
+      contactSectionTitle: string;
+      deliverySectionTitle: string;
+      deliveryMethodLabel: string;
+      itemsSectionTitle: string;
+      financialSummaryTitle: string;
+      continueShoppingCta: string;
+      giftAtelierCta: string;
+      returnHomeCta: string;
+      clearReceiptAction: string;
+      loadingReceiptLabel: string;
+      emptyEyebrow: string;
+      emptyTitle: string;
+      emptyDescription: string;
+      emptyCheckoutCta: string;
     };
     summary: {
       title: string;
@@ -1134,6 +1176,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         removeItem: 'حذف العنصر',
         increaseQty: 'زيادة الكمية',
         decreaseQty: 'إنقاص الكمية',
+        proceedToCheckout: 'إتمام الطلب',
         continueBrowsing: 'متابعة التصفح',
         giftBundlesSectionTitle: 'صناديق مشغل هدايا رِواق',
         standaloneSectionTitle: 'الابتكارات المنفردة',
@@ -1526,9 +1569,59 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         giftDedicationTo: 'إلى:',
         giftDedicationFrom: 'من:',
         giftDedicationBlank: 'بطاقة رِواق فارغة للكتابة اليدوية',
+        paymentSectionEyebrow: 'محاكاة الدفع · عرض توضيحي للمحفظة',
+        paymentSectionTitle: 'اختر تجربة الدفع التوضيحية',
+        paymentSectionSubtitle:
+          'اختر وسيلة الدفع المراد محاكاتها لإتمام رحلة الشراء التوضيحية. لا يتم جمع أي بيانات بطاقات أو تنفيذ أي خصم مالي فعلي.',
+        paymentDemoBadge: 'محاكاة عرض توضيحي فقط',
+        paymentDemoNotice:
+          'هذه المرحلة مخصصة لاستعراض اكتمال رحلة الشراء في محفظة الأعمال؛ لن يُطلب منك رقم بطاقة أو رمز تحقق (OTP) ولن يتم سحب أي مبلغ.',
+        confirmDemoOrderCta: 'تأكيد الطلب التجريبي',
+        confirmingDemoOrderCta: 'جاري إصدار إيصال الطلب التجريبي...',
+        completionErrors: {
+          invalid_payment_method:
+            'يرجى اختيار وسيلة دفع توضيحية صالحة قبل تأكيد الطلب.',
+          invalid_checkout_draft:
+            'يرجى التحقق من اكتمال بيانات التواصل وعنوان التوصيل قبل تأكيد الطلب.',
+          checkout_not_ready:
+            'طرأ تغيير على محتويات الحقيبة؛ يرجى مراجعة الحقيبة قبل إتمام الطلب.',
+          receipt_persistence_failed:
+            'تعذّر حفظ إيصال الطلب التجريبي في جلسة المتصفح الحالية. يرجى المحاولة مرة أخرى.',
+        },
         reviewFooterNotice:
-          'تمت مطابقة محتويات الحقيبة وبيانات التوصيل بنجاح. يمكنك تعديل أي من المراحل أعلاه أو مراجعة الحقيبة.',
+          'تمت مطابقة محتويات الحقيبة وبيانات التوصيل بنجاح. اختر تجربة الدفع التوضيحية أعلاه لتأكيد الطلب وإصدار الإيصال.',
         backToDeliveryAction: 'العودة إلى التوصيل',
+      },
+      confirmation: {
+        eyebrow: 'تأكيد الطلب التجريبي · دار رِواق للعطور',
+        heading: 'تم اعتماد طلبك التجريبي بنجاح',
+        subtitle:
+          'شكراً لتجربة رحلة الاقتناء في دار رِواق. تم إصدار إيصال الطلب التوضيحي أدناه استناداً إلى اختياراتك المعتمدة.',
+        demoBannerTitle: 'إشعار العرض التوضيحي للمحفظة (Portfolio Demo)',
+        demoBannerBody:
+          'هذا الإيصال نتاج محاكاة عرض توضيحي فقط؛ لم يتم تحصيل أي مبالغ مالية، ولا يترتب عليه شحن فعلي أو تسجيل طلب حقيقي.',
+        orderNumberLabel: 'رقم الطلب التوضيحي',
+        createdAtLabel: 'تاريخ الإصدار',
+        orderStatusLabel: 'حالة الطلب',
+        orderStatusValue: 'مؤكد (محاكاة عرض توضيحي)',
+        paymentMethodLabel: 'تجربة الدفع المختارة',
+        paymentStatusLabel: 'حالة الدفع',
+        paymentStatusValue: 'محاكاة ناجحة — بدون خصم مالي',
+        contactSectionTitle: 'بيانات التواصل المسجلة',
+        deliverySectionTitle: 'عنوان التوصيل داخل المملكة',
+        deliveryMethodLabel: 'طريقة الشحن',
+        itemsSectionTitle: 'المقتنيات وصناديق الإهداء المؤكدة',
+        financialSummaryTitle: 'الملخص المالي للإيصال',
+        continueShoppingCta: 'متابعة تسوق العطور',
+        giftAtelierCta: 'تنسيق هدية في مشغل رِواق',
+        returnHomeCta: 'العودة إلى الرئيسية',
+        clearReceiptAction: 'إنهاء العرض ومسح الإيصال التجريبي',
+        loadingReceiptLabel: 'جاري استرجاع إيصال الطلب التجريبي...',
+        emptyEyebrow: 'لا يوجد إيصال نشط · دار رِواق',
+        emptyTitle: 'لم يتم العثور على إيصال طلب تجريبي في هذه الجلسة',
+        emptyDescription:
+          'يُحفظ إيصال الطلب التوضيحي مؤقتاً في جلسة المتصفح الحالية فور إتمام الطلب. يمكنك استكشاف العطور أو مراجعة الحقيبة لبدء تجربة شراء جديدة.',
+        emptyCheckoutCta: 'الانتقال إلى إتمام الطلب',
       },
       summary: {
         title: 'ملخص الطلب',
@@ -2011,6 +2104,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         removeItem: 'Remove item',
         increaseQty: 'Increase quantity',
         decreaseQty: 'Decrease quantity',
+        proceedToCheckout: 'Proceed to Checkout',
         continueBrowsing: 'Continue Browsing',
         giftBundlesSectionTitle: 'RWAQ Gift Atelier Coffrets',
         standaloneSectionTitle: 'Individual Creations',
@@ -2408,9 +2502,59 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         giftDedicationTo: 'To:',
         giftDedicationFrom: 'From:',
         giftDedicationBlank: 'Blank RWAQ linen card enclosed for handwritten note',
+        paymentSectionEyebrow: 'Payment Simulation · Portfolio Demo',
+        paymentSectionTitle: 'Select Demo Payment Experience',
+        paymentSectionSubtitle:
+          'Choose the payment experience to simulate for this portfolio checkout. No card details are collected and no real charge is processed.',
+        paymentDemoBadge: 'Portfolio Demo Simulation Only',
+        paymentDemoNotice:
+          'This step demonstrates the end-to-end purchase flow in Portfolio Demo Mode; no card numbers, CVV, or OTP codes are requested and no payment is charged.',
+        confirmDemoOrderCta: 'Confirm Demo Order',
+        confirmingDemoOrderCta: 'Issuing Demo Order Receipt...',
+        completionErrors: {
+          invalid_payment_method:
+            'Please select a valid demo payment experience before confirming your order.',
+          invalid_checkout_draft:
+            'Please verify that your contact and delivery details are complete before confirming.',
+          checkout_not_ready:
+            'Your bag contents have changed; please review your bag before completing the order.',
+          receipt_persistence_failed:
+            'Unable to store the demo order receipt in your current browser session. Please try again.',
+        },
         reviewFooterNotice:
-          'Your contact details, delivery address, and bag items have been verified. You may edit any stage above or review your bag.',
+          'Your contact details, delivery address, and bag items have been verified. Select a demo payment experience above to confirm your order and generate a receipt.',
         backToDeliveryAction: 'Back to Delivery',
+      },
+      confirmation: {
+        eyebrow: 'Demo Order Confirmation · RWAQ House of Scent',
+        heading: 'Your Demo Order Is Confirmed',
+        subtitle:
+          'Thank you for experiencing the RWAQ acquisition journey. Your simulated order receipt has been generated below from your verified selections.',
+        demoBannerTitle: 'Portfolio Demonstration Notice',
+        demoBannerBody:
+          'This receipt was generated in Portfolio Demo Mode; no real payment was processed and no physical shipment has been scheduled.',
+        orderNumberLabel: 'Demo Order Reference',
+        createdAtLabel: 'Issued On',
+        orderStatusLabel: 'Order Status',
+        orderStatusValue: 'Confirmed (Demo Simulation)',
+        paymentMethodLabel: 'Selected Payment Experience',
+        paymentStatusLabel: 'Payment Status',
+        paymentStatusValue: 'Simulated Success — No Real Charge',
+        contactSectionTitle: 'Recorded Contact Details',
+        deliverySectionTitle: 'Saudi Delivery Destination',
+        deliveryMethodLabel: 'Delivery Method',
+        itemsSectionTitle: 'Confirmed Creations & Gift Coffrets',
+        financialSummaryTitle: 'Receipt Financial Summary',
+        continueShoppingCta: 'Continue Shopping',
+        giftAtelierCta: 'Compose a Gift in the Atelier',
+        returnHomeCta: 'Return to Homepage',
+        clearReceiptAction: 'Clear Demo Receipt',
+        loadingReceiptLabel: 'Loading demo order receipt...',
+        emptyEyebrow: 'No Active Receipt · RWAQ',
+        emptyTitle: 'No demo order receipt found in this session',
+        emptyDescription:
+          'Demo order receipts are stored temporarily in your current browser session upon checkout completion. Explore our creations or open your bag to begin a new checkout journey.',
+        emptyCheckoutCta: 'Proceed to Checkout',
       },
       summary: {
         title: 'Order Summary',

@@ -3,7 +3,13 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, ShoppingBag } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  ShoppingBag,
+} from 'lucide-react';
 import { Typography } from '@/components/ui/typography';
 import type {
   CheckoutContact,
@@ -11,10 +17,13 @@ import type {
   CheckoutReadinessResult,
   CheckoutShippingAddress,
   CheckoutStage,
+  DemoOrderCompletionFailureCode,
+  DemoPaymentMethod,
 } from '@/features/checkout/types';
 import { localize } from '@/lib/i18n/config';
 import { formatMoney } from '@/lib/money';
 import { useLocale } from '@/providers/locale-provider';
+import { CheckoutDemoPaymentSelector } from './checkout-demo-payment-selector';
 import { CheckoutGiftSummary } from './checkout-gift-summary';
 
 interface CheckoutReviewStepProps {
@@ -22,6 +31,11 @@ interface CheckoutReviewStepProps {
   shippingAddress: CheckoutShippingAddress;
   readiness: CheckoutReadinessResult;
   quote: CheckoutQuote;
+  selectedPaymentMethod: DemoPaymentMethod;
+  onSelectPaymentMethod: (method: DemoPaymentMethod) => void;
+  onConfirmDemoOrder: () => void;
+  isSubmittingOrder?: boolean;
+  completionError?: DemoOrderCompletionFailureCode | null;
   onEditStage: (stage: CheckoutStage) => void;
   onReviewBag: () => void;
 }
@@ -31,6 +45,11 @@ export function CheckoutReviewStep({
   shippingAddress,
   readiness,
   quote,
+  selectedPaymentMethod,
+  onSelectPaymentMethod,
+  onConfirmDemoOrder,
+  isSubmittingOrder = false,
+  completionError = null,
   onEditStage,
   onReviewBag,
 }: CheckoutReviewStepProps) {
@@ -41,6 +60,10 @@ export function CheckoutReviewStep({
     quote.shipping.amount === 0
       ? t.checkout.delivery.complimentaryStandardDelivery
       : formatMoney(quote.shipping, locale);
+
+  const errorMessage = completionError
+    ? t.checkout.review.completionErrors[completionError]
+    : null;
 
   return (
     <section
@@ -76,8 +99,9 @@ export function CheckoutReviewStep({
               </h2>
               <button
                 type="button"
+                disabled={isSubmittingOrder}
                 onClick={() => onEditStage('contact')}
-                className="min-h-9 px-2 text-xs font-medium text-[#0B0B0A] underline underline-offset-4 transition-colors hover:text-[#8C6239] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                className="min-h-9 px-2 text-xs font-medium text-[#0B0B0A] underline underline-offset-4 transition-colors hover:text-[#8C6239] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] disabled:opacity-50"
               >
                 {t.checkout.review.editContactAction}
               </button>
@@ -121,8 +145,9 @@ export function CheckoutReviewStep({
               </h2>
               <button
                 type="button"
+                disabled={isSubmittingOrder}
                 onClick={() => onEditStage('delivery')}
-                className="min-h-9 px-2 text-xs font-medium text-[#0B0B0A] underline underline-offset-4 transition-colors hover:text-[#8C6239] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                className="min-h-9 px-2 text-xs font-medium text-[#0B0B0A] underline underline-offset-4 transition-colors hover:text-[#8C6239] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] disabled:opacity-50"
               >
                 {t.checkout.review.editDeliveryAction}
               </button>
@@ -280,18 +305,56 @@ export function CheckoutReviewStep({
         )}
       </div>
 
-      {/* Legitimate Review Stage Actions (No Fake Payment CTA in Phase 05B) */}
+      {/* Demo Payment Experience Selector (Review Stage Only) */}
+      <CheckoutDemoPaymentSelector
+        selectedMethod={selectedPaymentMethod}
+        onSelectMethod={onSelectPaymentMethod}
+        disabled={isSubmittingOrder}
+      />
+
+      {/* Error Alert if Order Completion Fails */}
+      {errorMessage && (
+        <div
+          role="alert"
+          className="flex items-start gap-3 border border-[#9E3B33] bg-[#FDF6F5] p-4 text-xs leading-relaxed text-[#7A2720] sm:text-sm"
+        >
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 stroke-[1.8]" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
+
+      {/* Review Stage Confirmation & Navigation Actions */}
       <div className="space-y-5 border-t border-[#E6DEC8] pt-6 pb-[env(safe-area-inset-bottom)]">
         <p className="text-xs leading-relaxed text-[#5C534B]">
           {t.checkout.review.reviewFooterNotice}
         </p>
 
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        {/* Primary Demo Order Confirmation CTA */}
+        <button
+          type="button"
+          disabled={isSubmittingOrder}
+          onClick={onConfirmDemoOrder}
+          className="flex min-h-13 w-full items-center justify-center gap-2.5 border border-[#0B0B0A] bg-[#0B0B0A] px-6 py-3.5 text-xs font-semibold tracking-wider text-[#FFFDF9] transition-colors hover:bg-[#23201D] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
+        >
+          <CheckCircle2 className="h-4 w-4 shrink-0 stroke-[1.8] text-[#A77A50]" />
+          <span>
+            {isSubmittingOrder
+              ? t.checkout.review.confirmingDemoOrderCta
+              : t.checkout.review.confirmDemoOrderCta}
+          </span>
+          <span className="font-mono text-xs tabular-nums text-[#D8C8B2]">
+            · {formatMoney(quote.total, locale)}
+          </span>
+        </button>
+
+        {/* Secondary Navigation & Bag Controls */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
           <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
+              disabled={isSubmittingOrder}
               onClick={() => onEditStage('delivery')}
-              className="inline-flex min-h-11 items-center gap-2 border border-[#D5C9B8] bg-[#FFFDF9] px-5 py-2.5 text-xs font-medium text-[#2C2621] transition-colors hover:border-[#0B0B0A] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+              className="inline-flex min-h-11 items-center gap-2 border border-[#D5C9B8] bg-[#FFFDF9] px-5 py-2.5 text-xs font-medium text-[#2C2621] transition-colors hover:border-[#0B0B0A] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] disabled:opacity-50"
             >
               <BackArrowIcon className="h-3.5 w-3.5 stroke-[1.7]" />
               <span>{t.checkout.review.editDeliveryAction}</span>
@@ -299,8 +362,9 @@ export function CheckoutReviewStep({
 
             <button
               type="button"
+              disabled={isSubmittingOrder}
               onClick={() => onEditStage('contact')}
-              className="inline-flex min-h-11 items-center border border-[#D5C9B8] bg-[#FFFDF9] px-5 py-2.5 text-xs font-medium text-[#2C2621] transition-colors hover:border-[#0B0B0A] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+              className="inline-flex min-h-11 items-center border border-[#D5C9B8] bg-[#FFFDF9] px-5 py-2.5 text-xs font-medium text-[#2C2621] transition-colors hover:border-[#0B0B0A] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] disabled:opacity-50"
             >
               {t.checkout.review.editContactAction}
             </button>
@@ -309,8 +373,9 @@ export function CheckoutReviewStep({
           <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
+              disabled={isSubmittingOrder}
               onClick={onReviewBag}
-              className="inline-flex min-h-11 items-center gap-2 border border-[#0B0B0A] bg-[#0B0B0A] px-6 py-2.5 text-xs font-medium tracking-wider text-[#FFFDF9] transition-colors hover:bg-[#23201D] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+              className="inline-flex min-h-11 items-center gap-2 border border-[#D5C9B8] bg-[#FFFDF9] px-5 py-2.5 text-xs font-medium text-[#2C2621] transition-colors hover:border-[#0B0B0A] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] disabled:opacity-50"
             >
               <ShoppingBag className="h-3.5 w-3.5 stroke-[1.6]" />
               <span>{t.checkout.reviewBagCta}</span>

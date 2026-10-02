@@ -1,9 +1,12 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import {
   clampCheckoutStage,
+  clearCheckoutDraft,
+  completeDemoCheckout,
   DEFAULT_CHECKOUT_DRAFT,
   hydrateCheckoutDraft,
   reconcileBagForCheckout,
@@ -14,7 +17,10 @@ import type {
   CheckoutDraft,
   CheckoutShippingAddress,
   CheckoutStage,
+  DemoOrderCompletionFailureCode,
+  DemoPaymentMethod,
 } from '@/features/checkout/types';
+import { useLocale } from '@/providers/locale-provider';
 import { useUI } from '@/providers/ui-provider';
 import type { Product } from '@/types';
 import { CheckoutBlockedState } from './checkout-blocked-state';
@@ -29,11 +35,18 @@ interface CheckoutShellProps {
 }
 
 export function CheckoutShell({ products }: CheckoutShellProps) {
-  const { bagItems, openDrawer } = useUI();
+  const router = useRouter();
+  const { t } = useLocale();
+  const { bagItems, clearBag, openDrawer } = useUI();
   const prefersReducedMotion = useReducedMotion();
 
   const [draft, setDraft] = useState<CheckoutDraft>(DEFAULT_CHECKOUT_DRAFT);
   const [hasHydrated, setHasHydrated] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<DemoPaymentMethod>('mada');
+  const [completionError, setCompletionError] =
+    useState<DemoOrderCompletionFailureCode | null>(null);
+  const [isCompletingOrder, setIsCompletingOrder] = useState(false);
 
   useEffect(() => {
     const unsubscribe = hydrateCheckoutDraft((hydratedDraft) => {
@@ -44,9 +57,9 @@ export function CheckoutShell({ products }: CheckoutShellProps) {
   }, []);
 
   useEffect(() => {
-    if (!hasHydrated) return;
+    if (!hasHydrated || isCompletingOrder) return;
     saveCheckoutDraft(draft);
-  }, [draft, hasHydrated]);
+  }, [draft, hasHydrated, isCompletingOrder]);
 
   const readiness = useMemo(
     () =>
@@ -70,6 +83,7 @@ export function CheckoutShell({ products }: CheckoutShellProps) {
   );
 
   const handleSelectStage = useCallback((targetStage: CheckoutStage) => {
+    setCompletionError(null);
     setDraft((prev) => {
       const safeStage = clampCheckoutStage(
         targetStage,
@@ -86,6 +100,7 @@ export function CheckoutShell({ products }: CheckoutShellProps) {
   }, []);
 
   const handleChangeContact = useCallback((nextContact: CheckoutContact) => {
+    setCompletionError(null);
     setDraft((prev) => ({
       ...prev,
       contact: nextContact,
@@ -95,6 +110,7 @@ export function CheckoutShell({ products }: CheckoutShellProps) {
 
   const handleCompleteContact = useCallback(
     (validatedContact: CheckoutContact) => {
+      setCompletionError(null);
       setDraft((prev) => {
         const shouldPrefillRecipient =
           prev.shippingAddress.recipientName.trim().length === 0 &&
@@ -123,6 +139,7 @@ export function CheckoutShell({ products }: CheckoutShellProps) {
 
   const handleChangeAddress = useCallback(
     (nextAddress: CheckoutShippingAddress) => {
+      setCompletionError(null);
       setDraft((prev) => ({
         ...prev,
         shippingAddress: nextAddress,
@@ -134,6 +151,7 @@ export function CheckoutShell({ products }: CheckoutShellProps) {
 
   const handleCompleteDelivery = useCallback(
     (validatedAddress: CheckoutShippingAddress) => {
+      setCompletionError(null);
       setDraft((prev) => ({
         ...prev,
         stage: 'review',
@@ -144,9 +162,61 @@ export function CheckoutShell({ products }: CheckoutShellProps) {
     []
   );
 
+  const handleSelectPaymentMethod = useCallback((method: DemoPaymentMethod) => {
+    setCompletionError(null);
+    setSelectedPaymentMethod(method);
+  }, []);
+
+  const handleConfirmDemoOrder = useCallback(() => {
+    if (isCompletingOrder) return;
+    setCompletionError(null);
+
+    const completionResult = completeDemoCheckout({
+      draft,
+      bagItems,
+      products,
+      paymentMethod: selectedPaymentMethod,
+      onAfterReceiptPersisted: () => {
+        setIsCompletingOrder(true);
+        clearBag();
+        clearCheckoutDraft();
+      },
+    });
+
+    if (!completionResult.success) {
+      setCompletionError(completionResult.reason);
+      return;
+    }
+
+    router.push('/checkout/confirmation');
+  }, [
+    bagItems,
+    clearBag,
+    draft,
+    isCompletingOrder,
+    products,
+    router,
+    selectedPaymentMethod,
+  ]);
+
   const handleReviewBag = useCallback(() => {
     openDrawer('bag');
   }, [openDrawer]);
+
+  if (isCompletingOrder) {
+    return (
+      <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center bg-[#F5F0E8] px-4 py-16 text-[#0B0B0A]">
+        <div className="max-w-md border border-[#D8C8B2] bg-[#FAF7F2] p-8 text-center">
+          <p className="text-xs font-medium tracking-wider text-[#8C6239]">
+            {t.checkout.confirmation.eyebrow}
+          </p>
+          <p className="mt-3 text-base font-semibold text-[#0B0B0A]">
+            {t.checkout.review.confirmingDemoOrderCta}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!readiness.ready || !readiness.quote) {
     return (
@@ -211,6 +281,11 @@ export function CheckoutShell({ products }: CheckoutShellProps) {
                     shippingAddress={draft.shippingAddress}
                     readiness={readiness}
                     quote={readiness.quote}
+                    selectedPaymentMethod={selectedPaymentMethod}
+                    onSelectPaymentMethod={handleSelectPaymentMethod}
+                    onConfirmDemoOrder={handleConfirmDemoOrder}
+                    isSubmittingOrder={isCompletingOrder}
+                    completionError={completionError}
                     onEditStage={handleSelectStage}
                     onReviewBag={handleReviewBag}
                   />
