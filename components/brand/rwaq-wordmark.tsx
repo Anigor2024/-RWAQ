@@ -25,19 +25,19 @@ export function RwaqWordmark({
   return (
     <span
       className={cn(
-        'inline-flex items-center font-medium select-none whitespace-nowrap',
+        'inline-flex shrink-0 min-w-max items-center font-medium select-none whitespace-nowrap',
         sizeClasses[size],
         className
       )}
     >
-      <span className="font-[family-name:var(--font-arabic)] font-medium tracking-normal text-[#FFFDF9]">
+      <span className="shrink-0 font-[family-name:var(--font-arabic)] font-medium tracking-normal text-current">
         رِواق
       </span>
       <span
         aria-hidden="true"
-        className="h-4 w-px bg-[#A77A50]/70 sm:h-5"
+        className="h-4 w-px shrink-0 bg-[#A77A50]/75 sm:h-5"
       />
-      <span className="font-[family-name:var(--font-display-en)] text-[0.88em] font-semibold tracking-[0.26em] text-[#F5F0E8]">
+      <span className="shrink-0 font-[family-name:var(--font-display-en)] text-[0.88em] font-semibold tracking-[0.26em] text-current opacity-92">
         RWAQ
       </span>
     </span>

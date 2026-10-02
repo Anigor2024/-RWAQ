@@ -21,9 +21,13 @@ import type { Product } from '@/types';
 
 interface EditorialProductCardProps {
   product: Product;
+  featuredScale?: boolean;
 }
 
-export function EditorialProductCard({ product }: EditorialProductCardProps) {
+export function EditorialProductCard({
+  product,
+  featuredScale = false,
+}: EditorialProductCardProps) {
   const { locale, t } = useLocale();
   const { addToBag, isWishlisted, toggleWishlist } = useUI();
   const { showToast } = useToast();
@@ -39,8 +43,13 @@ export function EditorialProductCard({ product }: EditorialProductCardProps) {
   return (
     <article className="group flex h-full flex-col justify-between">
       <div>
-        {/* Product Visual Container */}
-        <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#181512]">
+        {/* Image-First Editorial Portrait */}
+        <div
+          className={cn(
+            'relative w-full overflow-hidden bg-[#181512]',
+            featuredScale ? 'aspect-[4/5]' : 'aspect-[3/4]'
+          )}
+        >
           <Link
             href={productHref}
             aria-label={`${localize(product.name, locale)} — ${t.shop.card.viewCreation}`}
@@ -50,28 +59,28 @@ export function EditorialProductCard({ product }: EditorialProductCardProps) {
               src={product.image.url}
               alt={localize(product.image.alt, locale)}
               fill
-              sizes="(max-width: 640px) 84vw, (max-width: 1024px) 48vw, 31vw"
-              className="object-cover brightness-[1.04] contrast-[1.03] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+              sizes="(max-width: 640px) 84vw, (max-width: 1024px) 48vw, 38vw"
+              className="object-cover brightness-[1.04] contrast-[1.03] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               referrerPolicy="no-referrer"
             />
 
-            {/* Subtle Bottom Vignette for Image Depth */}
+            {/* Measured Scrim for Subtle Depth */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0B0B0A]/35 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#0B0B0A]/50 via-[#0B0B0A]/15 to-transparent opacity-70 transition-opacity duration-300 group-hover:opacity-90"
             />
           </Link>
 
-          {/* Single Quiet Kicker Status Text */}
+          {/* Unboxed Quiet Kicker Text */}
           {(product.isNew || product.isBestSeller) && (
-            <span className="pointer-events-none absolute top-4 start-4 border border-[#F5F0E8]/15 bg-[#0B0B0A]/80 px-3 py-1 text-[11px] tracking-wide text-[#FFFDF9] backdrop-blur-xs">
+            <span className="pointer-events-none absolute bottom-3.5 start-4 text-[11px] font-medium tracking-wider text-[#F5F0E8]/95 drop-shadow-[0_1px_6px_rgba(0,0,0,0.65)]">
               {product.isNew
                 ? t.creations.newCreation
                 : t.creations.houseSignature}
             </span>
           )}
 
-          {/* Wishlist Button */}
+          {/* Wishlist Affordance */}
           <button
             type="button"
             onClick={() => {
@@ -89,12 +98,13 @@ export function EditorialProductCard({ product }: EditorialProductCardProps) {
                 ? t.creations.removeFromWishlist
                 : t.creations.saveToWishlist
             }
-            className="absolute top-3 end-3 inline-flex h-10 w-10 items-center justify-center border border-[#F5F0E8]/15 bg-[#0B0B0A]/70 text-[#F5F0E8] backdrop-blur-xs transition-all duration-200 hover:border-[#A77A50] hover:bg-[#0B0B0A] hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+            className="absolute top-3.5 end-3.5 inline-flex h-10 w-10 items-center justify-center border border-[#F5F0E8]/20 bg-[#0B0B0A]/70 text-[#F5F0E8] backdrop-blur-xs transition-all duration-200 hover:border-[#A77A50] hover:bg-[#0B0B0A] hover:text-[#A77A50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
           >
             <Heart
-              className={`h-4 w-4 transition-transform duration-200 ${
-                saved ? 'scale-110 fill-[#A77A50] text-[#A77A50]' : ''
-              }`}
+              className={cn(
+                'h-4 w-4 transition-transform duration-200',
+                saved && 'scale-110 fill-[#A77A50] text-[#A77A50]'
+              )}
             />
           </button>
         </div>
@@ -123,7 +133,12 @@ export function EditorialProductCard({ product }: EditorialProductCardProps) {
             href={productHref}
             className="group/title flex items-baseline gap-2.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
           >
-            <h3 className="text-xl font-medium text-[#0B0B0A] transition-colors group-hover/title:text-[#4A3027]">
+            <h3
+              className={cn(
+                'font-medium text-[#0B0B0A] transition-colors group-hover/title:text-[#4A3027]',
+                featuredScale ? 'text-xl sm:text-2xl' : 'text-xl'
+              )}
+            >
               {localize(product.name, locale)}
             </h3>
             <span className="font-[family-name:var(--font-display-en)] text-xs tracking-wider text-[#918A80]">
@@ -143,7 +158,7 @@ export function EditorialProductCard({ product }: EditorialProductCardProps) {
           </div>
         </div>
 
-        <p className="mt-2 text-sm leading-relaxed text-[#665F57]">
+        <p className="mt-2 text-sm leading-relaxed text-[#5C544C]">
           {localize(product.shortDescription, locale)}
         </p>
 

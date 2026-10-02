@@ -32,14 +32,17 @@ export function SignatureCollections({
   return (
     <section
       id="collections"
-      className="relative border-t border-[#F5F0E8]/10 bg-[#12100E] py-24 sm:py-32 lg:py-40 text-[#F5F0E8]"
+      className="relative bg-[#0E0C0A] pt-24 text-[#F5F0E8] sm:pt-32 lg:pt-40"
     >
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-8 lg:px-12">
-        {/* Section Header & Quick Chapter Anchor Bar */}
-        <div className="flex flex-col justify-between gap-10 lg:flex-row lg:items-end">
+      {/* Exhibition Intro Header */}
+      <div className="mx-auto max-w-[1440px] px-4 pb-16 sm:px-8 sm:pb-24 lg:px-12">
+        <div className="flex flex-col justify-between gap-10 border-b border-[#F5F0E8]/12 pb-10 lg:flex-row lg:items-end">
           <div className="max-w-2xl">
             <Reveal>
               <div className="inline-flex items-center gap-3">
+                <span className="font-[family-name:var(--font-display-en)] text-xs tracking-[0.24em] text-[#A77A50]">
+                  03
+                </span>
                 <span aria-hidden="true" className="h-px w-8 bg-[#A77A50]" />
                 <Typography variant="eyebrow" className="text-[#D8C8B2]">
                   {t.collections.sectionEyebrow}
@@ -65,47 +68,50 @@ export function SignatureCollections({
             </Reveal>
           </div>
 
-          {/* Interactive Olfactory World Chapter Jump Links */}
+          {/* Unboxed Chapter Index Navigation */}
           <Reveal delay={0.18}>
-            <div className="flex flex-wrap items-center gap-3">
+            <nav
+              aria-label={t.collections.sectionTitle}
+              className="flex flex-wrap items-center gap-6 sm:gap-8"
+            >
               {collections.map((col) => (
                 <a
                   key={col.id}
                   href={`#collection-${col.slug}`}
-                  className="group inline-flex items-center gap-3 border border-[#F5F0E8]/18 bg-[#1C1815] px-5 py-3 text-xs text-[#F5F0E8] transition-colors hover:border-[#A77A50] hover:bg-[#241E1A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                  className="group flex items-baseline gap-2.5 border-b border-transparent pb-2 text-xs sm:text-sm text-[#F5F0E8]/85 transition-colors hover:border-[#A77A50] hover:text-[#FFFDF9] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
                 >
-                  <span className="font-[family-name:var(--font-display-en)] text-[#A77A50]">
+                  <span className="font-[family-name:var(--font-display-en)] text-sm tracking-[0.22em] text-[#A77A50]">
                     {col.romanCode}
                   </span>
                   <span className="font-medium">
                     {localize(col.name, locale)}
                   </span>
-                  <span className="text-[#918A80]">
+                  <span className="font-[family-name:var(--font-display-en)] text-xs tracking-wider text-[#918A80]">
                     {locale === 'ar' ? col.name.en : col.name.ar}
                   </span>
                 </a>
               ))}
-            </div>
+            </nav>
           </Reveal>
         </div>
+      </div>
 
-        {/* Three Olfactory Worlds Sequence */}
-        <div className="mt-16 space-y-16 sm:mt-20 sm:space-y-24">
-          {collections.map((collection, index) => {
-            const collectionProducts = products.filter(
-              (p) => p.collectionSlug === collection.slug
-            );
-            return (
-              <CollectionStory
-                key={collection.id}
-                collection={collection}
-                collectionProducts={collectionProducts}
-                isReversedOnDesktop={index % 2 === 1}
-                onExploreCollection={handleSelectCollectionCreations}
-              />
-            );
-          })}
-        </div>
+      {/* Three Full-Width Cinematic Chapters: NAJD · SAHRA · LAYL */}
+      <div className="divide-y divide-[#F5F0E8]/10">
+        {collections.map((collection, index) => {
+          const collectionProducts = products.filter(
+            (p) => p.collectionSlug === collection.slug
+          );
+          return (
+            <CollectionStory
+              key={collection.id}
+              collection={collection}
+              collectionProducts={collectionProducts}
+              isReversedOnDesktop={index % 2 === 1}
+              onExploreCollection={handleSelectCollectionCreations}
+            />
+          );
+        })}
       </div>
     </section>
   );

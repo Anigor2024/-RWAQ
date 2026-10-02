@@ -69,7 +69,7 @@ export function Footer() {
           </div>
 
           {/* House Letters Newsletter Column */}
-          <div className="lg:col-span-6 lg: flex lg:flex-col lg:justify-between">
+          <div className="lg:col-span-6 lg:flex lg:flex-col lg:justify-between">
             <div>
               <Typography
                 variant="eyebrow"

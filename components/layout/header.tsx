@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
+  ChevronDown,
   Heart,
   Menu,
   Search,
@@ -15,11 +16,18 @@ import { cn } from '@/lib/utils';
 import { useLocale } from '@/providers/locale-provider';
 import { useUI } from '@/providers/ui-provider';
 
+const HOUSE_MENU_ID = 'rwaq-desktop-house-menu';
+
 export function Header() {
   const { t, toggleLocale } = useLocale();
   const { openDrawer, bagCount, wishlistProductIds } = useUI();
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isHouseMenuOpen, setIsHouseMenuOpen] = useState(false);
+
+  const houseMenuContainerRef = useRef<HTMLDivElement>(null);
+  const houseTriggerRef = useRef<HTMLButtonElement>(null);
+  const firstMenuLinkRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,6 +37,72 @@ export function Header() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const closeHouseMenu = useCallback((returnFocus = false) => {
+    setIsHouseMenuOpen(false);
+    if (returnFocus) {
+      window.requestAnimationFrame(() => {
+        houseTriggerRef.current?.focus();
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isHouseMenuOpen) return;
+
+    const handlePointerDownOutside = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node | null;
+      if (
+        target &&
+        houseMenuContainerRef.current &&
+        !houseMenuContainerRef.current.contains(target)
+      ) {
+        setIsHouseMenuOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeHouseMenu(true);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDownOutside);
+    document.addEventListener('touchstart', handlePointerDownOutside, {
+      passive: true,
+    });
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDownOutside);
+      document.removeEventListener('touchstart', handlePointerDownOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isHouseMenuOpen, closeHouseMenu]);
+
+  const handleHouseMenuBlur = (event: React.FocusEvent<HTMLDivElement>) => {
+    const nextFocused = event.relatedTarget as Node | null;
+    if (
+      nextFocused &&
+      houseMenuContainerRef.current &&
+      !houseMenuContainerRef.current.contains(nextFocused)
+    ) {
+      setIsHouseMenuOpen(false);
+    }
+  };
+
+  const handleHouseTriggerKeyDown = (
+    event: React.KeyboardEvent<HTMLButtonElement>
+  ) => {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setIsHouseMenuOpen(true);
+      window.requestAnimationFrame(() => {
+        firstMenuLinkRef.current?.focus();
+      });
+    }
+  };
 
   const wishlistCount = wishlistProductIds.length;
   const isShopRoute = pathname?.startsWith('/shop');
@@ -40,7 +114,18 @@ export function Header() {
     isShopRoute ||
     isScentFinderRoute ||
     isGiftBuilderRoute ||
-    isProductRoute;
+    isProductRoute ||
+    isHouseMenuOpen;
+
+  const navLinkClass =
+    'relative shrink-0 whitespace-nowrap py-1.5 text-[0.9rem] xl:text-[0.9375rem] font-normal text-[#FFFDF9]/92 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:bg-[#A77A50] after:transition-transform after:duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]';
+
+  const houseChapters = [
+    { code: 'I', label: t.nav.creations, href: '/#creations' },
+    { code: 'II', label: t.nav.craft, href: '/#craft' },
+    { code: 'III', label: t.nav.manifesto, href: '/#manifesto' },
+    { code: 'IV', label: t.nav.house, href: '/#house' },
+  ];
 
   return (
     <>
@@ -59,35 +144,36 @@ export function Header() {
             : 'border-b border-[#F5F0E8]/10 bg-gradient-to-b from-[#0B0B0A]/80 via-[#0B0B0A]/40 to-transparent text-[#FFFDF9]'
         )}
       >
-        <div className="mx-auto flex h-20 lg:h-[5.25rem] max-w-[1440px] items-center justify-between px-4 sm:px-8 lg:px-12">
-          {/* Zone 1: Brand Wordmark (Single Element Contract) */}
-          <div className="flex items-center gap-2.5 sm:gap-3.5">
+        {/* Three-Zone Architectural Grid on Desktop: max-content minmax(0, 1fr) max-content */}
+        <div className="mx-auto flex h-20 max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-8 lg:grid lg:h-[5.25rem] lg:grid-cols-[max-content_minmax(0,1fr)_max-content] lg:items-center lg:gap-8 lg:px-10 xl:gap-12 xl:px-12">
+          {/* Zone 1: Brand Wordmark (Non-Shrinkable) */}
+          <div className="flex shrink-0 min-w-max items-center gap-2.5 sm:gap-3.5">
             <button
               type="button"
               onClick={() => openDrawer('mobile-menu')}
               aria-label={t.a11y.openMenu}
-              className="inline-flex h-11 w-11 items-center justify-center text-[#FFFDF9] transition-colors hover:text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] lg:hidden"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center text-[#FFFDF9] transition-colors hover:text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] lg:hidden"
             >
               <Menu className="h-5 w-5 stroke-[1.6]" />
             </button>
 
             <Link
               href="/"
-              className="group inline-flex items-center py-1 text-[#FFFDF9] transition-opacity duration-200 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
+              className="group inline-flex shrink-0 min-w-max items-center py-1 text-[#FFFDF9] transition-opacity duration-200 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
             >
               <RwaqWordmark size="md" />
             </Link>
           </div>
 
-          {/* Zone 2: Primary Editorial Navigation (Desktop) */}
+          {/* Zone 2: Responsive Editorial Navigation (Owns strictly the center track) */}
           <nav
             aria-label={t.a11y.primaryNavigation}
-            className="hidden lg:flex items-center gap-7 text-[0.9375rem] font-normal text-[#FFFDF9]/92"
+            className="hidden lg:flex min-w-0 items-center justify-center gap-5 xl:gap-7 2xl:gap-8 px-2"
           >
             <Link
               href="/shop"
               className={cn(
-                'relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:bg-[#A77A50] after:transition-transform after:duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]',
+                navLinkClass,
                 isShopRoute
                   ? 'text-[#D8C8B2] after:scale-x-100'
                   : 'after:scale-x-0 hover:after:scale-x-100'
@@ -95,10 +181,11 @@ export function Header() {
             >
               {t.nav.shop}
             </Link>
+
             <Link
               href="/scent-finder"
               className={cn(
-                'relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:bg-[#A77A50] after:transition-transform after:duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]',
+                navLinkClass,
                 isScentFinderRoute
                   ? 'text-[#D8C8B2] after:scale-x-100'
                   : 'after:scale-x-0 hover:after:scale-x-100'
@@ -106,10 +193,11 @@ export function Header() {
             >
               {t.nav.scentFinder}
             </Link>
+
             <Link
               href="/gift-builder"
               className={cn(
-                'relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:bg-[#A77A50] after:transition-transform after:duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]',
+                navLinkClass,
                 isGiftBuilderRoute
                   ? 'text-[#D8C8B2] after:scale-x-100'
                   : 'after:scale-x-0 hover:after:scale-x-100'
@@ -117,45 +205,104 @@ export function Header() {
             >
               {t.nav.giftAtelier}
             </Link>
-            <Link
-              href="/#creations"
-              className="relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:scale-x-0 after:bg-[#A77A50] after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
-            >
-              {t.nav.creations}
-            </Link>
+
             <Link
               href="/#collections"
-              className="relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:scale-x-0 after:bg-[#A77A50] after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
+              className={cn(
+                navLinkClass,
+                'after:scale-x-0 hover:after:scale-x-100'
+              )}
             >
               {t.nav.collections}
             </Link>
+
+            {/* Wide Desktop Inline Editorial Chapters (2xl: 1536px+) */}
+            <Link
+              href="/#creations"
+              className={cn(
+                navLinkClass,
+                'hidden 2xl:inline-flex after:scale-x-0 hover:after:scale-x-100'
+              )}
+            >
+              {t.nav.creations}
+            </Link>
+
             <Link
               href="/#craft"
-              className="relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:scale-x-0 after:bg-[#A77A50] after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
+              className={cn(
+                navLinkClass,
+                'hidden 2xl:inline-flex after:scale-x-0 hover:after:scale-x-100'
+              )}
             >
               {t.nav.craft}
             </Link>
-            <Link
-              href="/#manifesto"
-              className="relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:scale-x-0 after:bg-[#A77A50] after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
+
+            {/* Accessible Luxury "The House / الدار" Editorial Menu */}
+            <div
+              ref={houseMenuContainerRef}
+              onBlur={handleHouseMenuBlur}
+              className="relative shrink-0"
             >
-              {t.nav.manifesto}
-            </Link>
-            <Link
-              href="/#house"
-              className="relative whitespace-nowrap py-1.5 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:scale-x-0 after:bg-[#A77A50] after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
-            >
-              {t.nav.house}
-            </Link>
+              <button
+                ref={houseTriggerRef}
+                type="button"
+                aria-expanded={isHouseMenuOpen}
+                aria-controls={HOUSE_MENU_ID}
+                aria-haspopup="true"
+                onClick={() => setIsHouseMenuOpen((prev) => !prev)}
+                onKeyDown={handleHouseTriggerKeyDown}
+                className={cn(
+                  'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap py-1.5 text-[0.9rem] xl:text-[0.9375rem] font-normal transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]',
+                  isHouseMenuOpen
+                    ? 'text-[#D8C8B2]'
+                    : 'text-[#FFFDF9]/92 hover:text-[#D8C8B2]'
+                )}
+              >
+                <span>{t.nav.house}</span>
+                <ChevronDown
+                  className={cn(
+                    'h-3.5 w-3.5 stroke-[1.7] text-[#A77A50] transition-transform duration-200',
+                    isHouseMenuOpen ? 'rotate-180' : 'rotate-0'
+                  )}
+                />
+              </button>
+
+              <div
+                id={HOUSE_MENU_ID}
+                hidden={!isHouseMenuOpen}
+                className={cn(
+                  'absolute top-full end-0 mt-3 w-64 border border-[#F5F0E8]/16 border-t-2 border-t-[#A77A50] bg-[#0B0B0A]/96 p-2 text-[#FFFDF9] shadow-[0_20px_48px_rgba(0,0,0,0.65)] backdrop-blur-md',
+                  isHouseMenuOpen ? 'block' : 'hidden'
+                )}
+              >
+                <ul className="divide-y divide-[#F5F0E8]/10">
+                  {houseChapters.map((chapter, index) => (
+                    <li key={chapter.href}>
+                      <Link
+                        ref={index === 0 ? firstMenuLinkRef : undefined}
+                        href={chapter.href}
+                        onClick={() => closeHouseMenu(false)}
+                        className="group flex items-center justify-between gap-4 px-3.5 py-3 text-xs sm:text-sm text-[#F5F0E8]/90 transition-colors duration-150 hover:bg-[#1A1613] hover:text-[#D8C8B2] focus-visible:bg-[#1A1613] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#A77A50]"
+                      >
+                        <span className="font-normal">{chapter.label}</span>
+                        <span className="font-[family-name:var(--font-display-en)] text-[11px] tracking-[0.22em] text-[#A77A50] transition-transform duration-200 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">
+                          {chapter.code}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </nav>
 
-          {/* Zone 3: Language & Utility Actions */}
-          <div className="flex items-center gap-1 sm:gap-2">
+          {/* Zone 3: Language & Utility Actions (Non-Shrinkable) */}
+          <div className="flex shrink-0 min-w-max items-center justify-end gap-1 sm:gap-2">
             <button
               type="button"
               onClick={toggleLocale}
               aria-label={t.a11y.switchLanguage}
-              className="inline-flex h-10 min-w-11 items-center justify-center border border-[#F5F0E8]/25 bg-[#0B0B0A]/30 px-3 text-xs font-medium tracking-wider text-[#FFFDF9] transition-colors duration-200 hover:border-[#A77A50] hover:text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
+              className="inline-flex h-10 min-w-11 shrink-0 items-center justify-center border border-[#F5F0E8]/25 bg-[#0B0B0A]/30 px-3 text-xs font-medium tracking-wider text-[#FFFDF9] transition-colors duration-200 hover:border-[#A77A50] hover:text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
             >
               {t.nav.languageToggleLabel}
             </button>
@@ -164,7 +311,7 @@ export function Header() {
               type="button"
               onClick={() => openDrawer('search')}
               aria-label={t.a11y.openSearch}
-              className="inline-flex h-11 w-11 items-center justify-center text-[#FFFDF9] transition-colors duration-200 hover:text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center text-[#FFFDF9] transition-colors duration-200 hover:text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
             >
               <Search className="h-[19px] w-[19px] stroke-[1.6]" />
             </button>
@@ -173,7 +320,7 @@ export function Header() {
               type="button"
               onClick={() => openDrawer('account')}
               aria-label={t.a11y.openAccount}
-              className="hidden sm:inline-flex h-11 w-11 items-center justify-center text-[#FFFDF9] transition-colors duration-200 hover:text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+              className="hidden sm:inline-flex h-11 w-11 shrink-0 items-center justify-center text-[#FFFDF9] transition-colors duration-200 hover:text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
             >
               <User className="h-[19px] w-[19px] stroke-[1.6]" />
             </button>
@@ -182,9 +329,9 @@ export function Header() {
               type="button"
               onClick={() => openDrawer('wishlist')}
               aria-label={t.a11y.openWishlist}
-              className="relative inline-flex h-11 min-w-11 items-center justify-center px-1.5 text-[#FFFDF9] transition-colors duration-200 hover:text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+              className="relative inline-flex h-11 min-w-11 shrink-0 items-center justify-center px-1.5 text-[#FFFDF9] transition-colors duration-200 hover:text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
             >
-              <Heart className="h-[19px] w-[19px] stroke-[1.6]" />
+              <Heart className="h-[19px] w-[19px] shrink-0 stroke-[1.6]" />
               {wishlistCount > 0 && (
                 <span className="ms-1 text-[11px] font-medium tabular-nums text-[#D8C8B2]">
                   {wishlistCount}
@@ -196,10 +343,10 @@ export function Header() {
               type="button"
               onClick={() => openDrawer('bag')}
               aria-label={t.a11y.openBag}
-              className="relative inline-flex h-11 items-center justify-center gap-1.5 px-2.5 text-[#FFFDF9] transition-colors duration-200 hover:text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+              className="relative inline-flex h-11 shrink-0 items-center justify-center gap-1.5 px-2.5 text-[#FFFDF9] transition-colors duration-200 hover:text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
             >
-              <ShoppingBag className="h-[19px] w-[19px] stroke-[1.6]" />
-              <span className="inline-flex h-5 min-w-5 items-center justify-center bg-[#A77A50]/25 px-1.5 text-xs font-medium tabular-nums text-[#F5F0E8] border border-[#A77A50]/50">
+              <ShoppingBag className="h-[19px] w-[19px] shrink-0 stroke-[1.6]" />
+              <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center border border-[#A77A50]/50 bg-[#A77A50]/25 px-1.5 text-xs font-medium tabular-nums text-[#F5F0E8]">
                 {bagCount}
               </span>
             </button>
