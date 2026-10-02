@@ -34,7 +34,7 @@ export function EditorialProductCard({
   const { addToBag, isWishlisted, toggleWishlist } = useUI();
   const { showToast } = useToast();
   const isDominant = featuredScale || editorialVariant === 'dominant';
-  const [isNotesExpanded, setIsNotesExpanded] = useState(isDominant);
+  const [isNotesExpanded, setIsNotesExpanded] = useState(false);
 
   const saved = isWishlisted(product.id);
   const defaultVariant = getDefaultPurchasableVariant(product);
@@ -43,20 +43,19 @@ export function EditorialProductCard({
   const canPurchase = isProductPurchasable(product);
   const productHref = `/products/${product.slug}`;
 
-  const imageAspectClass = isDominant
-    ? 'aspect-[4/5] sm:aspect-[16/13] lg:aspect-[6/5] lg:min-h-[520px]'
-    : editorialVariant === 'portrait'
-      ? 'aspect-[4/5] lg:min-h-[460px]'
-      : 'aspect-[4/5] lg:min-h-[400px]';
+  const imageStageClass =
+    isDominant || editorialVariant === 'portrait'
+      ? 'aspect-[4/5] lg:aspect-auto lg:h-[500px] xl:h-[540px]'
+      : 'aspect-[4/5] lg:aspect-auto lg:h-[420px] xl:h-[440px]';
 
   return (
-    <article className="group flex h-full flex-col justify-between">
-      <div>
-        {/* Commanding Editorial Portrait */}
+    <article className="group flex h-full w-full flex-col justify-between">
+      <div className="flex flex-1 flex-col">
+        {/* Consistent Editorial Image Stage */}
         <div
           className={cn(
-            'relative w-full overflow-hidden bg-[#181512]',
-            imageAspectClass
+            'relative w-full shrink-0 overflow-hidden bg-[#181512]',
+            imageStageClass
           )}
         >
           <Link
@@ -70,8 +69,8 @@ export function EditorialProductCard({
               fill
               sizes={
                 isDominant
-                  ? '(max-width: 640px) 88vw, (max-width: 1024px) 95vw, 56vw'
-                  : '(max-width: 640px) 88vw, (max-width: 1024px) 48vw, 38vw'
+                  ? '(max-width: 640px) 88vw, (max-width: 1024px) 50vw, 56vw'
+                  : '(max-width: 640px) 88vw, (max-width: 1024px) 50vw, 38vw'
               }
               className="object-cover brightness-[1.04] contrast-[1.04] transition-transform duration-1000 ease-out group-hover:scale-[1.025]"
               referrerPolicy="no-referrer"
@@ -140,16 +139,16 @@ export function EditorialProductCard({
         </div>
 
         {/* Prominent Product Name & Refined SAR Price */}
-        <div className="mt-2 flex items-baseline justify-between gap-4">
+        <div className="mt-2 flex items-baseline justify-between gap-4 sm:min-h-[2.25rem]">
           <Link
             href={productHref}
             className="group/title focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
           >
             <h3
               className={cn(
-                'font-medium text-[#0B0B0A] transition-colors group-hover/title:text-[#4A3027]',
-                isDominant
-                  ? 'text-2xl sm:text-3xl lg:text-[2rem]'
+                'font-medium leading-snug text-[#0B0B0A] transition-colors group-hover/title:text-[#4A3027]',
+                isDominant || editorialVariant === 'portrait'
+                  ? 'text-xl sm:text-2xl lg:text-[1.65rem]'
                   : 'text-xl sm:text-2xl'
               )}
             >
@@ -166,7 +165,9 @@ export function EditorialProductCard({
             <span
               className={cn(
                 'font-medium text-[#0B0B0A]',
-                isDominant ? 'text-xl sm:text-2xl' : 'text-lg sm:text-xl'
+                isDominant || editorialVariant === 'portrait'
+                  ? 'text-lg sm:text-xl lg:text-2xl'
+                  : 'text-lg sm:text-xl'
               )}
             >
               {formatMoney(displayPrice, locale)}
@@ -174,10 +175,10 @@ export function EditorialProductCard({
           </div>
         </div>
 
-        {/* Readable Editorial Description */}
+        {/* Readable Editorial Description (flex-1 anchors performance + actions to bottom baseline) */}
         <p
           className={cn(
-            'mt-2.5 leading-relaxed text-[#4E463F]',
+            'mt-2.5 flex-1 leading-relaxed text-[#4E463F] sm:min-h-[4.5rem]',
             isDominant
               ? 'text-base sm:text-[1.0625rem] max-w-2xl'
               : 'text-[0.9375rem] sm:text-base'
@@ -209,8 +210,8 @@ export function EditorialProductCard({
         {isNotesExpanded && <OlfactoryNotes notes={product.notes} />}
       </div>
 
-      {/* Generously Proportioned Interactive Actions */}
-      <div className="mt-6 flex items-center gap-3 pt-2">
+      {/* Bottom-Anchored Interactive Actions */}
+      <div className="mt-6 flex shrink-0 items-center gap-3 pt-2">
         <button
           type="button"
           disabled={!canPurchase}

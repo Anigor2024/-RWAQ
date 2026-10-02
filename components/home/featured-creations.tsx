@@ -401,11 +401,11 @@ export function FeaturedCreations({
             </div>
 
             {/* Mobile Horizontal Snap Rail (< 640px) */}
-            <div className="-mx-4 flex snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-4 sm:hidden">
+            <div className="-mx-4 flex items-stretch snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-4 sm:hidden">
               {supportingProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="w-[86vw] max-w-[360px] shrink-0 snap-start"
+                  className="flex w-[86vw] max-w-[360px] shrink-0 snap-start"
                 >
                   <EditorialProductCard
                     product={product}
@@ -415,12 +415,12 @@ export function FeaturedCreations({
               ))}
             </div>
 
-            {/* Tablet & Desktop 2-Row Staggered Editorial Gallery */}
-            <div className="hidden sm:block space-y-16 lg:space-y-24">
-              {/* Row 1: One Large Dominant Portrait (7 cols) + One Medium Staggered Portrait (5 cols) */}
-              <div className="grid grid-cols-12 items-start gap-8 lg:gap-14">
+            {/* Tablet & Desktop 2-Row Controlled Asymmetrical Editorial Gallery */}
+            <div className="hidden sm:block space-y-16 lg:space-y-20">
+              {/* Row 1: Dominant Editorial Stage (7 cols) + Supporting Portrait (5 cols) — Aligned Top & Bottom Baselines */}
+              <div className="grid grid-cols-12 items-stretch gap-8 lg:gap-12">
                 {rowOneLarge && (
-                  <div className="col-span-12 lg:col-span-7">
+                  <div className="col-span-12 flex md:col-span-6 lg:col-span-7">
                     <EditorialProductCard
                       product={rowOneLarge}
                       featuredScale
@@ -430,7 +430,7 @@ export function FeaturedCreations({
                 )}
 
                 {rowOneMedium && (
-                  <div className="col-span-12 lg:col-span-5 lg:mt-16">
+                  <div className="col-span-12 flex md:col-span-6 lg:col-span-5">
                     <EditorialProductCard
                       product={rowOneMedium}
                       editorialVariant="portrait"
@@ -439,36 +439,33 @@ export function FeaturedCreations({
                 )}
               </div>
 
-              {/* Row 2: Varied Editorial Compositions with Staggered Vertical Rhythm */}
+              {/* Row 2: Disciplined Editorial Gallery Row — Aligned Top & Bottom Baselines */}
               {rowTwoProducts.length > 0 && (
-                <div className="grid grid-cols-12 items-start gap-8 border-t border-[#E5D9C8] pt-14 lg:gap-12 lg:pt-18">
+                <div className="grid grid-cols-12 items-stretch gap-8 border-t border-[#E5D9C8] pt-14 lg:gap-10 lg:pt-16">
                   {rowTwoProducts.map((product, index) => {
                     const colSpanClass =
                       rowTwoProducts.length === 1
-                        ? 'col-span-12 lg:col-span-7'
+                        ? 'col-span-12 flex lg:col-span-7'
                         : rowTwoProducts.length === 2
                           ? index === 0
-                            ? 'col-span-12 md:col-span-6 lg:col-span-5'
-                            : 'col-span-12 md:col-span-6 lg:col-span-7 lg:mt-12'
-                          : 'col-span-12 md:col-span-6 lg:col-span-4';
+                            ? 'col-span-12 flex md:col-span-6 lg:col-span-5'
+                            : 'col-span-12 flex md:col-span-6 lg:col-span-7'
+                          : 'col-span-12 flex md:col-span-6 lg:col-span-4';
+
+                    const variantForCard =
+                      rowTwoProducts.length === 1
+                        ? 'dominant'
+                        : rowTwoProducts.length === 2
+                          ? index === 0
+                            ? 'portrait'
+                            : 'dominant'
+                          : 'gallery';
 
                     return (
-                      <div
-                        key={product.id}
-                        className={cn(
-                          colSpanClass,
-                          rowTwoProducts.length === 3 &&
-                            index === 1 &&
-                            'lg:mt-12'
-                        )}
-                      >
+                      <div key={product.id} className={colSpanClass}>
                         <EditorialProductCard
                           product={product}
-                          editorialVariant={
-                            rowTwoProducts.length === 2 && index === 1
-                              ? 'dominant'
-                              : 'gallery'
-                          }
+                          editorialVariant={variantForCard}
                         />
                       </div>
                     );
