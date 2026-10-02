@@ -31,7 +31,7 @@ interface CheckoutReviewStepProps {
   shippingAddress: CheckoutShippingAddress;
   readiness: CheckoutReadinessResult;
   quote: CheckoutQuote;
-  selectedPaymentMethod: DemoPaymentMethod;
+  selectedPaymentMethod: DemoPaymentMethod | null;
   onSelectPaymentMethod: (method: DemoPaymentMethod) => void;
   onConfirmDemoOrder: () => void;
   isSubmittingOrder?: boolean;
@@ -64,6 +64,9 @@ export function CheckoutReviewStep({
   const errorMessage = completionError
     ? t.checkout.review.completionErrors[completionError]
     : null;
+
+  const isConfirmDisabled =
+    selectedPaymentMethod === null || isSubmittingOrder === true;
 
   return (
     <section
@@ -332,9 +335,9 @@ export function CheckoutReviewStep({
         {/* Primary Demo Order Confirmation CTA */}
         <button
           type="button"
-          disabled={isSubmittingOrder}
+          disabled={isConfirmDisabled}
           onClick={onConfirmDemoOrder}
-          className="flex min-h-13 w-full items-center justify-center gap-2.5 border border-[#0B0B0A] bg-[#0B0B0A] px-6 py-3.5 text-xs font-semibold tracking-wider text-[#FFFDF9] transition-colors hover:bg-[#23201D] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
+          className="flex min-h-13 w-full items-center justify-center gap-2.5 border border-[#0B0B0A] bg-[#0B0B0A] px-6 py-3.5 text-xs font-semibold tracking-wider text-[#FFFDF9] transition-colors hover:bg-[#23201D] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
         >
           <CheckCircle2 className="h-4 w-4 shrink-0 stroke-[1.8] text-[#A77A50]" />
           <span>

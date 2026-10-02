@@ -43,7 +43,7 @@ export function CheckoutShell({ products }: CheckoutShellProps) {
   const [draft, setDraft] = useState<CheckoutDraft>(DEFAULT_CHECKOUT_DRAFT);
   const [hasHydrated, setHasHydrated] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<DemoPaymentMethod>('mada');
+    useState<DemoPaymentMethod | null>(null);
   const [completionError, setCompletionError] =
     useState<DemoOrderCompletionFailureCode | null>(null);
   const [isCompletingOrder, setIsCompletingOrder] = useState(false);
@@ -168,7 +168,7 @@ export function CheckoutShell({ products }: CheckoutShellProps) {
   }, []);
 
   const handleConfirmDemoOrder = useCallback(() => {
-    if (isCompletingOrder) return;
+    if (isCompletingOrder || selectedPaymentMethod === null) return;
     setCompletionError(null);
 
     const completionResult = completeDemoCheckout({
@@ -188,7 +188,7 @@ export function CheckoutShell({ products }: CheckoutShellProps) {
       return;
     }
 
-    router.push('/checkout/confirmation');
+    router.replace('/checkout/confirmation');
   }, [
     bagItems,
     clearBag,

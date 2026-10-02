@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { useLocale } from '@/providers/locale-provider';
 
 interface CheckoutDemoPaymentSelectorProps {
-  selectedMethod: DemoPaymentMethod;
+  selectedMethod: DemoPaymentMethod | null;
   onSelectMethod: (method: DemoPaymentMethod) => void;
   disabled?: boolean;
 }

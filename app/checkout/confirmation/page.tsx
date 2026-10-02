@@ -10,7 +10,11 @@ export const metadata: Metadata = {
   title:
     'تأكيد الطلب التجريبي | RWAQ Order Confirmation — دار رِواق للعطور',
   description:
-    'إيصال تأكيد الطلب التجريبي لدى دار رِواق للعطور؛ تفاصيل الطلب المعتمد وعنوان التوصيل داخل المملكة العربية السعودية. RWAQ portfolio demo order confirmation receipt.',
+    'إيصال تأكيد الطلب التجريبي لدى دار رِواق للعطور. RWAQ portfolio demo order confirmation receipt.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function CheckoutConfirmationPage() {
