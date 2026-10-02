@@ -118,7 +118,7 @@ export function Header() {
     isHouseMenuOpen;
 
   const navLinkClass =
-    'relative shrink-0 whitespace-nowrap py-1.5 text-[0.9rem] xl:text-[0.9375rem] font-normal text-[#FFFDF9]/92 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-center after:bg-[#A77A50] after:transition-transform after:duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]';
+    'relative shrink-0 whitespace-nowrap py-2 text-[0.9375rem] xl:text-base font-normal text-[#FFFDF9]/94 transition-colors duration-200 hover:text-[#D8C8B2] after:absolute after:inset-x-0 after:bottom-0 after:h-[1.5px] after:origin-center after:bg-[#A77A50] after:transition-transform after:duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]';
 
   const houseChapters = [
     { code: 'I', label: t.nav.creations, href: '/#creations' },
@@ -145,7 +145,7 @@ export function Header() {
         )}
       >
         {/* Three-Zone Architectural Grid on Desktop: max-content minmax(0, 1fr) max-content */}
-        <div className="mx-auto flex h-20 max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-8 lg:grid lg:h-[5.25rem] lg:grid-cols-[max-content_minmax(0,1fr)_max-content] lg:items-center lg:gap-8 lg:px-10 xl:gap-12 xl:px-12">
+        <div className="mx-auto flex h-20 max-w-[1600px] items-center justify-between gap-4 px-4 sm:px-8 lg:grid lg:h-[5.5rem] lg:grid-cols-[max-content_minmax(0,1fr)_max-content] lg:items-center lg:gap-8 lg:px-10 xl:gap-12 xl:px-14">
           {/* Zone 1: Brand Wordmark (Non-Shrinkable) */}
           <div className="flex shrink-0 min-w-max items-center gap-2.5 sm:gap-3.5">
             <button
@@ -168,7 +168,7 @@ export function Header() {
           {/* Zone 2: Responsive Editorial Navigation (Owns strictly the center track) */}
           <nav
             aria-label={t.a11y.primaryNavigation}
-            className="hidden lg:flex min-w-0 items-center justify-center gap-5 xl:gap-7 2xl:gap-8 px-2"
+            className="hidden lg:flex min-w-0 items-center justify-center gap-6 xl:gap-8 2xl:gap-10 px-2"
           >
             <Link
               href="/shop"
@@ -252,16 +252,16 @@ export function Header() {
                 onClick={() => setIsHouseMenuOpen((prev) => !prev)}
                 onKeyDown={handleHouseTriggerKeyDown}
                 className={cn(
-                  'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap py-1.5 text-[0.9rem] xl:text-[0.9375rem] font-normal transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]',
+                  'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap py-2 text-[0.9375rem] xl:text-base font-normal transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]',
                   isHouseMenuOpen
                     ? 'text-[#D8C8B2]'
-                    : 'text-[#FFFDF9]/92 hover:text-[#D8C8B2]'
+                    : 'text-[#FFFDF9]/94 hover:text-[#D8C8B2]'
                 )}
               >
                 <span>{t.nav.house}</span>
                 <ChevronDown
                   className={cn(
-                    'h-3.5 w-3.5 stroke-[1.7] text-[#A77A50] transition-transform duration-200',
+                    'h-4 w-4 stroke-[1.7] text-[#A77A50] transition-transform duration-200',
                     isHouseMenuOpen ? 'rotate-180' : 'rotate-0'
                   )}
                 />
@@ -271,7 +271,7 @@ export function Header() {
                 id={HOUSE_MENU_ID}
                 hidden={!isHouseMenuOpen}
                 className={cn(
-                  'absolute top-full end-0 mt-3 w-64 border border-[#F5F0E8]/16 border-t-2 border-t-[#A77A50] bg-[#0B0B0A]/96 p-2 text-[#FFFDF9] shadow-[0_20px_48px_rgba(0,0,0,0.65)] backdrop-blur-md',
+                  'absolute top-full end-0 mt-3 w-72 border border-[#F5F0E8]/18 border-t-2 border-t-[#A77A50] bg-[#0B0B0A]/96 p-2.5 text-[#FFFDF9] shadow-[0_24px_56px_rgba(0,0,0,0.7)] backdrop-blur-md',
                   isHouseMenuOpen ? 'block' : 'hidden'
                 )}
               >
@@ -282,10 +282,10 @@ export function Header() {
                         ref={index === 0 ? firstMenuLinkRef : undefined}
                         href={chapter.href}
                         onClick={() => closeHouseMenu(false)}
-                        className="group flex items-center justify-between gap-4 px-3.5 py-3 text-xs sm:text-sm text-[#F5F0E8]/90 transition-colors duration-150 hover:bg-[#1A1613] hover:text-[#D8C8B2] focus-visible:bg-[#1A1613] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#A77A50]"
+                        className="group flex items-center justify-between gap-4 px-4 py-3.5 text-sm text-[#F5F0E8]/92 transition-colors duration-150 hover:bg-[#1A1613] hover:text-[#D8C8B2] focus-visible:bg-[#1A1613] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#A77A50]"
                       >
                         <span className="font-normal">{chapter.label}</span>
-                        <span className="font-[family-name:var(--font-display-en)] text-[11px] tracking-[0.22em] text-[#A77A50] transition-transform duration-200 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">
+                        <span className="font-[family-name:var(--font-display-en)] text-xs tracking-[0.22em] text-[#A77A50] transition-transform duration-200 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">
                           {chapter.code}
                         </span>
                       </Link>
@@ -302,7 +302,7 @@ export function Header() {
               type="button"
               onClick={toggleLocale}
               aria-label={t.a11y.switchLanguage}
-              className="inline-flex h-10 min-w-11 shrink-0 items-center justify-center border border-[#F5F0E8]/25 bg-[#0B0B0A]/30 px-3 text-xs font-medium tracking-wider text-[#FFFDF9] transition-colors duration-200 hover:border-[#A77A50] hover:text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
+              className="inline-flex h-10 min-w-12 shrink-0 items-center justify-center border border-[#F5F0E8]/28 bg-[#0B0B0A]/35 px-3.5 text-xs sm:text-[0.8125rem] font-medium tracking-wider text-[#FFFDF9] transition-colors duration-200 hover:border-[#A77A50] hover:text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50] whitespace-nowrap"
             >
               {t.nav.languageToggleLabel}
             </button>

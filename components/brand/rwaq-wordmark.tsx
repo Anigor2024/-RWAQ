@@ -18,8 +18,8 @@ export function RwaqWordmark({
 }: RwaqWordmarkProps) {
   const sizeClasses = {
     sm: 'text-lg sm:text-xl gap-2.5',
-    md: 'text-[1.35rem] sm:text-[1.6rem] gap-3',
-    lg: 'text-2xl sm:text-3xl gap-3.5',
+    md: 'text-[1.45rem] sm:text-[1.7rem] lg:text-[1.85rem] gap-3 sm:gap-3.5',
+    lg: 'text-2xl sm:text-3xl lg:text-[2.15rem] gap-3.5 sm:gap-4',
   };
 
   return (
@@ -35,9 +35,9 @@ export function RwaqWordmark({
       </span>
       <span
         aria-hidden="true"
-        className="h-4 w-px shrink-0 bg-[#A77A50]/75 sm:h-5"
+        className="h-4 w-px shrink-0 bg-[#A77A50]/80 sm:h-5 lg:h-6"
       />
-      <span className="shrink-0 font-[family-name:var(--font-display-en)] text-[0.88em] font-semibold tracking-[0.26em] text-current opacity-92">
+      <span className="shrink-0 font-[family-name:var(--font-display-en)] text-[0.88em] font-semibold tracking-[0.26em] text-current opacity-95">
         RWAQ
       </span>
     </span>

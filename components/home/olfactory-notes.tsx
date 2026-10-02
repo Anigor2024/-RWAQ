@@ -21,33 +21,48 @@ export function OlfactoryNotes({
   return (
     <div
       className={cn(
-        'mt-3 space-y-2 border-t pt-3 text-xs',
+        'mt-4 space-y-2.5 border-t pt-4 text-sm sm:text-[0.9375rem] leading-relaxed',
         isDark
-          ? 'border-[#F5F0E8]/14 text-[#F5F0E8]/90'
-          : 'border-[#DFD3C3] text-[#4A3027]'
+          ? 'border-[#F5F0E8]/16 text-[#F5F0E8]/92'
+          : 'border-[#DFD3C3] text-[#3B2820]'
       )}
     >
-      <div>
-        <span className={isDark ? 'text-[#A77A50]' : 'text-[#918A80]'}>
-          {t.creations.topNotes}:{' '}
+      <div className="flex flex-wrap items-baseline gap-x-2">
+        <span
+          className={cn(
+            'font-medium',
+            isDark ? 'text-[#D8C8B2]' : 'text-[#665F57]'
+          )}
+        >
+          {t.creations.topNotes}:
         </span>
-        <span>
+        <span className={isDark ? 'text-[#FFFDF9]' : 'text-[#0B0B0A]'}>
           {notes.top.map((note) => localize(note, locale)).join(' · ')}
         </span>
       </div>
-      <div>
-        <span className={isDark ? 'text-[#A77A50]' : 'text-[#918A80]'}>
-          {t.creations.heartNotes}:{' '}
+      <div className="flex flex-wrap items-baseline gap-x-2">
+        <span
+          className={cn(
+            'font-medium',
+            isDark ? 'text-[#D8C8B2]' : 'text-[#665F57]'
+          )}
+        >
+          {t.creations.heartNotes}:
         </span>
-        <span>
+        <span className={isDark ? 'text-[#FFFDF9]' : 'text-[#0B0B0A]'}>
           {notes.heart.map((note) => localize(note, locale)).join(' · ')}
         </span>
       </div>
-      <div>
-        <span className={isDark ? 'text-[#A77A50]' : 'text-[#918A80]'}>
-          {t.creations.baseNotes}:{' '}
+      <div className="flex flex-wrap items-baseline gap-x-2">
+        <span
+          className={cn(
+            'font-medium',
+            isDark ? 'text-[#D8C8B2]' : 'text-[#665F57]'
+          )}
+        >
+          {t.creations.baseNotes}:
         </span>
-        <span>
+        <span className={isDark ? 'text-[#FFFDF9]' : 'text-[#0B0B0A]'}>
           {notes.base.map((note) => localize(note, locale)).join(' · ')}
         </span>
       </div>

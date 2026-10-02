@@ -25,30 +25,45 @@ const WORLD_THEMES: Record<
   {
     surfaceClass: string;
     accentTextClass: string;
+    badgeTextClass: string;
     glowClass: string;
     ruleClass: string;
+    borderAccentClass: string;
+    railCardSurfaceClass: string;
   }
 > = {
+  // NAJD: Deep brown-black / bronze / warm limestone
   najd: {
-    surfaceClass: 'bg-[#15110E]',
-    accentTextClass: 'text-[#D8C8B2]',
+    surfaceClass: 'bg-[#14100C]',
+    accentTextClass: 'text-[#E5D6C0]',
+    badgeTextClass: 'text-[#C69666]',
     glowClass:
-      'bg-[radial-gradient(circle_at_75%_25%,rgba(167,122,80,0.18)_0%,transparent_65%)]',
+      'bg-[radial-gradient(circle_at_78%_28%,rgba(167,122,80,0.24)_0%,rgba(74,48,39,0.14)_40%,transparent_72%)]',
     ruleClass: 'bg-[#A77A50]',
+    borderAccentClass: 'border-[#A77A50]/30',
+    railCardSurfaceClass: 'bg-[#1C1611]/90 hover:bg-[#241C16]',
   },
+  // SAHRA: Dark amber / burnt sand / glowing warm highlights
   sahra: {
-    surfaceClass: 'bg-[#19130E]',
-    accentTextClass: 'text-[#E3BE98]',
+    surfaceClass: 'bg-[#21140C]',
+    accentTextClass: 'text-[#F0C699]',
+    badgeTextClass: 'text-[#DF9E63]',
     glowClass:
-      'bg-[radial-gradient(circle_at_25%_30%,rgba(176,120,72,0.20)_0%,transparent_65%)]',
-    ruleClass: 'bg-[#B88252]',
+      'bg-[radial-gradient(circle_at_22%_32%,rgba(208,136,72,0.28)_0%,rgba(140,78,36,0.16)_42%,transparent_72%)]',
+    ruleClass: 'bg-[#D08848]',
+    borderAccentClass: 'border-[#D08848]/35',
+    railCardSurfaceClass: 'bg-[#2B1B11]/90 hover:bg-[#352216]',
   },
+  // LAYL: Near-black / charcoal / muted plum or smoke accents
   layl: {
-    surfaceClass: 'bg-[#0F0F13]',
-    accentTextClass: 'text-[#D4C5CE]',
+    surfaceClass: 'bg-[#0C0C12]',
+    accentTextClass: 'text-[#DECED9]',
+    badgeTextClass: 'text-[#B59AA9]',
     glowClass:
-      'bg-[radial-gradient(circle_at_70%_30%,rgba(158,136,146,0.18)_0%,transparent_65%)]',
-    ruleClass: 'bg-[#9E8892]',
+      'bg-[radial-gradient(circle_at_72%_28%,rgba(166,139,156,0.24)_0%,rgba(62,50,68,0.16)_42%,transparent_72%)]',
+    ruleClass: 'bg-[#A68B9C]',
+    borderAccentClass: 'border-[#A68B9C]/30',
+    railCardSurfaceClass: 'bg-[#15151E]/90 hover:bg-[#1D1D29]',
   },
 };
 
@@ -71,19 +86,31 @@ export function CollectionStory({
     <article
       id={`collection-${collection.slug}`}
       className={cn(
-        'relative overflow-hidden py-20 sm:py-28 lg:py-32',
+        'relative flex min-h-0 flex-col justify-center overflow-hidden py-16 sm:py-22 lg:min-h-[90vh] lg:py-28',
         theme.surfaceClass
       )}
     >
-      {/* Material & Lighting Atmosphere Glow */}
+      {/* Distinct Atmospheric Lighting Glow */}
       <div
         aria-hidden="true"
         className={cn('pointer-events-none absolute inset-0', theme.glowClass)}
       />
 
-      <div className="relative z-10 mx-auto max-w-[1440px] px-4 sm:px-8 lg:px-12">
-        <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-16">
-          {/* Large Edge-to-Edge Editorial Imagery Column (~60% width) */}
+      {/* Giant Background Roman Numeral Watermark */}
+      <span
+        aria-hidden="true"
+        className={cn(
+          'pointer-events-none absolute top-6 select-none font-[family-name:var(--font-display-en)] text-[7.5rem] sm:text-[11rem] lg:text-[15rem] font-normal leading-none tracking-[0.08em] text-[#FFFDF9]/[0.04]',
+          isReversedOnDesktop ? 'start-6 sm:start-14' : 'end-6 sm:end-14'
+        )}
+      >
+        {collection.romanCode}
+      </span>
+
+      <div className="relative z-10 mx-auto w-full max-w-[1600px] px-4 sm:px-8 lg:px-12 xl:px-16">
+        {/* Main 12-Column Destination Stage: ~60% Visual (7 Cols) + ~40% World Architecture (5 Cols) */}
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-14 xl:gap-16">
+          {/* Monumental Campaign Imagery Column (7 Cols = ~58% Width) */}
           <div
             className={
               isReversedOnDesktop
@@ -92,32 +119,37 @@ export function CollectionStory({
             }
           >
             <Reveal>
-              <div className="group relative aspect-[4/5] w-full overflow-hidden bg-[#0B0B0A] sm:aspect-[16/11] lg:aspect-[5/4]">
+              <div className="group relative aspect-[4/5] w-full overflow-hidden bg-[#080706] sm:aspect-[16/11] lg:aspect-auto lg:min-h-[640px]">
                 <Image
                   src={collection.image.url}
                   alt={localize(collection.image.alt, locale)}
                   fill
                   sizes="(max-width: 1024px) 100vw, 60vw"
-                  className="object-cover brightness-[1.06] contrast-[1.04] transition-transform duration-1000 ease-out group-hover:scale-[1.03]"
+                  className="object-cover brightness-[1.06] contrast-[1.05] transition-transform duration-1000 ease-out group-hover:scale-[1.025]"
                   referrerPolicy="no-referrer"
                 />
                 <div
                   aria-hidden="true"
-                  className="absolute inset-0 bg-gradient-to-t from-[#0B0B0A]/80 via-[#0B0B0A]/20 to-transparent"
+                  className="absolute inset-0 bg-gradient-to-t from-[#080706]/85 via-[#080706]/20 to-transparent"
                 />
 
-                {/* Layered Roman Chapter Code & Origin Coordinate Bar */}
-                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-6 sm:p-8">
-                  <div className="space-y-1">
-                    <span className="block text-[11px] tracking-wider text-[#D8C8B2]/80">
+                {/* Layered World Signature & Roman Numeral Over Image */}
+                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 p-6 sm:p-10">
+                  <div className="max-w-md space-y-1.5">
+                    <span
+                      className={cn(
+                        'block text-xs sm:text-sm font-medium tracking-wider',
+                        theme.badgeTextClass
+                      )}
+                    >
                       {t.collections.originLabel}
                     </span>
-                    <span className="block text-xs sm:text-sm font-medium text-[#FFFDF9]">
+                    <span className="block text-base sm:text-lg font-medium text-[#FFFDF9]">
                       {localize(collection.originInspiration, locale)}
                     </span>
                   </div>
 
-                  <span className="font-[family-name:var(--font-display-en)] text-3xl sm:text-5xl font-normal tracking-[0.18em] text-[#F5F0E8]/90">
+                  <span className="font-[family-name:var(--font-display-en)] text-5xl sm:text-7xl font-normal leading-none tracking-[0.16em] text-[#FFFDF9]/92">
                     {collection.romanCode}
                   </span>
                 </div>
@@ -125,10 +157,9 @@ export function CollectionStory({
             </Reveal>
           </div>
 
-          {/* Sticky Chapter Identity & Integrated Creation Rail */}
+          {/* World Identity, Accord Architecture & Action (5 Cols = ~42% Width) */}
           <div
             className={cn(
-              'lg:sticky lg:top-28',
               isReversedOnDesktop
                 ? 'lg:col-span-5 lg:order-1'
                 : 'lg:col-span-5 lg:order-2'
@@ -136,136 +167,190 @@ export function CollectionStory({
           >
             <Reveal delay={0.08}>
               <div>
-                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-                  <div className="inline-flex items-center gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+                  <div className="inline-flex items-center gap-3.5">
                     <span
                       aria-hidden="true"
-                      className={cn('h-px w-6', theme.ruleClass)}
+                      className={cn('h-[2px] w-9', theme.ruleClass)}
                     />
-                    <span className="font-[family-name:var(--font-display-en)] text-xs tracking-[0.24em] text-[#A77A50]">
+                    <span
+                      className={cn(
+                        'font-[family-name:var(--font-display-en)] tracking-[0.26em]',
+                        theme.badgeTextClass
+                      )}
+                    >
                       {t.collections.chapterPrefix} {collection.romanCode}
                     </span>
                   </div>
-                  <span className="text-[#918A80]">{worldMeta.atmosphere}</span>
+                  <span className="font-medium text-[#D8C8B2]/85">
+                    {worldMeta.atmosphere}
+                  </span>
                 </div>
 
+                {/* Oversized World Name & Counterpart */}
                 <div className="mt-5 flex flex-wrap items-baseline gap-4">
                   <Typography
-                    variant="display-l"
+                    variant="display-xl"
                     as="h3"
                     serifInEnglish
                     className="text-[#FFFDF9]"
                   >
                     {localize(collection.name, locale)}
                   </Typography>
-                  <span className="font-[family-name:var(--font-display-en)] text-lg tracking-[0.24em] text-[#A77A50]">
+                  <span
+                    className={cn(
+                      'font-[family-name:var(--font-display-en)] text-xl sm:text-2xl tracking-[0.24em]',
+                      theme.badgeTextClass
+                    )}
+                  >
                     {locale === 'ar' ? collection.name.en : collection.name.ar}
                   </span>
                 </div>
 
                 <Typography
-                  variant="h3"
+                  variant="h2"
                   as="p"
-                  className={cn('mt-3', theme.accentTextClass)}
+                  className={cn('mt-4', theme.accentTextClass)}
                 >
                   {localize(collection.tagline, locale)}
                 </Typography>
 
                 <Typography
-                  variant="body"
-                  className="mt-4 text-[#F5F0E8]/80"
+                  variant="body-lg"
+                  className="mt-5 text-[#F5F0E8]/88"
                 >
                   {localize(collection.editorialDescription, locale)}
                 </Typography>
 
                 {/* Unboxed Material & Accord Specimen Ledger */}
-                <div className="mt-7 space-y-3.5 border-y border-[#F5F0E8]/12 py-5 text-xs">
+                <div
+                  className={cn(
+                    'mt-8 space-y-5 border-y py-6',
+                    theme.borderAccentClass
+                  )}
+                >
                   <div>
-                    <span className="block text-[#918A80]">
+                    <span className="block text-xs sm:text-sm text-[#D8C8B2]/75">
                       {t.collections.accordLabel}
                     </span>
-                    <span className="mt-1 block text-sm font-medium text-[#FFFDF9]">
+                    <span className="mt-1.5 block text-base sm:text-lg font-medium text-[#FFFDF9]">
                       {localize(collection.accordSummary, locale)}
                     </span>
                   </div>
 
-                  <div className="border-t border-[#F5F0E8]/10 pt-3.5">
-                    <span className="block text-[#918A80]">
+                  <div
+                    className={cn('border-t pt-4', theme.borderAccentClass)}
+                  >
+                    <span className="block text-xs sm:text-sm text-[#D8C8B2]/75">
                       {t.collections.materialCharacterLabel}
                     </span>
-                    <span className="mt-1 block text-xs text-[#D8C8B2]">
+                    <span
+                      className={cn(
+                        'mt-1.5 block text-sm sm:text-base',
+                        theme.accentTextClass
+                      )}
+                    >
                       {worldMeta.material}
                     </span>
                   </div>
                 </div>
 
-                {/* Integrated Creation Rail for this World */}
-                {collectionProducts.length > 0 && (
-                  <div className="mt-6">
-                    <span className="block text-xs text-[#918A80]">
-                      {t.collections.featuredInCollectionLabel}
-                    </span>
-                    <div className="mt-3 divide-y divide-[#F5F0E8]/10 border-b border-[#F5F0E8]/10">
-                      {collectionProducts.map((prod) => {
-                        const prodPrice = getProductDisplayPrice(prod);
-                        return (
-                          <Link
-                            key={prod.id}
-                            href={`/products/${prod.slug}`}
-                            className="group/item flex items-center justify-between gap-4 py-3 transition-colors hover:bg-[#F5F0E8]/[0.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
-                          >
-                            <div className="flex min-w-0 items-center gap-3.5">
-                              <div className="relative h-12 w-10 shrink-0 overflow-hidden bg-[#0B0B0A]">
-                                <Image
-                                  src={prod.image.url}
-                                  alt={localize(prod.image.alt, locale)}
-                                  fill
-                                  sizes="40px"
-                                  className="object-cover transition-transform duration-500 group-hover/item:scale-105"
-                                  referrerPolicy="no-referrer"
-                                />
-                              </div>
-                              <div className="min-w-0">
-                                <span className="block truncate text-sm font-medium text-[#FFFDF9] transition-colors group-hover/item:text-[#D8C8B2]">
-                                  {localize(prod.name, locale)}
-                                </span>
-                                <span className="block truncate text-xs text-[#918A80]">
-                                  {localize(prod.notes.olfactoryFamily, locale)}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="flex shrink-0 items-center gap-3">
-                              {prodPrice && (
-                                <span className="text-xs font-medium tabular-nums text-[#D8C8B2]">
-                                  {formatMoney(prodPrice, locale)}
-                                </span>
-                              )}
-                              <DirectionalArrow className="h-3.5 w-3.5 text-[#A77A50] transition-transform duration-200 group-hover/item:translate-x-0.5 rtl:group-hover/item:-translate-x-0.5" />
-                            </div>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                <div className="mt-7">
+                {/* Primary World Filter Trigger */}
+                <div className="mt-8">
                   <button
                     type="button"
                     onClick={() => onExploreCollection(collection.slug)}
-                    className="group inline-flex items-center gap-3 text-sm font-medium text-[#FFFDF9] transition-colors hover:text-[#D8C8B2] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
+                    className="group inline-flex h-13 items-center gap-3.5 border border-[#F5F0E8]/35 bg-[#F5F0E8]/10 px-7 text-sm sm:text-base font-medium text-[#FFFDF9] transition-all duration-200 hover:border-[#A77A50] hover:bg-[#A77A50] hover:text-[#0B0B0A] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
                   >
-                    <span className="border-b border-[#A77A50] pb-1 transition-colors group-hover:border-[#FFFDF9]">
-                      {t.collections.exploreCollectionCreations}
-                    </span>
-                    <DirectionalArrow className="h-4 w-4 text-[#A77A50] transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+                    <span>{t.collections.exploreCollectionCreations}</span>
+                    <DirectionalArrow className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
                   </button>
                 </div>
               </div>
             </Reveal>
           </div>
         </div>
+
+        {/* Full-Width Horizontal Visual Integrated Creation Rail */}
+        {collectionProducts.length > 0 && (
+          <Reveal delay={0.14}>
+            <div
+              className={cn(
+                'mt-12 border-t pt-8 sm:mt-16 sm:pt-10',
+                theme.borderAccentClass
+              )}
+            >
+              <div className="mb-6 flex items-center justify-between gap-4">
+                <span
+                  className={cn(
+                    'text-xs sm:text-sm font-medium tracking-wider uppercase',
+                    theme.badgeTextClass
+                  )}
+                >
+                  {t.collections.featuredInCollectionLabel}
+                </span>
+                <span className="font-[family-name:var(--font-display-en)] text-xs sm:text-sm tracking-[0.22em] text-[#D8C8B2]/70">
+                  0{collectionProducts.length} · {collection.romanCode}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+                {collectionProducts.slice(0, 6).map((prod) => {
+                  const prodPrice = getProductDisplayPrice(prod);
+                  return (
+                    <Link
+                      key={prod.id}
+                      href={`/products/${prod.slug}`}
+                      className={cn(
+                        'group/item flex items-center justify-between gap-4 border p-3.5 sm:p-4 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
+                        theme.borderAccentClass,
+                        theme.railCardSurfaceClass
+                      )}
+                    >
+                      <div className="flex min-w-0 items-center gap-4">
+                        <div className="relative h-22 w-18 sm:h-24 sm:w-20 shrink-0 overflow-hidden bg-[#080706]">
+                          <Image
+                            src={prod.image.url}
+                            alt={localize(prod.image.alt, locale)}
+                            fill
+                            sizes="88px"
+                            className="object-cover transition-transform duration-500 group-hover/item:scale-105"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                        <div className="min-w-0">
+                          <span className="block truncate text-base sm:text-lg font-medium text-[#FFFDF9] transition-colors group-hover/item:text-[#D8C8B2]">
+                            {localize(prod.name, locale)}
+                          </span>
+                          <span className="mt-0.5 block truncate text-xs sm:text-sm text-[#D8C8B2]/75">
+                            {localize(prod.notes.olfactoryFamily, locale)}
+                          </span>
+                          {prodPrice && (
+                            <span
+                              className={cn(
+                                'mt-2 block text-sm sm:text-base font-medium tabular-nums',
+                                theme.accentTextClass
+                              )}
+                            >
+                              {formatMoney(prodPrice, locale)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <DirectionalArrow
+                        className={cn(
+                          'h-4 w-4 shrink-0 transition-transform duration-200 group-hover/item:translate-x-1 rtl:group-hover/item:-translate-x-1',
+                          theme.badgeTextClass
+                        )}
+                      />
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </Reveal>
+        )}
       </div>
     </article>
   );

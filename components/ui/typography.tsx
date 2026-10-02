@@ -59,32 +59,32 @@ export function Typography({
 
   const variantClasses: Record<TypographyVariant, string> = {
     'display-xl': isArabic
-      ? 'text-[clamp(2.15rem,4.3vw+0.85rem,4.35rem)] font-medium leading-[1.22] tracking-normal text-balance'
-      : 'text-[clamp(2.5rem,5vw+0.85rem,5rem)] font-normal leading-[1.05] tracking-[-0.02em] text-balance',
+      ? 'text-[clamp(2.35rem,4.8vw+0.8rem,4.9rem)] font-medium leading-[1.2] tracking-normal text-balance'
+      : 'text-[clamp(2.65rem,5.2vw+0.8rem,5.5rem)] font-normal leading-[1.03] tracking-[-0.02em] text-balance',
     'display-l': isArabic
-      ? 'text-[clamp(1.85rem,3.2vw+0.7rem,3.35rem)] font-normal leading-[1.3] tracking-normal text-balance'
-      : 'text-[clamp(2.1rem,3.8vw+0.7rem,3.85rem)] font-normal leading-[1.1] tracking-[-0.015em] text-balance',
+      ? 'text-[clamp(2.05rem,3.6vw+0.65rem,3.85rem)] font-normal leading-[1.26] tracking-normal text-balance'
+      : 'text-[clamp(2.25rem,4.1vw+0.65rem,4.35rem)] font-normal leading-[1.08] tracking-[-0.015em] text-balance',
     h1: isArabic
-      ? 'text-2xl sm:text-3xl md:text-4xl font-medium leading-[1.35] text-balance'
-      : 'text-3xl sm:text-4xl md:text-5xl font-normal leading-[1.15] tracking-[-0.01em] text-balance',
+      ? 'text-[clamp(1.75rem,2.8vw+0.5rem,3.15rem)] font-medium leading-[1.3] text-balance'
+      : 'text-[clamp(1.95rem,3.2vw+0.5rem,3.65rem)] font-normal leading-[1.12] tracking-[-0.01em] text-balance',
     h2: isArabic
-      ? 'text-xl sm:text-2xl md:text-3xl font-medium leading-[1.38] text-balance'
-      : 'text-2xl sm:text-3xl md:text-4xl font-normal leading-[1.18] tracking-[-0.01em] text-balance',
+      ? 'text-2xl sm:text-3xl lg:text-4xl font-medium leading-[1.34] text-balance'
+      : 'text-2xl sm:text-3xl lg:text-4xl font-normal leading-[1.16] tracking-[-0.01em] text-balance',
     h3: isArabic
-      ? 'text-lg sm:text-xl font-medium leading-[1.45]'
-      : 'text-lg sm:text-xl font-medium leading-[1.35] tracking-[-0.005em]',
+      ? 'text-lg sm:text-xl lg:text-2xl font-medium leading-[1.4]'
+      : 'text-lg sm:text-xl lg:text-2xl font-medium leading-[1.3] tracking-[-0.005em]',
     'body-lg': isArabic
-      ? 'text-base sm:text-lg md:text-[1.1875rem] font-light leading-[1.85]'
-      : 'text-base sm:text-lg md:text-[1.125rem] font-light leading-[1.75]',
+      ? 'text-base sm:text-lg lg:text-[1.25rem] font-light leading-[1.82]'
+      : 'text-base sm:text-lg lg:text-[1.1875rem] font-light leading-[1.72]',
     body: isArabic
-      ? 'text-[0.9375rem] sm:text-base font-normal leading-[1.8]'
-      : 'text-[0.9375rem] sm:text-base font-normal leading-[1.68]',
+      ? 'text-[0.9375rem] sm:text-base lg:text-[1.0625rem] font-normal leading-[1.78]'
+      : 'text-[0.9375rem] sm:text-base lg:text-[1.0625rem] font-normal leading-[1.68]',
     small: isArabic
-      ? 'text-xs sm:text-[0.8125rem] font-normal leading-[1.65]'
-      : 'text-xs sm:text-[0.8125rem] font-normal leading-[1.55]',
+      ? 'text-xs sm:text-sm font-normal leading-[1.65]'
+      : 'text-xs sm:text-sm font-normal leading-[1.55]',
     eyebrow: isArabic
-      ? 'text-xs sm:text-[0.8125rem] font-medium leading-[1.5] tracking-wide'
-      : 'text-[0.75rem] sm:text-[0.8125rem] font-medium leading-[1.4] tracking-[0.16em] uppercase',
+      ? 'text-xs sm:text-sm font-medium leading-[1.5] tracking-wide'
+      : 'text-xs sm:text-sm font-medium leading-[1.4] tracking-[0.18em] uppercase',
   };
 
   const fontFamilyClass = useEnglishDisplaySerif
