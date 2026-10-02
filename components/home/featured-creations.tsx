@@ -74,10 +74,9 @@ export function FeaturedCreations({
       : `/shop?collection=${selectedCollectionFilter}`;
 
   const filterChapters = [
-    { id: 'all', code: '00', label: t.creations.filterAll },
+    { id: 'all', label: t.creations.filterAll },
     ...collections.map((col) => ({
       id: col.slug,
-      code: col.romanCode,
       label: localize(col.name, locale),
     })),
   ];
@@ -87,24 +86,13 @@ export function FeaturedCreations({
       id="creations"
       className="relative overflow-hidden border-b border-[#DFD3C3] bg-[#FFFDF9] py-16 text-[#0B0B0A] sm:py-22 lg:py-28"
     >
-      {/* Oversized Chapter Watermark */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-8 end-6 sm:end-12 select-none font-[family-name:var(--font-display-en)] text-[6.5rem] sm:text-[9rem] lg:text-[12rem] font-normal leading-none tracking-[0.08em] text-[#4A3027]/[0.05]"
-      >
-        02
-      </span>
-
       <div className="relative z-10 mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-12 xl:px-16">
-        {/* Chapter Header & Interactive Chapter Selector */}
+        {/* Clean Section Header & Interactive Collection Selector */}
         <div className="flex flex-col justify-between gap-8 border-b border-[#E2D6C5] pb-8 lg:flex-row lg:items-end">
           <div className="max-w-3xl">
             <Reveal>
-              <div className="inline-flex items-center gap-3.5">
-                <span className="font-[family-name:var(--font-display-en)] text-sm sm:text-base tracking-[0.24em] text-[#A77A50]">
-                  02
-                </span>
-                <span aria-hidden="true" className="h-[1.5px] w-10 bg-[#A77A50]" />
+              <div className="inline-flex items-center gap-3">
+                <span aria-hidden="true" className="h-px w-8 bg-[#A77A50]" />
                 <Typography variant="eyebrow" className="text-[#4A3027]">
                   {t.creations.sectionEyebrow}
                 </Typography>
@@ -127,7 +115,7 @@ export function FeaturedCreations({
             </Reveal>
           </div>
 
-          {/* Chapter Filter Bar with Traveling Underline */}
+          {/* Clean Collection Filter Bar with Traveling Underline */}
           <div
             role="tablist"
             aria-label={t.collections.sectionTitle}
@@ -143,15 +131,12 @@ export function FeaturedCreations({
                   aria-selected={isSelected}
                   onClick={() => setSelectedCollectionFilter(chapter.id)}
                   className={cn(
-                    'relative inline-flex items-baseline gap-2.5 px-4 py-3 text-sm sm:text-base transition-colors duration-200 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
+                    'relative inline-flex items-center px-4 py-3 text-sm sm:text-base transition-colors duration-200 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]',
                     isSelected
-                      ? 'font-semibold text-[#0B0B0A]'
+                      ? 'font-medium text-[#0B0B0A]'
                       : 'text-[#665F57] hover:text-[#0B0B0A]'
                   )}
                 >
-                  <span className="font-[family-name:var(--font-display-en)] text-xs sm:text-sm tracking-[0.22em] text-[#A77A50]">
-                    {chapter.code}
-                  </span>
                   <span>{chapter.label}</span>
                   {isSelected && (
                     <motion.span
@@ -161,7 +146,7 @@ export function FeaturedCreations({
                           ? { duration: 0 }
                           : { duration: 0.25, ease: [0.16, 1, 0.3, 1] }
                       }
-                      className="absolute inset-x-0 bottom-0 h-[2.5px] bg-[#0B0B0A]"
+                      className="absolute inset-x-0 bottom-0 h-[2px] bg-[#0B0B0A]"
                     />
                   )}
                 </button>
@@ -170,7 +155,7 @@ export function FeaturedCreations({
           </div>
         </div>
 
-        {/* FLAGSHIP CREATION — Monumental Hero-Within-The-Page (~82vh Desktop Stage) */}
+        {/* FLAGSHIP CREATION — Hero-Within-The-Page (~80vh Desktop Stage) */}
         {flagshipProduct && (
           <div className="mt-10 sm:mt-14">
             <AnimatePresence mode="wait" initial={false}>
@@ -184,12 +169,12 @@ export function FeaturedCreations({
                     ? { duration: 0 }
                     : { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
                 }
-                className="relative overflow-hidden bg-[#110E0C] text-[#F5F0E8] shadow-[0_28px_70px_rgba(11,11,10,0.16)]"
+                className="relative overflow-hidden bg-[#110E0C] text-[#F5F0E8] shadow-[0_28px_70px_rgba(11,11,10,0.14)]"
               >
-                <div className="grid grid-cols-1 lg:min-h-[82vh] lg:grid-cols-12">
+                <div className="grid grid-cols-1 lg:min-h-[80vh] lg:grid-cols-12">
                   {/* Left / Start: Commanding 58% Bottle Studio Photography (7 Cols) */}
                   <div className="relative lg:col-span-7">
-                    <div className="group relative aspect-[4/5] w-full overflow-hidden bg-[#0B0B0A] sm:aspect-[16/13] lg:h-full lg:min-h-[680px] lg:aspect-auto">
+                    <div className="group relative aspect-[4/5] w-full overflow-hidden bg-[#0B0B0A] sm:aspect-[16/13] lg:h-full lg:min-h-[660px] lg:aspect-auto">
                       <Link
                         href={`/products/${flagshipProduct.slug}`}
                         aria-label={`${localize(flagshipProduct.name, locale)} — ${t.shop.card.viewCreation}`}
@@ -205,7 +190,7 @@ export function FeaturedCreations({
                         />
                         <div
                           aria-hidden="true"
-                          className="absolute inset-0 bg-gradient-to-t from-[#110E0C]/85 via-transparent to-[#0B0B0A]/25"
+                          className="absolute inset-0 bg-gradient-to-t from-[#110E0C]/80 via-transparent to-[#0B0B0A]/20"
                         />
                       </Link>
 
@@ -251,7 +236,7 @@ export function FeaturedCreations({
                       {/* Collection & Olfactory Family Accent */}
                       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#F5F0E8]/14 pb-4 text-sm sm:text-base text-[#D8C8B2]">
                         <span>
-                          <strong className="font-semibold text-[#A77A50]">
+                          <strong className="font-medium text-[#A77A50]">
                             {localize(flagshipProduct.collectionName, locale)}
                           </strong>
                           <span aria-hidden="true" className="mx-2.5 text-[#A77A50]">
@@ -273,26 +258,19 @@ export function FeaturedCreations({
 
                       {/* Large Product Title & Strong Refined Price */}
                       <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-baseline sm:justify-between">
-                        <div>
-                          <Link
-                            href={`/products/${flagshipProduct.slug}`}
-                            className="group/title inline-block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                        <Link
+                          href={`/products/${flagshipProduct.slug}`}
+                          className="group/title inline-block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+                        >
+                          <Typography
+                            variant="display-l"
+                            as="h3"
+                            serifInEnglish
+                            className="text-[#FFFDF9] transition-colors group-hover/title:text-[#D8C8B2]"
                           >
-                            <Typography
-                              variant="display-l"
-                              as="h3"
-                              serifInEnglish
-                              className="text-[#FFFDF9] transition-colors group-hover/title:text-[#D8C8B2]"
-                            >
-                              {localize(flagshipProduct.name, locale)}
-                            </Typography>
-                          </Link>
-                          <span className="mt-1 block font-[family-name:var(--font-display-en)] text-sm sm:text-base tracking-[0.24em] text-[#A77A50]">
-                            {locale === 'ar'
-                              ? flagshipProduct.name.en
-                              : flagshipProduct.name.ar}
-                          </span>
-                        </div>
+                            {localize(flagshipProduct.name, locale)}
+                          </Typography>
+                        </Link>
 
                         {flagshipPrice && (
                           <div className="sm:text-end shrink-0">
@@ -306,7 +284,7 @@ export function FeaturedCreations({
                         )}
                       </div>
 
-                      <p className="mt-4 text-base sm:text-lg font-medium text-[#D8C8B2]">
+                      <p className="mt-3 text-base sm:text-lg font-medium text-[#D8C8B2]">
                         {localize(flagshipProduct.subtitle, locale)}
                       </p>
 
@@ -463,11 +441,7 @@ export function FeaturedCreations({
 
               {/* Row 2: Varied Editorial Compositions with Staggered Vertical Rhythm */}
               {rowTwoProducts.length > 0 && (
-                <div
-                  className={cn(
-                    'grid grid-cols-12 items-start gap-8 lg:gap-12 border-t border-[#E5D9C8] pt-14 lg:pt-18'
-                  )}
-                >
+                <div className="grid grid-cols-12 items-start gap-8 border-t border-[#E5D9C8] pt-14 lg:gap-12 lg:pt-18">
                   {rowTwoProducts.map((product, index) => {
                     const colSpanClass =
                       rowTwoProducts.length === 1

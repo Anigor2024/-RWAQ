@@ -38,9 +38,9 @@ const WORLD_THEMES: Record<
     accentTextClass: 'text-[#E5D6C0]',
     badgeTextClass: 'text-[#C69666]',
     glowClass:
-      'bg-[radial-gradient(circle_at_78%_28%,rgba(167,122,80,0.24)_0%,rgba(74,48,39,0.14)_40%,transparent_72%)]',
+      'bg-[radial-gradient(circle_at_78%_28%,rgba(167,122,80,0.22)_0%,rgba(74,48,39,0.12)_40%,transparent_72%)]',
     ruleClass: 'bg-[#A77A50]',
-    borderAccentClass: 'border-[#A77A50]/30',
+    borderAccentClass: 'border-[#A77A50]/28',
     railCardSurfaceClass: 'bg-[#1C1611]/90 hover:bg-[#241C16]',
   },
   // SAHRA: Dark amber / burnt sand / glowing warm highlights
@@ -49,9 +49,9 @@ const WORLD_THEMES: Record<
     accentTextClass: 'text-[#F0C699]',
     badgeTextClass: 'text-[#DF9E63]',
     glowClass:
-      'bg-[radial-gradient(circle_at_22%_32%,rgba(208,136,72,0.28)_0%,rgba(140,78,36,0.16)_42%,transparent_72%)]',
+      'bg-[radial-gradient(circle_at_22%_32%,rgba(208,136,72,0.26)_0%,rgba(140,78,36,0.14)_42%,transparent_72%)]',
     ruleClass: 'bg-[#D08848]',
-    borderAccentClass: 'border-[#D08848]/35',
+    borderAccentClass: 'border-[#D08848]/32',
     railCardSurfaceClass: 'bg-[#2B1B11]/90 hover:bg-[#352216]',
   },
   // LAYL: Near-black / charcoal / muted plum or smoke accents
@@ -60,9 +60,9 @@ const WORLD_THEMES: Record<
     accentTextClass: 'text-[#DECED9]',
     badgeTextClass: 'text-[#B59AA9]',
     glowClass:
-      'bg-[radial-gradient(circle_at_72%_28%,rgba(166,139,156,0.24)_0%,rgba(62,50,68,0.16)_42%,transparent_72%)]',
+      'bg-[radial-gradient(circle_at_72%_28%,rgba(166,139,156,0.22)_0%,rgba(62,50,68,0.14)_42%,transparent_72%)]',
     ruleClass: 'bg-[#A68B9C]',
-    borderAccentClass: 'border-[#A68B9C]/30',
+    borderAccentClass: 'border-[#A68B9C]/28',
     railCardSurfaceClass: 'bg-[#15151E]/90 hover:bg-[#1D1D29]',
   },
 };
@@ -86,7 +86,7 @@ export function CollectionStory({
     <article
       id={`collection-${collection.slug}`}
       className={cn(
-        'relative flex min-h-0 flex-col justify-center overflow-hidden py-16 sm:py-22 lg:min-h-[90vh] lg:py-28',
+        'relative flex min-h-0 flex-col justify-center overflow-hidden py-16 sm:py-22 lg:min-h-[88vh] lg:py-28',
         theme.surfaceClass
       )}
     >
@@ -96,21 +96,10 @@ export function CollectionStory({
         className={cn('pointer-events-none absolute inset-0', theme.glowClass)}
       />
 
-      {/* Giant Background Roman Numeral Watermark */}
-      <span
-        aria-hidden="true"
-        className={cn(
-          'pointer-events-none absolute top-6 select-none font-[family-name:var(--font-display-en)] text-[7.5rem] sm:text-[11rem] lg:text-[15rem] font-normal leading-none tracking-[0.08em] text-[#FFFDF9]/[0.04]',
-          isReversedOnDesktop ? 'start-6 sm:start-14' : 'end-6 sm:end-14'
-        )}
-      >
-        {collection.romanCode}
-      </span>
-
       <div className="relative z-10 mx-auto w-full max-w-[1600px] px-4 sm:px-8 lg:px-12 xl:px-16">
-        {/* Main 12-Column Destination Stage: ~60% Visual (7 Cols) + ~40% World Architecture (5 Cols) */}
+        {/* Main 12-Column Destination Stage: ~58% Visual (7 Cols) + ~42% World Architecture (5 Cols) */}
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-14 xl:gap-16">
-          {/* Monumental Campaign Imagery Column (7 Cols = ~58% Width) */}
+          {/* Monumental Campaign Imagery Column (7 Cols) */}
           <div
             className={
               isReversedOnDesktop
@@ -119,45 +108,41 @@ export function CollectionStory({
             }
           >
             <Reveal>
-              <div className="group relative aspect-[4/5] w-full overflow-hidden bg-[#080706] sm:aspect-[16/11] lg:aspect-auto lg:min-h-[640px]">
+              <div className="group relative aspect-[4/5] w-full overflow-hidden bg-[#080706] sm:aspect-[16/11] lg:aspect-auto lg:min-h-[620px]">
                 <Image
                   src={collection.image.url}
                   alt={localize(collection.image.alt, locale)}
                   fill
                   sizes="(max-width: 1024px) 100vw, 60vw"
-                  className="object-cover brightness-[1.06] contrast-[1.05] transition-transform duration-1000 ease-out group-hover:scale-[1.025]"
+                  className="object-cover brightness-[1.05] contrast-[1.04] transition-transform duration-1000 ease-out group-hover:scale-[1.025]"
                   referrerPolicy="no-referrer"
                 />
                 <div
                   aria-hidden="true"
-                  className="absolute inset-0 bg-gradient-to-t from-[#080706]/85 via-[#080706]/20 to-transparent"
+                  className="absolute inset-0 bg-gradient-to-t from-[#080706]/80 via-[#080706]/15 to-transparent"
                 />
 
-                {/* Layered World Signature & Roman Numeral Over Image */}
-                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 p-6 sm:p-10">
-                  <div className="max-w-md space-y-1.5">
+                {/* Clean Origin Inspiration Caption Over Image */}
+                <div className="absolute inset-x-0 bottom-0 p-6 sm:p-9">
+                  <div className="max-w-lg space-y-1">
                     <span
                       className={cn(
-                        'block text-xs sm:text-sm font-medium tracking-wider',
+                        'block text-xs font-medium tracking-wider',
                         theme.badgeTextClass
                       )}
                     >
                       {t.collections.originLabel}
                     </span>
-                    <span className="block text-base sm:text-lg font-medium text-[#FFFDF9]">
+                    <span className="block text-sm sm:text-base font-medium text-[#FFFDF9]">
                       {localize(collection.originInspiration, locale)}
                     </span>
                   </div>
-
-                  <span className="font-[family-name:var(--font-display-en)] text-5xl sm:text-7xl font-normal leading-none tracking-[0.16em] text-[#FFFDF9]/92">
-                    {collection.romanCode}
-                  </span>
                 </div>
               </div>
             </Reveal>
           </div>
 
-          {/* World Identity, Accord Architecture & Action (5 Cols = ~42% Width) */}
+          {/* World Identity, Accord Architecture & Action (5 Cols) */}
           <div
             className={cn(
               isReversedOnDesktop
@@ -168,27 +153,27 @@ export function CollectionStory({
             <Reveal delay={0.08}>
               <div>
                 <div className="flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
-                  <div className="inline-flex items-center gap-3.5">
+                  <div className="inline-flex items-center gap-3">
                     <span
                       aria-hidden="true"
-                      className={cn('h-[2px] w-9', theme.ruleClass)}
+                      className={cn('h-px w-8', theme.ruleClass)}
                     />
                     <span
                       className={cn(
-                        'font-[family-name:var(--font-display-en)] tracking-[0.26em]',
+                        'font-[family-name:var(--font-display-en)] tracking-[0.24em]',
                         theme.badgeTextClass
                       )}
                     >
                       {t.collections.chapterPrefix} {collection.romanCode}
                     </span>
                   </div>
-                  <span className="font-medium text-[#D8C8B2]/85">
+                  <span className="font-medium text-[#D8C8B2]/80">
                     {worldMeta.atmosphere}
                   </span>
                 </div>
 
-                {/* Oversized World Name & Counterpart */}
-                <div className="mt-5 flex flex-wrap items-baseline gap-4">
+                {/* World Name */}
+                <div className="mt-5">
                   <Typography
                     variant="display-xl"
                     as="h3"
@@ -197,27 +182,19 @@ export function CollectionStory({
                   >
                     {localize(collection.name, locale)}
                   </Typography>
-                  <span
-                    className={cn(
-                      'font-[family-name:var(--font-display-en)] text-xl sm:text-2xl tracking-[0.24em]',
-                      theme.badgeTextClass
-                    )}
-                  >
-                    {locale === 'ar' ? collection.name.en : collection.name.ar}
-                  </span>
                 </div>
 
                 <Typography
                   variant="h2"
                   as="p"
-                  className={cn('mt-4', theme.accentTextClass)}
+                  className={cn('mt-3', theme.accentTextClass)}
                 >
                   {localize(collection.tagline, locale)}
                 </Typography>
 
                 <Typography
                   variant="body-lg"
-                  className="mt-5 text-[#F5F0E8]/88"
+                  className="mt-4 text-[#F5F0E8]/88"
                 >
                   {localize(collection.editorialDescription, locale)}
                 </Typography>
@@ -225,7 +202,7 @@ export function CollectionStory({
                 {/* Unboxed Material & Accord Specimen Ledger */}
                 <div
                   className={cn(
-                    'mt-8 space-y-5 border-y py-6',
+                    'mt-7 space-y-4 border-y py-5',
                     theme.borderAccentClass
                   )}
                 >
@@ -233,7 +210,7 @@ export function CollectionStory({
                     <span className="block text-xs sm:text-sm text-[#D8C8B2]/75">
                       {t.collections.accordLabel}
                     </span>
-                    <span className="mt-1.5 block text-base sm:text-lg font-medium text-[#FFFDF9]">
+                    <span className="mt-1 block text-base sm:text-lg font-medium text-[#FFFDF9]">
                       {localize(collection.accordSummary, locale)}
                     </span>
                   </div>
@@ -246,7 +223,7 @@ export function CollectionStory({
                     </span>
                     <span
                       className={cn(
-                        'mt-1.5 block text-sm sm:text-base',
+                        'mt-1 block text-sm sm:text-base',
                         theme.accentTextClass
                       )}
                     >
@@ -280,17 +257,14 @@ export function CollectionStory({
                 theme.borderAccentClass
               )}
             >
-              <div className="mb-6 flex items-center justify-between gap-4">
+              <div className="mb-5">
                 <span
                   className={cn(
-                    'text-xs sm:text-sm font-medium tracking-wider uppercase',
+                    'text-xs sm:text-sm font-medium tracking-wider',
                     theme.badgeTextClass
                   )}
                 >
                   {t.collections.featuredInCollectionLabel}
-                </span>
-                <span className="font-[family-name:var(--font-display-en)] text-xs sm:text-sm tracking-[0.22em] text-[#D8C8B2]/70">
-                  0{collectionProducts.length} · {collection.romanCode}
                 </span>
               </div>
 

@@ -77,26 +77,18 @@ export function EditorialProductCard({
               referrerPolicy="no-referrer"
             />
 
-            {/* Measured Scrim for Depth & Overlay Legibility */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-[#0B0B0A]/70 via-[#0B0B0A]/20 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-95"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0B0B0A]/65 via-[#0B0B0A]/15 to-transparent opacity-75 transition-opacity duration-300 group-hover:opacity-90"
             />
           </Link>
 
-          {/* Editorial Signature Kicker Overlay */}
+          {/* Single Quiet Signature Kicker Overlay */}
           {(product.isNew || product.isBestSeller) && (
-            <span className="pointer-events-none absolute bottom-4 start-5 border-s-2 border-[#A77A50] ps-3 text-xs sm:text-sm font-medium tracking-wider text-[#FFFDF9] drop-shadow-[0_2px_8px_rgba(0,0,0,0.75)]">
+            <span className="pointer-events-none absolute bottom-4 start-5 border-s-2 border-[#A77A50] ps-3 text-xs font-medium tracking-wider text-[#FFFDF9] drop-shadow-[0_2px_8px_rgba(0,0,0,0.75)]">
               {product.isNew
                 ? t.creations.newCreation
                 : t.creations.houseSignature}
-            </span>
-          )}
-
-          {/* Volume Pill Overlay */}
-          {defaultVariant && (
-            <span className="pointer-events-none absolute bottom-4 end-5 text-xs sm:text-sm font-medium tabular-nums text-[#D8C8B2] drop-shadow-[0_2px_8px_rgba(0,0,0,0.75)]">
-              {formatVolumeMl(defaultVariant.sizeMl, locale)}
             </span>
           )}
 
@@ -129,10 +121,10 @@ export function EditorialProductCard({
           </button>
         </div>
 
-        {/* Unboxed Collection & Olfactory Family Accent */}
+        {/* Clean Unboxed Metadata Header */}
         <div className="mt-5 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm text-[#665F57]">
           <span>
-            <strong className="font-semibold text-[#4A3027]">
+            <strong className="font-medium text-[#4A3027]">
               {localize(product.collectionName, locale)}
             </strong>
             <span aria-hidden="true" className="mx-2 text-[#A77A50]">
@@ -141,17 +133,17 @@ export function EditorialProductCard({
             <span>{localize(product.notes.olfactoryFamily, locale)}</span>
           </span>
           {defaultVariant && (
-            <span className="text-xs sm:text-sm text-[#665F57]">
-              {localize(defaultVariant.concentration, locale)}
+            <span className="tabular-nums text-[#665F57]">
+              {formatVolumeMl(defaultVariant.sizeMl, locale)}
             </span>
           )}
         </div>
 
         {/* Prominent Product Name & Refined SAR Price */}
-        <div className="mt-2.5 flex flex-wrap items-baseline justify-between gap-4">
+        <div className="mt-2 flex items-baseline justify-between gap-4">
           <Link
             href={productHref}
-            className="group/title flex flex-wrap items-baseline gap-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
+            className="group/title focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A77A50]"
           >
             <h3
               className={cn(
@@ -163,12 +155,9 @@ export function EditorialProductCard({
             >
               {localize(product.name, locale)}
             </h3>
-            <span className="font-[family-name:var(--font-display-en)] text-xs sm:text-sm tracking-[0.2em] text-[#8C6239]">
-              {locale === 'ar' ? product.name.en : product.name.ar}
-            </span>
           </Link>
 
-          <div className="flex items-baseline gap-2.5 tabular-nums">
+          <div className="flex shrink-0 items-baseline gap-2.5 tabular-nums">
             {displayOriginalPrice && (
               <span className="text-xs sm:text-sm text-[#918A80] line-through">
                 {formatMoney(displayOriginalPrice, locale)}
@@ -188,7 +177,7 @@ export function EditorialProductCard({
         {/* Readable Editorial Description */}
         <p
           className={cn(
-            'mt-3 leading-relaxed text-[#4E463F]',
+            'mt-2.5 leading-relaxed text-[#4E463F]',
             isDominant
               ? 'text-base sm:text-[1.0625rem] max-w-2xl'
               : 'text-[0.9375rem] sm:text-base'

@@ -10,7 +10,7 @@ import { useLocale } from '@/providers/locale-provider';
 import { useUI } from '@/providers/ui-provider';
 
 /**
- * CONCIERGE & GIFT ATELIER — FULL-BLEED CINEMATIC FINALE (Chapter 06).
+ * CONCIERGE & GIFT ATELIER — FULL-BLEED CINEMATIC FINALE.
  * Full-width Private Fragrance Salon atmosphere with edge-to-edge campaign photography,
  * layered obsidian scrims, asymmetrical editorial layout, and commanding 3-tier action hierarchy:
  * Primary: Gift Atelier (/gift-builder)
@@ -25,7 +25,7 @@ export function ConciergeServiceSection() {
   return (
     <section
       id="concierge"
-      className="group/finale relative flex min-h-[86vh] flex-col justify-between overflow-hidden border-t border-[#F5F0E8]/14 bg-[#0B0B0A] py-16 text-[#F5F0E8] sm:py-22 lg:min-h-[92vh] lg:py-28"
+      className="group/finale relative flex min-h-[84vh] flex-col justify-between overflow-hidden border-t border-[#F5F0E8]/14 bg-[#0B0B0A] py-16 text-[#F5F0E8] sm:py-22 lg:min-h-[90vh] lg:py-28"
     >
       {/* Full-Bleed Studio Flacon & Salon Campaign Background */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
@@ -49,20 +49,17 @@ export function ConciergeServiceSection() {
       </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-[1600px] flex-1 flex-col justify-between px-4 sm:px-8 lg:px-12 xl:px-16">
-        {/* Top Chapter Header */}
+        {/* Top Section Header */}
         <Reveal>
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#F5F0E8]/18 pb-5 text-xs sm:text-sm">
-            <div className="inline-flex items-center gap-3.5">
-              <span className="font-[family-name:var(--font-display-en)] text-sm sm:text-base tracking-[0.24em] text-[#A77A50]">
-                06
-              </span>
-              <span aria-hidden="true" className="h-[1.5px] w-10 bg-[#A77A50]" />
+            <div className="inline-flex items-center gap-3">
+              <span aria-hidden="true" className="h-px w-8 bg-[#A77A50]" />
               <Typography variant="eyebrow" className="text-[#D8C8B2]">
                 {t.concierge.sectionEyebrow}
               </Typography>
             </div>
 
-            <span className="font-[family-name:var(--font-display-en)] tracking-[0.26em] text-[#D8C8B2]/85">
+            <span className="font-[family-name:var(--font-display-en)] tracking-[0.24em] text-[#D8C8B2]/85">
               RWAQ · PRIVATE SALON · RIYADH
             </span>
           </div>
@@ -133,14 +130,11 @@ export function ConciergeServiceSection() {
             </Reveal>
           </div>
 
-          {/* Right / End: Architectural Salon Seal Plinth */}
+          {/* Right / End: Clean Architectural Salon Provenance Plinth */}
           <div className="lg:col-span-4">
             <Reveal delay={0.18}>
               <div className="border-s-2 border-[#A77A50] bg-[#0B0B0A]/65 p-6 sm:p-8 backdrop-blur-xs">
-                <span className="block font-[family-name:var(--font-display-en)] text-xs sm:text-sm tracking-[0.26em] text-[#A77A50]">
-                  I · II · III
-                </span>
-                <p className="mt-2.5 text-lg sm:text-xl font-medium text-[#FFFDF9]">
+                <p className="text-lg sm:text-xl font-medium text-[#FFFDF9]">
                   {t.brand.origin}
                 </p>
                 <p className="mt-2 text-sm sm:text-base leading-relaxed text-[#D8C8B2]/90">
@@ -151,15 +145,15 @@ export function ConciergeServiceSection() {
           </div>
         </div>
 
-        {/* Bottom 3 Unboxed Architectural Salon Pillars Spanning the Stage */}
+        {/* Bottom 3 Clean Unboxed Architectural Salon Pillars */}
         <div className="border-t border-[#F5F0E8]/20 pt-8 sm:pt-10">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-10 lg:gap-12">
             {t.concierge.pillars.map((pillar, idx) => (
               <Reveal key={pillar.code} delay={0.22 + idx * 0.06}>
                 <article className="border-s border-[#A77A50]/65 ps-5">
                   <div className="flex items-baseline justify-between gap-3">
-                    <span className="font-[family-name:var(--font-display-en)] text-2xl sm:text-3xl tracking-[0.2em] text-[#A77A50]">
-                      {pillar.code}
+                    <span className="font-mono text-xs font-medium tracking-[0.2em] text-[#A77A50]">
+                      0{idx + 1}
                     </span>
                     <span className="text-xs sm:text-sm font-medium text-[#D8C8B2]">
                       {pillar.detail}

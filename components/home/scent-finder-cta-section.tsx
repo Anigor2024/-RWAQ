@@ -4,21 +4,18 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Compass } from 'lucide-react';
-import { motion } from 'motion/react';
 import { Reveal } from '@/components/ui/reveal';
 import { Typography } from '@/components/ui/typography';
-import { useReducedMotionSafe } from '@/hooks/use-reduced-motion-safe';
 import { useLocale } from '@/providers/locale-provider';
 
 /**
- * SCENT FINDER — IMMERSIVE DISCOVERY PORTAL (Chapter 05).
+ * SCENT FINDER — IMMERSIVE DISCOVERY PORTAL.
  * Deep Obsidian environment (#0B0B0A) enriched with a controlled bronze glow,
- * oversized display headline, larger body prose, commanding CTA hierarchy,
- * and a tactile Olfactory Compass & Flacon focal stage.
+ * oversized display headline, larger body prose, strong CTA hierarchy,
+ * and a clean framed nocturnal flacon focal composition.
  */
 export function ScentFinderCtaSection() {
   const { dir, t } = useLocale();
-  const prefersReducedMotion = useReducedMotionSafe();
   const DirectionalArrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
 
   return (
@@ -27,37 +24,30 @@ export function ScentFinderCtaSection() {
       aria-labelledby="home-scent-finder-heading"
       className="relative overflow-hidden border-t border-[#F5F0E8]/14 bg-[#0B0B0A] py-16 text-[#F5F0E8] sm:py-22 lg:py-28"
     >
-      {/* Controlled Bronze Radial Glow & Coordinate Axis */}
+      {/* Controlled Bronze Radial Glow */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_50%,rgba(167,122,80,0.20)_0%,rgba(74,48,39,0.12)_38%,transparent_70%)]" />
-        <div className="absolute inset-x-0 top-1/2 h-px bg-[#A77A50]/14" />
-        <div className="absolute inset-y-0 start-1/2 w-px bg-[#A77A50]/10" />
-      </div>
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_50%,rgba(167,122,80,0.18)_0%,rgba(74,48,39,0.10)_40%,transparent_72%)]"
+      />
 
       <div className="relative z-10 mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-12 xl:px-16">
         {/* Top Coordinate Header */}
         <Reveal>
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#F5F0E8]/14 pb-5 text-xs sm:text-sm">
-            <div className="inline-flex items-center gap-3.5">
-              <span className="font-[family-name:var(--font-display-en)] text-sm sm:text-base tracking-[0.24em] text-[#A77A50]">
-                05
-              </span>
-              <span aria-hidden="true" className="h-[1.5px] w-10 bg-[#A77A50]" />
+            <div className="inline-flex items-center gap-3">
+              <span aria-hidden="true" className="h-px w-8 bg-[#A77A50]" />
               <Typography variant="eyebrow" className="text-[#D8C8B2]">
                 {t.homeScentFinder.eyebrow}
               </Typography>
             </div>
 
-            <span className="font-mono text-xs sm:text-sm tracking-widest text-[#D8C8B2]/80">
+            <span className="font-mono text-xs tracking-widest text-[#D8C8B2]/75">
               24.7136° N · 46.6753° E
             </span>
           </div>
         </Reveal>
 
-        {/* 12-Column Discovery Composition: 7 Cols Typography & CTAs + 5 Cols Olfactory Compass Focal Stage */}
+        {/* 12-Column Discovery Composition: 7 Cols Typography & CTAs + 5 Cols Framed Focal Stage */}
         <div className="mt-12 grid grid-cols-1 items-center gap-12 lg:mt-16 lg:grid-cols-12 lg:gap-16">
           {/* Left / Start: Oversized Headline, Larger Body Copy, 3 Consultation Pillars & Strong CTAs (7 Cols) */}
           <div className="lg:col-span-7">
@@ -82,15 +72,15 @@ export function ScentFinderCtaSection() {
               </Typography>
             </Reveal>
 
-            {/* 3 Architectural Consultation Pillars along a Coordinate Axis */}
+            {/* 3 Clean Architectural Consultation Pillars */}
             <Reveal delay={0.18}>
               <div className="mt-10 grid grid-cols-1 gap-6 border-y border-[#F5F0E8]/16 py-8 sm:grid-cols-3 sm:gap-8">
                 {t.homeScentFinder.pillars.map((pillar) => (
                   <div
                     key={pillar.code}
-                    className="relative border-s-2 border-[#A77A50] ps-5"
+                    className="relative border-s-2 border-[#A77A50]/75 ps-4"
                   >
-                    <span className="block font-[family-name:var(--font-display-en)] text-xl sm:text-2xl tracking-[0.2em] text-[#A77A50]">
+                    <span className="block font-mono text-xs font-medium tracking-[0.2em] text-[#A77A50]">
                       {pillar.code}
                     </span>
                     <span className="mt-2 block text-base sm:text-lg font-medium text-[#FFFDF9]">
@@ -126,32 +116,11 @@ export function ScentFinderCtaSection() {
             </Reveal>
           </div>
 
-          {/* Right / End: Visual Focal Point — Tactile Olfactory Compass & Nocturnal Flacon Stage (5 Cols) */}
+          {/* Right / End: Clean Framed Campaign Focal Portrait (5 Cols) */}
           <div className="lg:col-span-5">
             <Reveal delay={0.14}>
-              <div className="relative mx-auto max-w-lg lg:max-w-none">
-                {/* Outer Layered Compass Ring */}
-                <motion.div
-                  aria-hidden="true"
-                  initial={
-                    prefersReducedMotion ? false : { opacity: 0.5, scale: 0.96 }
-                  }
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true, margin: '-60px' }}
-                  transition={
-                    prefersReducedMotion
-                      ? { duration: 0 }
-                      : { duration: 1.1, ease: [0.16, 1, 0.3, 1] }
-                  }
-                  className="pointer-events-none absolute -inset-4 sm:-inset-6 rounded-full border border-[#A77A50]/30"
-                >
-                  <div className="absolute inset-6 rounded-full border border-[#F5F0E8]/14" />
-                  <div className="absolute inset-x-0 top-1/2 h-px bg-[#A77A50]/30" />
-                  <div className="absolute inset-y-0 left-1/2 w-px bg-[#A77A50]/30" />
-                </motion.div>
-
-                {/* Atmospheric Campaign Focal Portrait */}
-                <div className="group relative aspect-[4/5] w-full overflow-hidden border border-[#A77A50]/35 bg-[#12100E] shadow-[0_28px_80px_rgba(0,0,0,0.75)]">
+              <div className="border border-[#F5F0E8]/16 bg-[#110E0C] p-3 sm:p-4 shadow-[0_28px_80px_rgba(0,0,0,0.7)]">
+                <div className="group relative aspect-[4/5] w-full overflow-hidden bg-[#0B0B0A]">
                   <Image
                     src="/images/rwaq/collection_layl_musk_1790732079960.jpg"
                     alt={t.homeScentFinder.title}
@@ -162,22 +131,14 @@ export function ScentFinderCtaSection() {
                   />
                   <div
                     aria-hidden="true"
-                    className="absolute inset-0 bg-gradient-to-t from-[#0B0B0A]/90 via-[#0B0B0A]/25 to-transparent"
+                    className="absolute inset-0 bg-gradient-to-t from-[#0B0B0A]/85 via-[#0B0B0A]/20 to-transparent"
                   />
 
-                  {/* Compass Calibration Overlay */}
-                  <div className="absolute inset-x-0 top-0 flex items-center justify-between border-b border-[#F5F0E8]/15 bg-[#0B0B0A]/50 px-5 py-3.5 text-xs tracking-widest text-[#D8C8B2] backdrop-blur-xs">
-                    <span className="font-[family-name:var(--font-display-en)]">
-                      I · II · III
-                    </span>
-                    <span className="font-mono text-[#A77A50]">28% EXTRAIT</span>
-                  </div>
-
                   <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
-                    <span className="block font-[family-name:var(--font-display-en)] text-xs sm:text-sm tracking-[0.26em] text-[#A77A50]">
+                    <span className="block font-[family-name:var(--font-display-en)] text-xs tracking-[0.24em] text-[#A77A50]">
                       NAJD · SAHRA · LAYL
                     </span>
-                    <p className="mt-2 text-base sm:text-lg font-medium text-[#FFFDF9]">
+                    <p className="mt-2 text-sm sm:text-base font-medium text-[#FFFDF9]">
                       {t.hero.concentrationBadge}
                     </p>
                   </div>

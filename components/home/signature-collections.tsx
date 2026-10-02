@@ -34,24 +34,13 @@ export function SignatureCollections({
       id="collections"
       className="relative overflow-hidden bg-[#0E0B09] pt-16 text-[#F5F0E8] sm:pt-22 lg:pt-28"
     >
-      {/* Oversized Chapter Watermark */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-6 end-6 sm:end-12 select-none font-[family-name:var(--font-display-en)] text-[6.5rem] sm:text-[9rem] lg:text-[12rem] font-normal leading-none tracking-[0.08em] text-[#A77A50]/[0.07]"
-      >
-        03
-      </span>
-
       {/* Exhibition Intro Header */}
       <div className="relative z-10 mx-auto max-w-[1600px] px-4 pb-12 sm:px-8 sm:pb-16 lg:px-12 xl:px-16">
         <div className="flex flex-col justify-between gap-10 border-b border-[#F5F0E8]/14 pb-10 lg:flex-row lg:items-end">
           <div className="max-w-3xl">
             <Reveal>
-              <div className="inline-flex items-center gap-3.5">
-                <span className="font-[family-name:var(--font-display-en)] text-sm sm:text-base tracking-[0.24em] text-[#A77A50]">
-                  03
-                </span>
-                <span aria-hidden="true" className="h-[1.5px] w-10 bg-[#A77A50]" />
+              <div className="inline-flex items-center gap-3">
+                <span aria-hidden="true" className="h-px w-8 bg-[#A77A50]" />
                 <Typography variant="eyebrow" className="text-[#D8C8B2]">
                   {t.collections.sectionEyebrow}
                 </Typography>
@@ -76,26 +65,23 @@ export function SignatureCollections({
             </Reveal>
           </div>
 
-          {/* Unboxed Chapter Index Navigation */}
+          {/* Clean World Index Navigation */}
           <Reveal delay={0.16}>
             <nav
               aria-label={t.collections.sectionTitle}
               className="flex flex-wrap items-center gap-6 sm:gap-10"
             >
-              {collections.map((col) => (
+              {collections.map((col, idx) => (
                 <a
                   key={col.id}
                   href={`#collection-${col.slug}`}
-                  className="group flex items-baseline gap-3 border-b-2 border-transparent pb-2.5 text-sm sm:text-base text-[#F5F0E8]/90 transition-colors hover:border-[#A77A50] hover:text-[#FFFDF9] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
+                  className="group flex items-baseline gap-2.5 border-b-2 border-transparent pb-2.5 text-sm sm:text-base text-[#F5F0E8]/90 transition-colors hover:border-[#A77A50] hover:text-[#FFFDF9] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A77A50]"
                 >
-                  <span className="font-[family-name:var(--font-display-en)] text-lg sm:text-xl tracking-[0.22em] text-[#A77A50]">
-                    {col.romanCode}
+                  <span className="font-mono text-xs tracking-[0.2em] text-[#A77A50]">
+                    0{idx + 1}
                   </span>
                   <span className="font-medium">
                     {localize(col.name, locale)}
-                  </span>
-                  <span className="font-[family-name:var(--font-display-en)] text-xs sm:text-sm tracking-[0.2em] text-[#D8C8B2]/75">
-                    {locale === 'ar' ? col.name.en : col.name.ar}
                   </span>
                 </a>
               ))}

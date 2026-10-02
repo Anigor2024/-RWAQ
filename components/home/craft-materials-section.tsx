@@ -20,9 +20,9 @@ const SPECIMEN_OBJECT_POSITIONS = [
 ];
 
 /**
- * THE RWAQ MATERIAL LAB (Chapter 04).
- * High-impact unboxed raw-material exhibition (~58% visual stage / ~42% material dossier)
- * with editorial index selector, oversized background specimen watermark, and smooth crossfade.
+ * THE RWAQ MATERIAL LAB (Craft & Rare Materials).
+ * Unboxed raw-material exhibition (~58% visual stage / ~42% material dossier)
+ * with a clean 01–05 editorial index selector and smooth crossfade.
  */
 export function CraftMaterialsSection() {
   const { t } = useLocale();
@@ -40,33 +40,13 @@ export function CraftMaterialsSection() {
       id="craft"
       className="relative overflow-hidden border-t border-[#D8C8B2] bg-[#EBE3D5] py-16 text-[#0B0B0A] sm:py-22 lg:py-28"
     >
-      {/* Oversized Background Specimen Numeral & Name Watermark */}
-      {activeMaterial && (
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute top-10 inset-x-0 overflow-hidden select-none"
-        >
-          <div className="mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-12 xl:px-16 flex items-baseline justify-between">
-            <span className="font-[family-name:var(--font-display-en)] text-[5.5rem] sm:text-[8.5rem] lg:text-[11.5rem] font-normal leading-none tracking-[0.06em] text-[#4A3027]/[0.055]">
-              {activeMaterial.numeral}
-            </span>
-            <span className="hidden md:inline-block font-[family-name:var(--font-display-en)] text-[4rem] lg:text-[7rem] font-normal leading-none tracking-[0.04em] text-[#4A3027]/[0.045] truncate max-w-[70%]">
-              {activeMaterial.name}
-            </span>
-          </div>
-        </div>
-      )}
-
       <div className="relative z-10 mx-auto max-w-[1600px] px-4 sm:px-8 lg:px-12 xl:px-16">
-        {/* Chapter Header */}
+        {/* Clean Section Header */}
         <div className="flex flex-col justify-between gap-8 border-b border-[#CFC0AC] pb-8 lg:flex-row lg:items-end">
           <div className="max-w-3xl">
             <Reveal>
-              <div className="inline-flex items-center gap-3.5">
-                <span className="font-[family-name:var(--font-display-en)] text-sm sm:text-base tracking-[0.24em] text-[#4A3027]">
-                  04
-                </span>
-                <span aria-hidden="true" className="h-[1.5px] w-10 bg-[#4A3027]" />
+              <div className="inline-flex items-center gap-3">
+                <span aria-hidden="true" className="h-px w-8 bg-[#4A3027]" />
                 <Typography variant="eyebrow" className="text-[#4A3027]">
                   {t.craft.sectionEyebrow}
                 </Typography>
@@ -92,13 +72,13 @@ export function CraftMaterialsSection() {
           </div>
 
           <Reveal delay={0.16}>
-            <div className="font-[family-name:var(--font-display-en)] text-sm sm:text-base tracking-[0.26em] text-[#4A3027]">
+            <div className="font-mono text-xs sm:text-sm tracking-[0.24em] text-[#4A3027]">
               0{activeIndex + 1} / 0{materials.length}
             </div>
           </Reveal>
         </div>
 
-        {/* Unboxed Editorial Specimen Index Selector */}
+        {/* Clean Unboxed Editorial Specimen Index Selector */}
         <div
           role="tablist"
           aria-label={t.craft.sectionTitle}
@@ -129,23 +109,20 @@ export function CraftMaterialsSection() {
                         ? { duration: 0 }
                         : { duration: 0.25, ease: [0.16, 1, 0.3, 1] }
                     }
-                    className="hidden lg:block absolute inset-x-0 bottom-0 h-[3px] bg-[#A77A50]"
+                    className="hidden lg:block absolute inset-x-0 bottom-0 h-[2.5px] bg-[#A77A50]"
                   />
                 )}
 
-                <div className="flex items-baseline justify-between gap-3">
-                  <span
-                    className={cn(
-                      'font-[family-name:var(--font-display-en)] text-base sm:text-lg tracking-[0.2em]',
-                      isSelected ? 'font-semibold text-[#A77A50]' : 'text-[#665F57]'
-                    )}
-                  >
-                    {item.numeral}
-                  </span>
-                  <span className="font-mono text-xs tabular-nums opacity-60">
-                    0{idx + 1}
-                  </span>
-                </div>
+                <span
+                  className={cn(
+                    'block font-mono text-xs tracking-[0.22em]',
+                    isSelected
+                      ? 'font-semibold text-[#A77A50]'
+                      : 'text-[#665F57]'
+                  )}
+                >
+                  0{idx + 1}
+                </span>
 
                 <span className="mt-2 block text-base sm:text-lg font-medium leading-snug">
                   {item.name}
@@ -183,7 +160,7 @@ export function CraftMaterialsSection() {
               >
                 {/* Left / Start: 58% Monumental Specimen Visual (7 Cols) */}
                 <div className="lg:col-span-7">
-                  <div className="group relative aspect-[4/5] w-full overflow-hidden bg-[#14110E] sm:aspect-[16/11] lg:aspect-auto lg:min-h-[620px]">
+                  <div className="group relative aspect-[4/5] w-full overflow-hidden bg-[#14110E] sm:aspect-[16/11] lg:aspect-auto lg:min-h-[600px]">
                     <Image
                       src={activeMaterial.imageUrl}
                       alt={activeMaterial.imageAlt}
@@ -197,22 +174,16 @@ export function CraftMaterialsSection() {
                     />
                     <div
                       aria-hidden="true"
-                      className="absolute inset-0 bg-gradient-to-t from-[#0B0B0A]/80 via-[#0B0B0A]/15 to-transparent"
+                      className="absolute inset-0 bg-gradient-to-t from-[#0B0B0A]/70 via-transparent to-transparent"
                     />
 
-                    {/* Unboxed Specimen Coordinate Overlay */}
-                    <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 p-6 sm:p-10 text-[#FFFDF9]">
-                      <div>
-                        <span className="block text-xs sm:text-sm font-medium tracking-wider text-[#D8C8B2]">
-                          {activeMaterial.subtitle}
-                        </span>
-                        <span className="mt-1 block text-xl sm:text-2xl font-medium text-[#FFFDF9]">
-                          {activeMaterial.name}
-                        </span>
-                      </div>
-
-                      <span className="font-[family-name:var(--font-display-en)] text-5xl sm:text-7xl font-normal leading-none tracking-[0.16em] text-[#A77A50]">
-                        {activeMaterial.numeral}
+                    {/* Single Restrained Specimen Provenance Caption */}
+                    <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 p-6 sm:p-8 text-[#FFFDF9]">
+                      <span className="text-xs sm:text-sm font-medium tracking-wide text-[#F5F0E8]/95">
+                        {activeMaterial.subtitle}
+                      </span>
+                      <span className="font-mono text-xs tracking-[0.22em] text-[#D8C8B2]">
+                        0{activeIndex + 1} / 0{materials.length}
                       </span>
                     </div>
                   </div>
@@ -221,11 +192,15 @@ export function CraftMaterialsSection() {
                 {/* Right / End: 42% Unboxed Material Dossier & Olfactory Ledger (5 Cols) */}
                 <div className="lg:col-span-5 flex flex-col justify-between">
                   <div>
-                    <div className="flex items-baseline justify-between gap-4 border-b border-[#CFC0AC] pb-4">
-                      <span className="font-[family-name:var(--font-display-en)] text-5xl sm:text-6xl font-normal leading-none tracking-[0.14em] text-[#A77A50]">
-                        {activeMaterial.numeral}
+                    <div className="inline-flex items-center gap-3">
+                      <span className="font-mono text-xs font-medium tracking-[0.22em] text-[#A77A50]">
+                        0{activeIndex + 1}
                       </span>
-                      <span className="text-sm sm:text-base font-medium text-[#4A3027]">
+                      <span
+                        aria-hidden="true"
+                        className="h-px w-8 bg-[#A77A50]"
+                      />
+                      <span className="text-xs sm:text-sm font-medium text-[#4A3027]">
                         {activeMaterial.subtitle}
                       </span>
                     </div>
@@ -234,7 +209,7 @@ export function CraftMaterialsSection() {
                       variant="display-l"
                       as="h3"
                       serifInEnglish
-                      className="mt-6 text-[#0B0B0A]"
+                      className="mt-4 text-[#0B0B0A]"
                     >
                       {activeMaterial.name}
                     </Typography>
